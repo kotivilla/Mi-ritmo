@@ -784,72 +784,55 @@ body.nutrition-mode .intro{display:none}
 </div>
 
 <div id="progress-view" class="view insights-progress-view" hidden>
- <main class="progress-main">
-  <section class="panel progress-overview-card" aria-labelledby="progress-overview-title">
-   <div class="progress-section-heading">
-    <div>
-     <p class="progress-kicker">BALANCE SEMANAL</p>
-     <h2 id="progress-overview-title">Tu semana de un vistazo</h2>
-     <p class="progress-section-description">Lo importante de tus hábitos, sin perderte en números.</p>
-    </div>
-    <span class="progress-week-range" id="insights-report-range"></span>
+ <main class="progress-main progress-clean">
+  <div class="progress-clean-top">
+   <h2>Progreso</h2>
+   <div class="progress-tab-list" role="tablist" aria-label="Secciones de progreso">
+    <button class="progress-tab active" id="progress-tab-summary" role="tab" type="button" aria-selected="true" aria-controls="progress-panel-summary">Resumen</button>
+    <button class="progress-tab" id="progress-tab-weight" role="tab" type="button" aria-selected="false" aria-controls="progress-panel-weight">Peso</button>
+    <button class="progress-tab" id="progress-tab-recovery" role="tab" type="button" aria-selected="false" aria-controls="progress-panel-recovery">Recuperación</button>
+   </div>
+  </div>
+  <section class="panel progress-clean-panel progress-tabs-panel" id="progress-panel-summary" role="tabpanel" aria-labelledby="progress-tab-summary">
+   <div class="progress-clean-heading">
+    <h3>Esta semana</h3>
+    <span id="insights-report-range" class="sub"></span>
    </div>
    <div class="progress-kpi-grid" id="insights-report-cards"></div>
-   <div class="progress-insight-box">
-    <span class="progress-insight-icon" aria-hidden="true">↗</span>
-    <div class="progress-insight-content">
-     <h3>Balance de la semana</h3>
-     <div id="insights-report-notes"></div>
-    </div>
-   </div>
-   <p class="progress-disclaimer">Solo analizamos lo que registraste. Un día sin datos no significa que no cumpliste tu plan.</p>
+   <details class="progress-notes" id="progress-notes">
+    <summary>Ver balance semanal <span aria-hidden="true">⌄</span></summary>
+    <div id="insights-report-notes"></div>
+   </details>
   </section>
-  <div class="progress-detail-grid">
-   <section class="panel progress-weight-card" aria-labelledby="progress-weight-title">
-    <div class="progress-section-heading">
-     <div>
-      <p class="progress-kicker">SEGUIMIENTO CORPORAL</p>
-      <h2 id="progress-weight-title">Peso corporal</h2>
-      <p class="progress-section-description">Mirá la tendencia, no una variación aislada.</p>
-     </div>
-     <span class="progress-header-symbol" aria-hidden="true">⌁</span>
-    </div>
-    <div class="progress-weight-data" id="insights-weight-summary"></div>
-    <div class="progress-chart-wrap" id="insights-weight-chart"></div>
-    <div class="progress-entry-area">
-     <div class="progress-entry-heading"><h3>Registrar peso</h3><span>En pocos segundos</span></div>
-     <form id="insights-weight-form" class="insights-quick-form progress-weight-form">
-      <label for="insights-weight-date"><span>Fecha</span><input class="field" type="date" id="insights-weight-date" required></label>
-      <label for="insights-weight-value"><span>Peso (kg)</span><input class="field" type="number" inputmode="decimal" step="0.01" min="20" max="350" placeholder="Ej. 75,5" id="insights-weight-value"></label>
-      <button class="pill primary" type="submit">Guardar</button>
-     </form>
-     <p class="progress-feedback" id="insights-weight-feedback" role="status" aria-live="polite"></p>
-    </div>
-   </section>
-   <section class="panel progress-recovery-card" aria-labelledby="progress-recovery-title">
-    <div class="progress-section-heading">
-     <div>
-      <p class="progress-kicker">BIENESTAR</p>
-      <h2 id="progress-recovery-title">Recuperación</h2>
-      <p class="progress-section-description">Cómo descansaste y cómo te sentís para entrenar.</p>
-     </div>
-     <span class="progress-header-symbol" aria-hidden="true">☾</span>
-    </div>
-    <div id="insights-recovery-summary" class="progress-recovery-status"></div>
-    <details class="progress-recovery-details" id="progress-recovery-details">
-     <summary><span>Registrar cómo me sentí</span><span class="progress-summary-chevron" aria-hidden="true">⌄</span></summary>
-     <form id="insights-recovery-form" class="insights-recovery-form progress-recovery-form">
-      <label for="insights-recovery-date"><span>Fecha</span><input class="field" type="date" id="insights-recovery-date" required></label>
-      <label for="insights-sleep"><span>Horas de sueño</span><input class="field" type="number" min="0" max="18" step="0.5" inputmode="decimal" id="insights-sleep" placeholder="Ej. 7,5"></label>
-      <label for="insights-energy"><span>Energía</span><select class="field" id="insights-energy"><option value="">Sin registrar</option><option value="1">1 · Muy baja</option><option value="2">2 · Baja</option><option value="3">3 · Normal</option><option value="4">4 · Buena</option><option value="5">5 · Muy buena</option></select></label>
-      <label for="insights-soreness"><span>Fatiga muscular</span><select class="field" id="insights-soreness"><option value="">Sin registrar</option><option value="1">1 · Nada</option><option value="2">2 · Leve</option><option value="3">3 · Moderada</option><option value="4">4 · Alta</option><option value="5">5 · Muy alta</option></select></label>
-      <button class="pill primary" type="submit">Guardar recuperación</button>
-     </form>
-     <p class="progress-feedback" id="insights-recovery-feedback" role="status" aria-live="polite"></p>
-    </details>
-    <p class="progress-recovery-footnote">Es opcional. No hace falta completar este registro todos los días.</p>
-   </section>
-  </div>
+  <section class="panel progress-clean-panel progress-tabs-panel" id="progress-panel-weight" role="tabpanel" aria-labelledby="progress-tab-weight" hidden>
+   <div class="progress-clean-heading"><h3>Peso corporal</h3></div>
+   <div class="progress-weight-data" id="insights-weight-summary"></div>
+   <div class="progress-chart-wrap" id="insights-weight-chart"></div>
+   <div class="progress-entry-area">
+    <h3>Registrar peso</h3>
+    <form id="insights-weight-form" class="insights-quick-form progress-weight-form">
+     <label for="insights-weight-date"><span>Fecha</span><input class="field" type="date" id="insights-weight-date" required></label>
+     <label for="insights-weight-value"><span>Peso (kg)</span><input class="field" type="number" inputmode="decimal" step="0.01" min="20" max="350" placeholder="Ej. 75,5" id="insights-weight-value"></label>
+     <button class="pill primary" type="submit">Guardar</button>
+    </form>
+    <p class="progress-feedback" id="insights-weight-feedback" role="status" aria-live="polite"></p>
+   </div>
+  </section>
+  <section class="panel progress-clean-panel progress-tabs-panel" id="progress-panel-recovery" role="tabpanel" aria-labelledby="progress-tab-recovery" hidden>
+   <div class="progress-clean-heading"><h3>Recuperación</h3></div>
+   <div id="insights-recovery-summary" class="progress-recovery-status"></div>
+   <details class="progress-recovery-details" id="progress-recovery-details">
+    <summary><span>Registrar recuperación</span><span class="progress-summary-chevron" aria-hidden="true">⌄</span></summary>
+    <form id="insights-recovery-form" class="insights-recovery-form progress-recovery-form">
+     <label for="insights-recovery-date"><span>Fecha</span><input class="field" type="date" id="insights-recovery-date" required></label>
+     <label for="insights-sleep"><span>Horas de sueño</span><input class="field" type="number" min="0" max="18" step="0.5" inputmode="decimal" id="insights-sleep" placeholder="Ej. 7,5"></label>
+     <label for="insights-energy"><span>Energía</span><select class="field" id="insights-energy"><option value="">Sin registrar</option><option value="1">1 · Muy baja</option><option value="2">2 · Baja</option><option value="3">3 · Normal</option><option value="4">4 · Buena</option><option value="5">5 · Muy buena</option></select></label>
+     <label for="insights-soreness"><span>Fatiga muscular</span><select class="field" id="insights-soreness"><option value="">Sin registrar</option><option value="1">1 · Nada</option><option value="2">2 · Leve</option><option value="3">3 · Moderada</option><option value="4">4 · Alta</option><option value="5">5 · Muy alta</option></select></label>
+     <button class="pill primary" type="submit">Guardar</button>
+    </form>
+    <p class="progress-feedback" id="insights-recovery-feedback" role="status" aria-live="polite"></p>
+   </details>
+  </section>
  </main>
 </div>
 </div>
