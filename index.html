@@ -505,7 +505,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <script src="/insights-ui.js?v=3"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
-<body>
+<body class="nutrition-mode">
 <div class="container">
 <header class="top">
  <div class="logo"><span class="logo-icon">✳</span>Mi Ritmo</div>
@@ -1365,12 +1365,12 @@ function renderMeals(){
   var savedOptions=dishList().filter(function(d){return d.meal===m.id}).sort(function(a,b){return a.name.localeCompare(b.name,'es')});
   var content=m.groups.map(function(g){
    var value=cap(entry[g.id],g.target);sum+=value/g.target;
-   return '<div class="group"><div class="group-title"><b>'+safe(g.name)+'</b><small>'+safe(g.hint)+'</small></div><div class="ticks">'+groupButtons(m,g,value)+'</div></div>'
+   return '<div class="group"><div class="group-title"><b>'+safe(g.name)+'</b></div><div class="ticks">'+groupButtons(m,g,value)+'</div></div>'
   }).join('');
-  var pct=Math.round(sum/m.groups.length*100),done=sum===m.groups.length;
+  var pct=Math.round(sum/m.groups.length*100),done=sum===m.groups.length,finished=m.groups.filter(function(g){return cap(entry[g.id],g.target)>=g.target}).length;
   return '<details class="meal'+(done?' done':'')+'" data-meal-card="'+m.id+'">'+
   '<summary class="meal-summary"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div>'+
-  '<div class="meal-meta"><span class="meal-count">'+pct+'%</span><span class="meal-chevron" aria-hidden="true">⌄</span></div></div>'+
+  '<div class="meal-meta"><span class="meal-count'+(done?' is-done':'')+'">'+(done?'✓ Listo':finished+'/'+m.groups.length)+'</span><span class="meal-chevron" aria-hidden="true">⌄</span></div></div>'+
   '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,sum>0)+'"></div></div></summary>'+
   '<div class="meal-body">'+content+
   '<div class="dish-tools">'+
@@ -1381,9 +1381,9 @@ function renderMeals(){
       (todayKey>calendarToday&&!eaten?'disabled':'')+' aria-pressed="'+String(eaten)+'" aria-label="'+(eaten?'Deshacer registro de ':'Registrar ')+safe(d.name)+'">'+(eaten?'✓ Ya lo comí':todayKey>calendarToday?'Fecha futura':'Comí esto')+'</button></div>';
     }).join(''):'<div class="meal-dish-empty">Todavía no tenés opciones para esta comida. <button class="pill" type="button" data-add-dish="'+m.id+'">+ Crear plato para mi lista</button></div>')+
    '</div></details>'+
-   (entry._dishes||[]).map(function(d){return '<div class="dish-log">✓ Registrado: '+safe(d.name)+'</div>'}).join('')+
+   (entry._dishes||[]).map(function(d){return '<div class="dish-log">✓ '+safe(d.name)+'</div>'}).join('')+
   '</div>'+
-  '<details class="guide"><summary>Ver cantidades y opciones</summary>'+
+  '<details class="guide"><summary>Ver porciones de referencia</summary>'+
   m.groups.map(function(g){return '<p><b>'+safe(g.name)+':</b> '+safe(g.help)+'</p>'}).join('')+
   '</details></div></details>'
  }).join('');
@@ -1403,9 +1403,9 @@ function renderMeals(){
 }
 function renderFruit(){
  var fruits=dailyFruit(keyDay(picked));
- $('daily-fruit').innerHTML='<article class="daily-fruit'+(fruits===2?' done':'')+'">'+
- '<div class="mealhead"><div class="mealname"><span>🍎</span>Frutas del día</div><div class="ticks">'+groupButtons({id:'daily'},fruitGroup,fruits)+'</div></div>'+
- '</article>';
+ $('daily-fruit').innerHTML='<div class="nutrition-fruit-row'+(fruits===2?' done':'')+'">'+
+ '<div class="nutrition-fruit-name"><span aria-hidden="true">🍎</span><strong>Frutas</strong><small>'+fruits+'/2</small></div>'+
+ '<div class="ticks">'+groupButtons({id:'daily'},fruitGroup,fruits)+'</div></div>';
  $('daily-fruit').querySelectorAll('[data-group]').forEach(function(btn){
   btn.addEventListener('click',function(){
    if(!user){openAccount();return}
@@ -1601,7 +1601,7 @@ function renderGymProgress(){
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
  $('gym-history-caption').textContent='Llevás '+sumSix+' '+(sumSix===1?'entrenamiento':'entrenamientos')+' en estas 6 semanas. Cada barra representa una semana.';
 }
-function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.round(c.points/c.total*100)+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
+function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('week-range').textContent=range(first)+' – '+range(plus(first,6));var entries=0,pts=0;$('barweek').innerHTML='';
  for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+progressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col);if(cc.any){entries++;pts+=cc.points/cc.total}}
@@ -1609,7 +1609,7 @@ function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.ro
  var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
  $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
 }
-function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();
+function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
 }
@@ -1766,6 +1766,7 @@ async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.c
 function downloadBackup(){var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mi-ritmo-'+k(current)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1500)}
 function switchView(view,scroll){
  activeView=view==='gym'?'gym':view==='progress'?'progress':'nutrition';
+ document.body.classList.toggle('nutrition-mode',activeView==='nutrition');
  ['nutrition','gym','progress'].forEach(function(name){
   var selected=activeView===name;
   $(name+'-view').hidden=!selected;
