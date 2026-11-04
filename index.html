@@ -471,6 +471,32 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  .dish-item-actions .pill{min-height:46px}
  .dish-library-date{margin-top:13px}
 }
+
+/* Mis platos: resumen compacto por defecto, listado solo a demanda */
+.dish-library-panel .dish-library-heading{align-items:center;gap:9px;margin-bottom:0}
+.dish-library-panel .dish-library-title{margin:0;min-width:0;flex:1;font-size:inherit}
+.dish-library-toggle{display:flex;width:100%;min-width:0;align-items:center;gap:11px;border:0;background:transparent;color:var(--dark);cursor:pointer;text-align:left;padding:6px 2px 6px 0;font:inherit;min-height:53px}
+.dish-library-toggle:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:10px}
+.dish-library-toggle-icon{flex:0 0 37px;width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:#edf6ef;color:var(--green);font-size:20px;font-weight:700;line-height:1}
+.dish-library-toggle-copy{display:flex;flex-direction:column;justify-content:center;min-width:0;gap:3px;flex:1}
+.dish-library-toggle-copy strong{font-size:17px;line-height:1.3;letter-spacing:-.3px;font-weight:850}
+.dish-library-toggle-copy small{font-size:11px;font-weight:600;color:var(--muted);line-height:1.35;overflow-wrap:anywhere}
+.dish-library-toggle-chevron{font-size:23px;color:var(--green);line-height:1;transition:transform .2s ease;margin-left:3px}
+.dish-library-toggle[aria-expanded="true"] .dish-library-toggle-chevron{transform:rotate(180deg)}
+#dish-library-body[hidden]{display:none!important}
+#dish-library-body{padding-top:10px;border-top:1px solid var(--border);margin-top:12px}
+@media(max-width:610px){
+ .dish-library-panel .dish-library-heading{gap:6px}
+ .dish-library-toggle{min-height:51px;gap:9px}
+ .dish-library-toggle-icon{flex-basis:34px;width:34px;height:34px;font-size:18px}
+ .dish-library-toggle-copy strong{font-size:16px}
+ .dish-library-toggle-copy small{font-size:10px}
+ .dish-library-panel .dish-library-heading .primary{min-height:42px;white-space:nowrap;padding:9px 11px;font-size:12px}
+}
+@media(max-width:370px){
+ .dish-library-toggle-icon{display:none}
+ .dish-library-panel .dish-library-heading .primary{padding:9px;font-size:11px}
+}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -510,9 +536,16 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  </aside>
   <section class="panel dish-library-panel" aria-labelledby="dish-library-title">
    <div class="heading dish-library-heading">
-    <div><h2 id="dish-library-title">Mis platos</h2><span class="sub">Tus opciones de comida, listas para reutilizar</span></div>
+    <h2 id="dish-library-title" class="dish-library-title">
+     <button class="dish-library-toggle" id="dish-library-toggle" type="button" aria-controls="dish-library-body" aria-expanded="false" aria-label="Mostrar Mis platos">
+      <span class="dish-library-toggle-icon" aria-hidden="true">▤</span>
+      <span class="dish-library-toggle-copy"><strong>Mis platos</strong><small id="dish-library-count">Tus opciones guardadas</small></span>
+      <span class="dish-library-toggle-chevron" aria-hidden="true">⌄</span>
+     </button>
+    </h2>
     <button class="pill primary" id="new-dish" type="button">+ Crear plato</button>
    </div>
+   <div id="dish-library-body" hidden>
    <div class="dish-library-date"><span aria-hidden="true">◷</span> Para registrar una comida: <b id="dish-library-selected-date">fecha seleccionada</b></div>
    <div class="dish-library-controls">
     <label for="dish-library-meal"><span>Mostrar</span>
@@ -525,6 +558,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <div id="dish-library-list" class="dish-list" aria-live="polite"></div>
    <p class="mini dish-library-help">Crear un plato solo lo agrega a esta lista. Para anotarlo en un día, tocá <b>Comí esto</b>. Tocá <b>✓ Ya lo comí</b> para deshacer.</p>
    <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
+   </div>
   </section>
    <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
     <div class="heading"><h2 id="insights-nutrition-title">Cómo viene tu alimentación</h2><span class="sub" id="insights-nutrition-date"></span></div>
@@ -1041,6 +1075,8 @@ function toggleSavedDish(dish,date){
  return dishHasBeenEaten(dish,date)?undoSavedDish(dish,date):registerSavedDish(dish,date);
 }
 function renderDishLibrary(){
+ var total=dishList().length;
+ $('dish-library-count').textContent=total===0?'Todavía no tenés platos guardados':total+' '+(total===1?'plato guardado':'platos guardados');
  var mealFilter=$('dish-library-meal').value,search=DishModel.normalize($('dish-library-search').value);
  var items=dishList().filter(function(d){return (!mealFilter||d.meal===mealFilter)&&(!search||DishModel.normalize(d.name+' '+(d.description||'')).includes(search))})
   .sort(function(a,b){return meals.findIndex(function(m){return m.id===a.meal})-meals.findIndex(function(m){return m.id===b.meal})||a.name.localeCompare(b.name,'es')});
@@ -1272,10 +1308,19 @@ function saveDish(event){
  syncDishLibrary();
  $('dish-dialog').close();
  $('dish-library-search').value='';
+ $('dish-library-body').hidden=false;
+ $('dish-library-toggle').setAttribute('aria-expanded','true');
+ $('dish-library-toggle').setAttribute('aria-label','Ocultar Mis platos');
  render();
  toast('Plato guardado en Mis platos. No se registró como comido.');
 }
 function setupDishes(){
+ $('dish-library-toggle').addEventListener('click',function(){
+  var body=$('dish-library-body'),expanded=body.hidden;
+  body.hidden=!expanded;
+  $('dish-library-toggle').setAttribute('aria-expanded',String(expanded));
+  $('dish-library-toggle').setAttribute('aria-label',expanded?'Ocultar Mis platos':'Mostrar Mis platos');
+ });
  $('new-dish').addEventListener('click',function(){openDish($('dish-library-meal').value||'lunch')});
  $('dish-library-meal').addEventListener('change',renderDishLibrary);
  $('dish-library-search').addEventListener('input',renderDishLibrary);
