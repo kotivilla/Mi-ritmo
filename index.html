@@ -913,7 +913,9 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
 <script src="/insights-model.js?v=2"></script>
-<script src="/insights-ui.js?v=3"></script>
+<script src="/smart-analysis.js?v=1"></script>
+<script src="/active-workout.js?v=1"></script>
+<script src="/insights-ui.js?v=4"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1078,6 +1080,10 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
     <span id="insights-report-range" class="sub"></span>
    </div>
    <div class="progress-kpi-grid" id="insights-report-cards"></div>
+   <div class="smart-analysis-panel" aria-labelledby="smart-analysis-title">
+    <div class="smart-analysis-heading"><h4 id="smart-analysis-title">Tu evolución</h4><span>Con tus registros</span></div>
+    <div id="smart-analysis-content" aria-live="polite"></div>
+   </div>
    <details class="progress-notes" id="progress-notes">
     <summary>Ver balance semanal <span class="ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
     <div id="insights-report-notes"></div>
@@ -1256,6 +1262,28 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  <div id="insights-blocks-compare"></div>
 </section>
 </div></dialog>
+<dialog id="active-workout-dialog" class="active-workout-dialog" aria-labelledby="active-workout-title">
+ <div class="active-workout-shell">
+  <header class="active-workout-header">
+   <div class="active-workout-headline"><div><p>ENTRENAMIENTO</p><h2 id="active-workout-title">Modo activo</h2></div>
+    <button type="button" id="active-workout-close" class="active-close" aria-label="Cerrar modo activo y conservar borrador">
+     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button></div>
+   <span id="active-workout-date" class="active-workout-date"></span>
+  </header>
+  <div id="active-workout-body" class="active-workout-body"></div>
+  <footer id="active-workout-footer" class="active-workout-footer" hidden>
+   <div class="active-rest-card" id="active-workout-rest" hidden>
+    <div class="active-rest-info"><small>DESCANSO</small><strong id="active-workout-countdown">1:30</strong></div>
+    <button id="active-workout-rest-duration" type="button" class="active-rest-control" title="Cambiar duración de los próximos descansos"><span id="active-workout-rest-seconds">90 s</span></button>
+    <button id="active-workout-rest-skip" type="button" class="active-rest-control">Omitir</button>
+   </div>
+   <p id="active-workout-error" role="alert" aria-live="polite"></p>
+   <div class="active-nav-buttons"><button type="button" id="active-workout-prev">Anterior</button><button type="button" id="active-workout-next" class="pill primary">Siguiente ejercicio</button></div>
+   <div class="active-lower-buttons"><button type="button" id="active-workout-change">Cambiar rutina</button><button type="button" id="active-workout-save">Guardar ahora</button></div>
+  </footer>
+ </div>
+</dialog>
 <dialog id="gym-session-dialog" aria-labelledby="gym-session-title"><form id="gym-session-form" class="dialog-body">
 <div class="heading"><h2 id="gym-session-title">Registrar entrenamiento</h2><button type="button" class="square close" data-close="gym-session-dialog" aria-label="Cerrar">×</button></div>
 <p id="gym-session-date" class="mini"></p><label for="gym-session-routine" class="dish-label">¿Qué día de la rutina hiciste?</label><select class="field" id="gym-session-routine" required></select>
