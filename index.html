@@ -620,6 +620,107 @@ body.nutrition-mode .intro{display:none}
  #nutrition-view .group-title b{font-size:11px}
  #nutrition-view .mealname{font-size:14px}
 }
+
+/* Gimnasio y Progreso v3: acción primero, detalle a demanda */
+body.gym-mode .intro,body.progress-mode .intro{display:none}
+#gym-view.gym-layout,#progress-view.insights-progress-view{max-width:760px;margin:15px auto 0;width:100%}
+#gym-view .gym-main{gap:12px;min-width:0}
+#gym-view .panel,#progress-view .panel{box-shadow:none;border:1px solid var(--border);border-radius:17px}
+#gym-view .gym-focus-panel{padding:23px}
+.gym-focus-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gym-focus-top h2{font-size:22px;letter-spacing:-.6px;line-height:1.2;margin:0;font-weight:850}
+.gym-range-label{display:block;margin-top:5px;font-size:12px;color:var(--muted);font-weight:600}
+.gym-focus-top .square{width:40px;height:40px;font-size:22px}
+#gym-view .gym-actions{margin-top:20px}
+#gym-view .gym-actions .pill{width:100%;min-height:49px;font-size:14px;border-radius:12px;font-weight:800}
+#gym-view .gymweek{margin:21px 0 0;gap:6px}
+#gym-view .gymday span{font-size:11px;margin-bottom:7px}
+#gym-view .gymday button{height:48px;font-size:20px;border-radius:12px;touch-action:manipulation}
+#gym-view .gym-week-count{margin:12px 0 0;color:#66826d;font-size:12px;font-weight:700;text-align:center}
+#gym-view .gym-analysis-panel{padding:0;overflow:hidden}
+.gym-analysis-main-summary{display:flex;align-items:center;gap:12px;min-height:70px;padding:13px 18px;list-style:none;cursor:pointer;font-size:14px;font-weight:820}
+.gym-analysis-main-summary::-webkit-details-marker{display:none}.gym-analysis-main-summary::marker{content:""}
+.gym-analysis-symbol{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:11px;background:#eff7f1;color:var(--green);font-size:25px;line-height:1}
+.gym-analysis-chevron{margin-left:auto;flex:0 0 auto;font-size:23px;line-height:1;color:#7c9987;transition:transform .18s}
+.gym-analysis-panel[open]>.gym-analysis-main-summary>.gym-analysis-chevron{transform:rotate(180deg)}
+.gym-analysis-content{border-top:1px solid var(--border);padding:0 15px 6px}
+.gym-analysis-detail{border-bottom:1px solid #e8eee8}
+.gym-analysis-detail:last-child{border-bottom:0}
+.gym-analysis-detail>summary{display:flex;gap:12px;align-items:center;min-height:67px;padding:10px 2px;cursor:pointer;list-style:none}
+.gym-analysis-detail>summary::-webkit-details-marker{display:none}.gym-analysis-detail>summary::marker{content:""}
+.gym-analysis-detail>summary>span:first-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.gym-analysis-detail>summary strong{font-size:13px;font-weight:800}
+.gym-analysis-detail>summary small{font-size:11px;color:var(--muted)}
+.gym-analysis-detail[open]>summary>.gym-analysis-chevron{transform:rotate(180deg)}
+.gym-analysis-inner{padding:8px 3px 19px}
+#gym-view .gym-history{margin-top:0;margin-bottom:5px}
+#gym-view .gym-analysis-inner .dish-label{margin-top:0}
+#gym-view .gym-analysis-inner .field{font-size:16px}
+#gym-view #strength-metric-help{display:none}
+#gym-view #gym-history-caption{margin:4px 0;font-size:11px}
+#gym-view #insights-progression-list{margin-top:0}
+#gym-view #insights-muscle-list{margin-top:8px}
+
+/* Progreso: 3 sub-vistas pequeñas, nunca tres formularios en una página */
+#progress-view .progress-clean{gap:15px;max-width:760px}
+.progress-clean-top{display:flex;flex-direction:column;gap:15px;padding:4px 2px 0}
+.progress-clean-top>h2{font-size:23px;letter-spacing:-.7px;line-height:1.2;margin:0;font-weight:850}
+.progress-tab-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;border:1px solid #e1e9e2;border-radius:13px;background:#edf3ee;padding:5px}
+.progress-tab{min-width:0;padding:11px 7px;min-height:43px;border:0;background:transparent;border-radius:10px;font-size:13px;font-weight:800;color:#778a7d;touch-action:manipulation}
+.progress-tab.active{color:var(--green);background:#fff;box-shadow:0 1px 5px #0e432217}
+.progress-tab:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.progress-tabs-panel[hidden]{display:none!important}
+#progress-view .progress-clean-panel{padding:22px}
+.progress-clean-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.progress-clean-heading h3{font-size:18px;letter-spacing:-.4px;line-height:1.3;margin:0;font-weight:850}
+#progress-view .progress-kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0}
+#progress-view .progress-kpi{padding:15px;background:#f7faf7;border:1px solid #edf0ed;border-radius:13px;min-height:110px}
+#progress-view .progress-kpi .progress-kpi-label{font-size:11px}
+#progress-view .progress-kpi strong{font-size:27px;letter-spacing:-1px;margin:3px 0 0;white-space:normal;overflow-wrap:anywhere}
+#progress-view .progress-kpi small{font-size:10px;line-height:1.4}
+.progress-notes{margin:18px 0 0;border-top:1px solid var(--border);padding-top:9px}
+.progress-notes>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:12px;list-style:none;padding:8px 2px;color:var(--green);font-size:12px;font-weight:800}
+.progress-notes>summary::-webkit-details-marker{display:none}.progress-notes>summary::marker{content:""}
+.progress-notes>summary span{font-size:20px;color:#7e9a87;transition:transform .18s}
+.progress-notes[open]>summary span{transform:rotate(180deg)}
+.progress-notes #insights-report-notes{font-size:12px;color:#546b5b;line-height:1.55;padding:3px 2px 0}
+.progress-notes #insights-report-notes p{margin:8px 0}
+#progress-view .progress-weight-data{margin-top:4px;min-height:0}
+#progress-view .progress-chart-wrap{margin-top:18px}
+#progress-view .progress-entry-area{margin-top:20px}
+#progress-view .progress-entry-area>h3{font-size:14px;margin:0;letter-spacing:-.1px}
+#progress-view .progress-weight-form{margin-top:13px}
+#progress-view .progress-recovery-status{margin-top:4px}
+#progress-view .progress-recovery-details{margin-top:18px}
+#progress-view .progress-recovery-empty{font-size:12px;line-height:1.5;border:0}
+@media(max-width:610px){
+ #gym-view.gym-layout,#progress-view.insights-progress-view{margin-top:10px}
+ #gym-view .gym-main{gap:10px}
+ #gym-view .gym-focus-panel{padding:17px 15px;border-radius:16px}
+ .gym-focus-top h2{font-size:20px}
+ .gym-range-label{font-size:11px}
+ .gym-focus-top .square{width:38px;height:38px}
+ #gym-view .gym-actions{margin-top:17px}
+ #gym-view .gym-actions .pill{min-height:47px}
+ #gym-view .gymweek{margin-top:18px;gap:4px}
+ #gym-view .gymday button{height:46px;border-radius:10px}
+ #gym-view .gym-analysis-main-summary{min-height:63px;padding:12px 15px}
+ .gym-analysis-content{padding:0 12px 5px}
+ .gym-analysis-inner{padding:5px 2px 16px}
+ #progress-view .progress-clean{gap:12px}
+ .progress-clean-top{gap:12px;padding:2px 0 0}
+ .progress-clean-top>h2{font-size:21px;padding-left:2px}
+ .progress-tab-list{padding:4px}
+ .progress-tab{min-height:43px;padding:10px 4px;font-size:12px}
+ #progress-view .progress-clean-panel{padding:17px 15px;border-radius:16px}
+ .progress-clean-heading{margin-bottom:15px;gap:10px}
+ .progress-clean-heading h3{font-size:17px}
+ #progress-view .progress-kpi-grid{gap:8px}
+ #progress-view .progress-kpi{min-height:104px;padding:12px 11px}
+ #progress-view .progress-kpi strong{font-size:24px}
+ #progress-view .progress-weight-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #progress-view .progress-weight-form button{grid-column:1/-1;width:100%}
+}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -1715,7 +1816,7 @@ function renderGym(){
  if(logged)btn.title=logged.routineName;
  btn.addEventListener('click',function(date){return function(){openGymSession(date)}}(d));w.append(btn);$('gymweek').append(w);
  }
- $('gym-week-count').textContent=sum?(sum+' '+(sum===1?'entrenamiento':'entrenamientos')+' esta semana'):'Todavía no registraste entrenamientos esta semana.';
+ $('gym-week-count').textContent=sum+'/'+target+' entrenamientos esta semana';
 }
 function openRoutineSettings(dayId){
  if(!user){openAccount();return}
@@ -1731,7 +1832,7 @@ function renderGymProgress(){
  var records=[],highest=Math.max(goal,1),sumSix=0;
  for(var j=5;j>=0;j--){var week=plus(first,-7*j),cnt=weeklyGym(week);records.push({day:week,count:cnt});highest=Math.max(highest,cnt);sumSix+=cnt}
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
- $('gym-history-caption').textContent='Llevás '+sumSix+' '+(sumSix===1?'entrenamiento':'entrenamientos')+' en estas 6 semanas. Cada barra representa una semana.';
+ $('gym-history-caption').textContent=sumSix+' entrenamientos · 6 semanas';
 }
 function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
