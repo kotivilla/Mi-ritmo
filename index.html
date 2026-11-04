@@ -564,31 +564,44 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
   <details class="panel nutrition-tools-panel" id="nutrition-tools-panel">
    <summary class="nutrition-tools-summary">
     <span class="nutrition-tools-icon" aria-hidden="true">⋯</span>
-    <span>Estadísticas y planificación</span>
+    <span>Más herramientas</span>
     <span class="nutrition-tools-chevron" aria-hidden="true">⌄</span>
    </summary>
    <div class="nutrition-tools-content">
-    <section class="nutrition-weekly-section" aria-label="Resumen semanal y mensual">
-     <div class="nutrition-tools-section-head"><h3>Últimos días</h3><span class="sub" id="week-range"></span></div>
-     <div class="barweek" id="barweek"></div>
-     <p class="mini" id="weekdetail"></p>
-     <div class="nutrition-monthly-line"><span>Promedio · 30 días</span><strong id="month-pct">—</strong></div>
-    </section>
-    <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
-    <div class="heading"><h2 id="insights-nutrition-title">Cómo viene tu alimentación</h2><span class="sub" id="insights-nutrition-date"></span></div>
-    <div id="insights-nutrition-body"></div>
-   </section>
-    <details class="panel dish-library-panel insights-planner-panel">
-    <summary class="insights-details-title">Planificar comidas y compras <span>Ver planificador</span></summary>
-    <p class="mini">Elegí platos guardados para organizar la semana. Podés generar una lista de compras con los ingredientes.</p>
-    <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square" type="button" id="insights-plan-prev" aria-label="Semana anterior">‹</button><button class="square" type="button" id="insights-plan-next" aria-label="Semana siguiente">›</button></div></div>
-    <div class="insights-plan-days" id="insights-plan-days"></div>
-    <div class="insights-plan-meals" id="insights-plan-meals"></div>
-    <hr class="sep">
-    <div class="heading"><div><h3>Lista de compras</h3><span class="sub" id="insights-shopping-count"></span></div><button class="pill" type="button" id="insights-plan-copy">Copiar lista</button></div>
-    <ul class="insights-shopping-list" id="insights-shopping-items"></ul>
-    <p class="mini" id="insights-shopping-note"></p>
-   </details>
+    <details class="nutrition-tool-detail" id="nutrition-stats-detail">
+     <summary class="nutrition-tool-detail-summary">
+      <span><strong>Estadísticas</strong><small>Semana y últimos 30 días</small></span>
+      <span class="nutrition-tool-chevron" aria-hidden="true">⌄</span>
+     </summary>
+     <div class="nutrition-tool-detail-body">
+      <div class="nutrition-weekly-section">
+       <div class="nutrition-tools-section-head"><h3>Últimos días</h3><span class="sub" id="week-range"></span></div>
+       <div class="barweek" id="barweek"></div>
+       <p class="mini" id="weekdetail"></p>
+       <div class="nutrition-monthly-line"><span>Promedio · 30 días</span><strong id="month-pct">—</strong></div>
+      </div>
+      <div class="nutrition-food-stats" aria-labelledby="insights-nutrition-title">
+       <div class="nutrition-tools-section-head"><h3 id="insights-nutrition-title">Grupos de la semana</h3><span class="sub" id="insights-nutrition-date"></span></div>
+       <div id="insights-nutrition-body"></div>
+      </div>
+     </div>
+    </details>
+    <details class="nutrition-tool-detail insights-planner-panel" id="nutrition-planner-detail">
+     <summary class="nutrition-tool-detail-summary">
+      <span><strong>Planificar comidas</strong><small>Organización y compras</small></span>
+      <span class="nutrition-tool-chevron" aria-hidden="true">⌄</span>
+     </summary>
+     <div class="nutrition-tool-detail-body">
+      <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square" type="button" id="insights-plan-prev" aria-label="Semana anterior">‹</button><button class="square" type="button" id="insights-plan-next" aria-label="Semana siguiente">›</button></div></div>
+      <div class="insights-plan-days" id="insights-plan-days"></div>
+      <div class="insights-plan-meals" id="insights-plan-meals"></div>
+      <div class="nutrition-planner-shopping">
+       <div class="heading"><div><h3>Lista de compras</h3><span class="sub" id="insights-shopping-count"></span></div><button class="pill" type="button" id="insights-plan-copy">Copiar lista</button></div>
+       <ul class="insights-shopping-list" id="insights-shopping-items"></ul>
+       <p class="mini" id="insights-shopping-note"></p>
+      </div>
+     </div>
+    </details>
    </div>
   </details>
  </main>
