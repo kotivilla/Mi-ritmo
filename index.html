@@ -127,6 +127,22 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .gym-recent-details b{font-size:14px}.gym-recent-details small{font-size:11px;color:var(--muted);margin-top:4px}
 .gym-recent-next{font-size:25px;color:var(--green)}
 @media(max-width:610px){.gym-plan-day-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Gimnasio para registrar y analizar; objetivo y rutina en Configuración */
+.gym-layout{display:block;max-width:790px;margin:0 auto}.gym-layout .maincol{width:100%}
+.gym-actions{display:block}.gym-actions .pill{width:100%;font-size:14px}
+.gym-week-count{font-size:12px;color:var(--green);font-weight:750;margin:8px 0 0}
+#settings-dialog{width:min(740px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+#settings-dialog .dialog-body{padding:25px}
+.config-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:19px 0 23px}
+.config-tab{border:1px solid var(--border);background:#f6f9f5;border-radius:12px;padding:12px;font-size:13px;color:var(--dark);font-weight:800}
+.config-tab.active{background:var(--green);border-color:var(--green);color:white}
+#config-goal-content[hidden],#config-routine-content[hidden]{display:none}
+.config-section-title{font-size:17px;margin:0}.config-form-caption{display:block;font-size:13px;margin-top:10px}
+#config-routine-content .routine-panel{margin-top:17px}
+.session-prior-hint{margin:0 0 12px!important;color:#537960!important;font-size:11px!important}
+.session-set input::placeholder{color:#88998f;opacity:1}
+@media(max-width:610px){#settings-dialog{width:100vw;height:100dvh;max-height:100dvh;border:0;border-radius:0;max-width:none;margin:0}#settings-dialog .dialog-body{padding:22px 16px calc(35px + env(safe-area-inset-bottom,0px))}.top-right{gap:5px}.top-right .pill{font-size:11px;padding:8px}}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
@@ -137,7 +153,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <div class="container">
 <header class="top">
  <div class="logo"><span class="logo-icon">✳</span>Mi Ritmo</div>
- <div class="top-right"><span class="sync" id="sync-label">Preparando registros...</span><button class="pill" id="account-btn" type="button">☁ Cuenta</button><button class="pill" id="settings-btn" type="button">⚙ Plan</button></div>
+ <div class="top-right"><span class="sync" id="sync-label">Preparando registros...</span><button class="pill" id="account-btn" type="button">☁ Cuenta</button><button class="pill" id="settings-btn" type="button">⚙ Configuración</button></div>
 </header>
 <section class="intro"><p class="eyebrow" id="view-eyebrow">TU CONSTANCIA, DÍA A DÍA</p><h1 id="view-title">Tu alimentación, a tu ritmo.</h1><p id="view-subtitle">Registrá cada grupo de alimentos y seguí tu progreso.</p></section>
 <div id="nutrition-view" class="view layout">
@@ -171,7 +187,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
   </section>
 </div>
 
-<div id="gym-view" class="view layout" hidden>
+<div id="gym-view" class="view gym-layout" hidden>
  <main class="maincol">
   <section class="panel gym-hero">
    <div class="heading">
@@ -180,19 +196,10 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    </div>
    <p class="sub">Tocá un día para registrar las series reales de tu entrenamiento.</p>
    <div class="gymweek" id="gymweek"></div>
-   <div class="gym-result"><div><b>Objetivo semanal</b><div class="mini" id="planned-text">Lun · Mié · Vie</div></div><strong id="gymscore">0/3</strong></div>
-   <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">＋ Registrar entrenamiento de hoy</button><button class="pill" type="button" id="gym-configure">⚙ Rutina</button></div>
+   <p class="gym-week-count" id="gym-week-count">Todavía no registraste entrenamientos esta semana.</p>
+   <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">＋ Registrar entrenamiento de hoy</button></div>
   </section>
-  <section class="panel" aria-labelledby="gym-summary-title">
-    <div class="heading"><div><h2 id="gym-summary-title">Tu rutina activa</h2><span class="sub">Tu plan base para las próximas semanas</span></div><button class="pill" id="gym-edit-plan" type="button">Editar</button></div>
-    <div class="gym-plan-overview" id="gym-plan-overview"></div>
-    <p class="mini">El plan se configura una vez; acá solo consultás los ejercicios.</p>
-   </section>
-   <section class="panel" aria-labelledby="gym-recent-title">
-    <div class="heading"><div><h2 id="gym-recent-title">Últimos entrenamientos</h2><span class="sub">Tocá uno para ver o editar lo que hiciste</span></div></div>
-    <div class="gym-recent-list" id="gym-recent-list"></div>
-   </section>
-   <section class="panel" aria-labelledby="strength-title">
+  <section class="panel" aria-labelledby="strength-title">
    <h2 id="strength-title">Evolución de pesos</h2>
    <label class="dish-label" for="strength-exercise">Ejercicio</label><select class="field" id="strength-exercise"></select>
    <div id="strength-history"></div>
@@ -203,14 +210,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <p class="mini" id="gym-history-caption">Se actualizará a medida que registres tus entrenamientos.</p>
   </section>
  </main>
- <aside class="sidecol">
-  <section class="panel">
-   <div class="heading"><h2>Objetivo semanal</h2><span class="sub">Personalizable</span></div>
-   <p class="mini">Configurá los días habituales y cuántas veces querés entrenar por semana.</p>
-   <div class="routine-card"><span>Objetivo</span><b id="gym-settings-summary">3 veces por semana</b></div>
-   <button class="pill primary" type="button" id="gym-settings-btn">⚙ Editar objetivo</button>
-  </section>
- </aside>
+ 
 </div>
 </div>
 
@@ -271,13 +271,21 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
   <p id="auth-message" class="mini auth-feedback" role="status" aria-live="polite"></p>
  </div>
 </dialog>
-<dialog id="settings-dialog"><div class="dialog-body"><div class="heading"><h2>Plan de gimnasio</h2><button class="square close" data-close="settings-dialog" aria-label="Cerrar">×</button></div><p>Elegí cuántas veces querés ir por semana y tus días habituales. Podés registrar un entrenamiento cualquier día.</p>
-<label for="gym-target"><b>Entrenamientos por semana</b></label><input id="gym-target" type="number" min="1" max="7" class="field" value="3">
-<b>Días planificados</b><div id="dayprefs" class="dayprefs"></div>
-<div class="actions"><button class="pill" data-close="settings-dialog" type="button">Cancelar</button><button class="pill primary" id="save-settings" type="button">Guardar plan</button></div></div></dialog>
-<dialog id="gym-plan-dialog" aria-labelledby="gym-plan-dialog-title"><div class="dialog-body">
-<div class="heading"><div><p class="eyebrow">CONFIGURACIÓN DE GIMNASIO</p><h2 id="gym-plan-dialog-title">Mi rutina</h2></div><button class="square close" type="button" data-close="gym-plan-dialog" aria-label="Cerrar configuración">×</button></div>
-<p class="gym-plan-help">Armá tu rutina una vez y usala durante varias semanas (por ejemplo, dos meses). Cambiarla no modifica las series y los pesos ya registrados.</p>
+<dialog id="settings-dialog" aria-labelledby="config-title"><div class="dialog-body">
+<div class="heading"><div><p class="eyebrow">PREFERENCIAS DE GIMNASIO</p><h2 id="config-title">Configuración</h2></div><button class="square close" type="button" data-close="settings-dialog" aria-label="Cerrar configuración">×</button></div>
+<div class="config-tabs" role="tablist" aria-label="Ajustes de gimnasio">
+<button type="button" id="config-tab-goal" class="config-tab active" role="tab" aria-selected="true" aria-controls="config-goal-content">Objetivo</button>
+<button type="button" id="config-tab-routine" class="config-tab" role="tab" aria-selected="false" aria-controls="config-routine-content">Rutina</button>
+</div>
+<section id="config-goal-content" role="tabpanel" aria-labelledby="config-tab-goal">
+<h3 class="config-section-title">Objetivo semanal</h3>
+<p class="mini">Elegí cuántas veces querés entrenar y cuáles son tus días habituales.</p>
+<label class="dish-label" for="gym-target">Entrenamientos por semana</label><input class="field" id="gym-target" type="number" min="1" max="7" value="3">
+<b class="config-form-caption">Días habituales</b><div class="dayprefs" id="dayprefs"></div>
+<div class="actions"><button class="pill primary" id="save-settings" type="button">Guardar objetivo</button></div>
+</section>
+<section id="config-routine-content" role="tabpanel" aria-labelledby="config-tab-routine" hidden>
+<p class="gym-plan-help">Definí los ejercicios y series de referencia una vez. Podés mantener la misma rutina durante dos meses o el tiempo que prefieras; tus entrenamientos anteriores no cambian.</p>
 <section class="routine-panel" aria-labelledby="training-title">
    <div class="heading"><h2 id="training-title">Días y ejercicios</h2><button class="pill" id="add-routine-day" type="button">+ Agregar día</button></div>
    <div id="routine-tabs" class="routine-tabs" aria-label="Días de rutina"></div>
@@ -293,7 +301,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <p id="training-feedback" class="mini" role="status" aria-live="polite"></p>
    <button class="pill" id="restore-routine" type="button" hidden>Recuperar día</button>
   </section>
-<div class="gym-plan-goal"><div><b>Objetivo semanal</b><p>Elegí cuántas veces entrenar y tus días habituales.</p></div><button class="pill" id="gym-edit-goal" type="button">⚙ Editar objetivo</button></div>
+</section>
 </div></dialog>
 <dialog id="gym-session-dialog" aria-labelledby="gym-session-title"><form id="gym-session-form" class="dialog-body">
 <div class="heading"><h2 id="gym-session-title">Registrar entrenamiento</h2><button type="button" class="square close" data-close="gym-session-dialog" aria-label="Cerrar">×</button></div>
