@@ -721,6 +721,86 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
  #progress-view .progress-weight-form{grid-template-columns:repeat(2,minmax(0,1fr))}
  #progress-view .progress-weight-form button{grid-column:1/-1;width:100%}
 }
+
+/* Tarjetas de herramientas individuales — sin contenedores anidados */
+#nutrition-view .tool-card,#gym-view .tool-card{
+  display:block;
+  min-width:0;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:none;
+}
+#nutrition-view .tool-card[open],#gym-view .tool-card[open]{
+  border-color:#d4e5d8;
+}
+.tool-card-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  cursor:pointer;
+  list-style:none;
+  min-height:71px;
+  padding:17px 19px;
+  touch-action:manipulation;
+}
+.tool-card-summary::-webkit-details-marker{display:none}
+.tool-card-summary::marker{content:""}
+.tool-card-summary>span:first-child{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  gap:5px;
+}
+.tool-card-summary strong{
+  color:var(--dark);
+  font-size:14px;
+  line-height:1.3;
+  font-weight:820;
+}
+.tool-card-summary small{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.4;
+}
+.tool-card-chevron{
+  flex:0 0 auto;
+  margin-left:auto;
+  font-size:22px;
+  line-height:1;
+  color:#7a9482;
+  transition:transform .18s ease;
+}
+.tool-card[open]>.tool-card-summary>.tool-card-chevron{
+  transform:rotate(180deg);
+}
+.tool-card-summary:focus-visible{
+  outline:2px solid var(--green);
+  outline-offset:-3px;
+  border-radius:15px;
+}
+#nutrition-view .tool-card-body,#gym-view .tool-card-body{
+  display:block;
+  padding:18px 19px 20px;
+  border-top:1px solid var(--border);
+  background:#fff;
+}
+#nutrition-view .tool-card-body .nutrition-weekly-section,
+#gym-view .tool-card-body .gym-history{margin-top:0}
+#nutrition-view .tool-card-body .insights-planner-head{margin-top:0}
+#gym-view .tool-card-body #insights-progression-list{margin-top:0}
+#nutrition-view .nutrition-main,#gym-view .gym-main{gap:11px}
+@media(max-width:610px){
+  #nutrition-view .tool-card,#gym-view .tool-card{border-radius:15px}
+  .tool-card-summary{min-height:65px;padding:14px 16px}
+  .tool-card-summary strong{font-size:14px}
+  .tool-card-summary small{font-size:11px}
+  #nutrition-view .tool-card-body,#gym-view .tool-card-body{padding:15px 16px 18px}
+  #nutrition-view .nutrition-main,#gym-view .gym-main{gap:10px}
+}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -785,19 +865,12 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
    </div>
   </section>
-  <details class="panel nutrition-tools-panel" id="nutrition-tools-panel">
-   <summary class="nutrition-tools-summary">
-    <span class="nutrition-tools-icon" aria-hidden="true">⋯</span>
-    <span>Más herramientas</span>
-    <span class="nutrition-tools-chevron" aria-hidden="true">⌄</span>
-   </summary>
-   <div class="nutrition-tools-content">
-    <details class="nutrition-tool-detail" id="nutrition-stats-detail">
-     <summary class="nutrition-tool-detail-summary">
+  <details class="panel tool-card" id="nutrition-stats-detail">
+     <summary class="tool-card-summary">
       <span><strong>Estadísticas</strong><small>Semana y últimos 30 días</small></span>
-      <span class="nutrition-tool-chevron" aria-hidden="true">⌄</span>
+      <span class="tool-card-chevron" aria-hidden="true">⌄</span>
      </summary>
-     <div class="nutrition-tool-detail-body">
+     <div class="tool-card-body">
       <div class="nutrition-weekly-section">
        <div class="nutrition-tools-section-head"><h3>Últimos días</h3><span class="sub" id="week-range"></span></div>
        <div class="barweek" id="barweek"></div>
@@ -810,12 +883,12 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
       </div>
      </div>
     </details>
-    <details class="nutrition-tool-detail insights-planner-panel" id="nutrition-planner-detail">
-     <summary class="nutrition-tool-detail-summary">
+    <details class="panel tool-card insights-planner-panel" id="nutrition-planner-detail">
+     <summary class="tool-card-summary">
       <span><strong>Planificar comidas</strong><small>Organización y compras</small></span>
-      <span class="nutrition-tool-chevron" aria-hidden="true">⌄</span>
+      <span class="tool-card-chevron" aria-hidden="true">⌄</span>
      </summary>
-     <div class="nutrition-tool-detail-body">
+     <div class="tool-card-body">
       <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square" type="button" id="insights-plan-prev" aria-label="Semana anterior">‹</button><button class="square" type="button" id="insights-plan-next" aria-label="Semana siguiente">›</button></div></div>
       <div class="insights-plan-days" id="insights-plan-days"></div>
       <div class="insights-plan-meals" id="insights-plan-meals"></div>
@@ -826,8 +899,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
       </div>
      </div>
     </details>
-   </div>
-  </details>
+
  </main>
 </div>
 
@@ -845,19 +917,16 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <div class="gymweek" id="gymweek"></div>
    <p class="gym-week-count" id="gym-week-count"></p>
   </section>
-  <details class="panel gym-analysis-panel" id="gym-analysis-panel">
-   <summary class="gym-analysis-main-summary"><span class="gym-analysis-symbol" aria-hidden="true">⌁</span><span>Ver evolución</span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
-   <div class="gym-analysis-content">
-    <details class="gym-analysis-detail">
-     <summary><span><strong>Constancia</strong><small>Últimas 6 semanas</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
-     <div class="gym-analysis-inner">
+  <details class="panel tool-card">
+     <summary class="tool-card-summary"><span><strong>Constancia</strong><small>Últimas 6 semanas</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <div class="gym-analysis-inner tool-card-body">
       <div id="gym-history" class="gym-history" aria-label="Gráfico de entrenamientos de las últimas seis semanas"></div>
       <p class="mini" id="gym-history-caption"></p>
      </div>
     </details>
-    <details class="gym-analysis-detail">
-     <summary><span><strong>Pesos y volumen</strong><small>Por ejercicio</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
-     <div class="gym-analysis-inner">
+    <details class="panel tool-card">
+     <summary class="tool-card-summary"><span><strong>Pesos y volumen</strong><small>Por ejercicio</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <div class="gym-analysis-inner tool-card-body">
       <label class="dish-label" for="strength-exercise">Ejercicio</label>
       <select class="field" id="strength-exercise"></select>
       <div class="strength-switch" role="group" aria-label="Métrica para el gráfico">
@@ -868,19 +937,18 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
       <div id="strength-history"></div>
      </div>
     </details>
-    <details class="gym-analysis-detail">
-     <summary><span><strong>Mejoras recientes</strong><small>Últimas 4 semanas</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
-     <div id="insights-progression-list" class="insights-activity-list gym-analysis-inner"></div>
+    <details class="panel tool-card">
+     <summary class="tool-card-summary"><span><strong>Mejoras recientes</strong><small>Últimas 4 semanas</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <div id="insights-progression-list" class="insights-activity-list gym-analysis-inner tool-card-body"></div>
     </details>
-    <details class="gym-analysis-detail">
-     <summary><span><strong>Grupos musculares</strong><small>Series por semana</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
-     <div class="gym-analysis-inner">
+    <details class="panel tool-card">
+     <summary class="tool-card-summary"><span><strong>Grupos musculares</strong><small>Series por semana</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <div class="gym-analysis-inner tool-card-body">
       <span class="sub" id="insights-muscle-week"></span>
       <div id="insights-muscle-list" class="insights-muscle-list"></div>
      </div>
     </details>
-   </div>
-  </details>
+
  </main>
 </div>
 
