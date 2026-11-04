@@ -47,6 +47,17 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  .gym-history{gap:7px}
  .gym-hero .gymweek{margin-top:24px}
 }
+
+.auth-body{padding:25px}
+.auth-body h2{font-size:23px}
+.auth-body .field{font-size:16px}
+.auth-main-button{width:100%;min-height:45px;font-size:14px;margin-top:8px}
+.auth-links{display:flex;justify-content:space-between;gap:15px;margin-top:19px}
+.auth-back{margin-top:18px}
+.auth-feedback{margin:12px 0 0;min-height:18px;color:var(--green)}
+.auth-logged-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.auth-body [hidden]{display:none!important}
+@media(max-width:610px){.auth-body{padding:20px}}
 </style>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
@@ -143,12 +154,51 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
   </button>
  </div>
 </nav>
-<dialog id="account-dialog"><div class="dialog-body"><div class="heading"><h2>Tu cuenta</h2><button id="auth-close" class="square close" data-close="account-dialog" aria-label="Cerrar" hidden>×</button></div><div id="login-content">
-<p>Ingresá con tu email para guardar tus comidas y entrenamientos en Supabase. Tu progreso se guarda en Supabase. Ingresá con tu email y contraseña.</p>
-<form id="login-form"><label for="email-input"><b>Correo electrónico</b></label><input id="email-input" class="field" type="email" autocomplete="email" required placeholder="tu@email.com"><label for="login-password"><b>Contraseña</b></label><input id="login-password" type="password" autocomplete="current-password" class="field" minlength="6" required placeholder="Tu contraseña"><button type="submit" class="pill primary" id="send-link">Ingresar</button></form>
-<div class="stack"><button type="button" class="pill" id="signup-btn">Crear cuenta</button><button type="button" class="pill" id="recover-btn">Olvidé mi contraseña</button></div><p class="mini" id="email-message" role="status"></p><div id="new-password-section" hidden><label for="new-password"><b>Nueva contraseña</b></label><input id="new-password" type="password" class="field" autocomplete="new-password" minlength="8"><button type="button" class="pill primary" id="new-password-btn">Guardar nueva contraseña</button></div></div>
-<div id="logged-content" hidden><p>Sesión iniciada como <strong id="session-email"></strong>. Tu información se sincroniza con tu cuenta privada.</p><button type="button" class="pill" id="logout-btn">Cerrar sesión</button></div>
-</div></dialog>
+<dialog id="account-dialog" aria-labelledby="auth-title">
+ <div class="dialog-body auth-body">
+  <div class="heading"><h2 id="auth-title">Iniciar sesión</h2><button id="auth-close" type="button" class="square close" data-close="account-dialog" aria-label="Cerrar">×</button></div>
+  <section id="auth-login">
+   <p>Ingresá con tu email y contraseña. Tus comidas y entrenamientos se guardan en Supabase.</p>
+   <form id="login-form">
+    <label for="email-input"><b>Email</b></label><input class="field" id="email-input" type="email" autocomplete="email" placeholder="tu@email.com" required>
+    <label for="login-password"><b>Contraseña</b></label><input class="field" id="login-password" type="password" autocomplete="current-password" required>
+    <button type="submit" id="send-link" class="pill primary auth-main-button">Ingresar</button>
+   </form>
+   <div class="auth-links"><button id="go-signup" class="linkish" type="button">Crear cuenta</button><button id="go-forgot" class="linkish" type="button">Olvidé mi contraseña</button></div>
+  </section>
+  <section id="auth-signup" hidden>
+   <p>Creá tu cuenta personal para guardar tus registros.</p>
+   <form id="signup-form">
+    <label for="signup-email"><b>Email</b></label><input class="field" type="email" id="signup-email" autocomplete="email" required>
+    <label for="signup-password"><b>Contraseña</b></label><input class="field" type="password" id="signup-password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres">
+    <label for="signup-confirm"><b>Repetí la contraseña</b></label><input class="field" type="password" id="signup-confirm" autocomplete="new-password" minlength="8" required>
+    <button type="submit" class="pill primary auth-main-button">Crear cuenta</button>
+   </form>
+   <button type="button" class="linkish auth-back" data-auth-back>Ya tengo cuenta</button>
+  </section>
+  <section id="auth-forgot" hidden>
+   <p>Te enviaremos un correo para que puedas elegir una contraseña nueva.</p>
+   <form id="forgot-form">
+    <label for="forgot-email"><b>Email</b></label><input class="field" type="email" id="forgot-email" autocomplete="email" required>
+    <button type="submit" class="pill primary auth-main-button">Enviar correo de recuperación</button>
+   </form>
+   <button type="button" class="linkish auth-back" data-auth-back>Volver a iniciar sesión</button>
+  </section>
+  <section id="auth-reset" hidden>
+   <p>Elegí tu nueva contraseña. No necesitás recordar la anterior.</p>
+   <form id="reset-form">
+    <label for="new-password"><b>Nueva contraseña</b></label><input class="field" id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres">
+    <label for="confirm-password"><b>Repetí la contraseña</b></label><input class="field" id="confirm-password" type="password" autocomplete="new-password" minlength="8" required>
+    <button type="submit" class="pill primary auth-main-button">Guardar nueva contraseña</button>
+   </form>
+  </section>
+  <section id="auth-logged" hidden>
+   <p>Sesión iniciada como <strong id="session-email"></strong>. Tus registros están asociados a esta cuenta.</p>
+   <div class="auth-logged-actions"><button id="change-password-btn" type="button" class="pill primary">Cambiar contraseña</button><button id="logout-btn" type="button" class="pill">Cerrar sesión</button></div>
+  </section>
+  <p id="auth-message" class="mini auth-feedback" role="status" aria-live="polite"></p>
+ </div>
+</dialog>
 <dialog id="settings-dialog"><div class="dialog-body"><div class="heading"><h2>Plan de gimnasio</h2><button class="square close" data-close="settings-dialog" aria-label="Cerrar">×</button></div><p>Elegí cuántas veces querés ir por semana y tus días habituales. Podés registrar un entrenamiento cualquier día.</p>
 <label for="gym-target"><b>Entrenamientos por semana</b></label><input id="gym-target" type="number" min="1" max="7" class="field" value="3">
 <b>Días planificados</b><div id="dayprefs" class="dayprefs"></div>
@@ -181,7 +231,9 @@ var db=null,user=null,loading=false,offlinePending=new Set(),queueTimers={},sett
 var current=new Date();current.setHours(12,0,0,0);
 var picked=new Date(current);
 var storeKey=GUEST, state=loadCache(GUEST),draftDays=[1,3,5];
-var initDone=false, hasEdited=false, recovering=false;
+var initDone=false, hasEdited=false;
+var authMode='login';
+var recoveryFromUrl=/(?:[?#&])type=recovery(?:&|$)/.test(location.search+'#'+location.hash);
 var activeView='nutrition';try{if(localStorage.getItem('mi-ritmo-active-view')==='gym')activeView='gym'}catch(e){}
 function k(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function fromKey(s){var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2],12)}
@@ -245,7 +297,7 @@ function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.ro
 }
 function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=k(picked)===k(current)?'Hoy · '+title:title;renderDays();renderMeals();renderGym();renderStats();renderGymProgress();if(document.activeElement!==$('day-note'))$('day-note').value=keyDay(picked).note||'';$('storage-state').textContent=user?'Supabase conectado':'En este dispositivo';
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';$('connect-btn').textContent=user?'Ver mi cuenta':'Conectar Supabase';$('account-description').textContent=user?'Tus registros están asociados a '+user.email+'. Se sincronizan con tu cuenta cuando hay internet.':'Iniciá sesión por email para guardar el progreso en Supabase y recuperarlo en otros dispositivos.';
- $('logged-content').hidden=!user||recovering;$('login-content').hidden=!!user&&!recovering;if(user)$('session-email').textContent=user.email||'Tu cuenta';
+ if(user)$('session-email').textContent=user.email||'Tu cuenta';
  var hasOld=!!legacyDays().length;$('import-hint').hidden=!user||!hasOld;$('import-previous').hidden=!user||!hasOld;
 }
 function legacyDays(){var old=[];var a=loadCache(GUEST);if(a.days)old=Object.keys(a.days);try{var prev=JSON.parse(localStorage.getItem(OLD)||'null');if(prev&&prev.days)old=old.concat(Object.keys(prev.days))}catch(e){}return Array.from(new Set(old))}
@@ -254,14 +306,89 @@ function legacyMerged(){var guest=loadCache(GUEST).days||{},all={};try{var prev=
 async function importPrevious(){if(!user)return;var old=legacyMerged(),count=0;Object.keys(old).forEach(function(key){if(!state.days[key]){state.days[key]=old[key];markDay(fromKey(key));count++}});saveCache();render();toast(count?'Importando '+count+' días a Supabase':'No había días nuevos para importar')}
 function settingPrefs(){var wrap=$('dayprefs');wrap.innerHTML='';for(var i=1;i<=7;i++){var n=i%7,b=document.createElement('button');b.type='button';b.className='daypref'+(draftDays.includes(n)?' active':'');b.textContent=days[n];b.setAttribute('aria-pressed',draftDays.includes(n));b.addEventListener('click',function(v){return function(){draftDays=draftDays.includes(v)?draftDays.filter(function(x){return x!==v}):draftDays.concat(v);settingPrefs()}}(n));wrap.append(b)}}
 function updateAccount(){render()}
-function openAccount(){$('auth-close').hidden=!user||recovering;if(!$('account-dialog').open)$('account-dialog').showModal()}
+function showAuth(mode){
+ authMode=mode;
+ var keys=['login','signup','forgot','reset','logged'];
+ keys.forEach(function(v){$('auth-'+v).hidden=(v!==mode)});
+ $('auth-title').textContent={login:'Iniciar sesión',signup:'Crear cuenta',forgot:'Recuperar contraseña',reset:'Cambiar contraseña',logged:'Mi cuenta'}[mode];
+ $('auth-close').hidden=!user||mode==='reset';
+ $('auth-message').textContent='';
+ if(mode==='signup')$('signup-email').value=$('email-input').value;
+ if(mode==='forgot')$('forgot-email').value=$('email-input').value;
+ if(user)$('session-email').textContent=user.email||'tu cuenta';
+ if(!$('account-dialog').open)$('account-dialog').showModal();
+}
+function openAccount(){showAuth(user?'logged':'login')}
 function openSettings(){$('gym-target').value=state.settings.gymTarget||3;draftDays=(state.settings.gymDays||[1,3,5]).slice();settingPrefs();$('settings-dialog').showModal()}
 function saveSettings(){var n=Number($('gym-target').value);if(!Number.isInteger(n)||n<1||n>7){toast('Elegí entre 1 y 7 entrenamientos');return}state.settings.gymTarget=n;state.settings.gymDays=draftDays.slice().sort(function(a,b){return (a+6)%7-(b+6)%7});saveCache();if(user)pushSettings();$('settings-dialog').close();render();toast('Plan actualizado')}
-async function login(ev){ev.preventDefault();if(!db){$('email-message').textContent='No se pudo conectar con Supabase';return}var email=$('email-input').value.trim(),password=$('login-password').value,button=$('send-link');button.disabled=true;button.textContent='Ingresando...';try{var result=await db.auth.signInWithPassword({email:email,password:password});if(result.error)throw result.error;await useUser(result.data.user);$('account-dialog').close();toast('Sesión iniciada');}catch(e){$('email-message').textContent='No se pudo ingresar: '+(e.message||'Revisá los datos')}finally{button.disabled=false;button.textContent='Ingresar'}}
-async function signup(){if(!db)return;var email=$('email-input').value.trim(),password=$('login-password').value;if(!$('email-input').checkValidity()){ $('email-message').textContent='Ingresá un email válido';return}if(password.length<8){$('email-message').textContent='Usá una contraseña de al menos 8 caracteres';return}try{var r=await db.auth.signUp({email:email,password:password,options:{emailRedirectTo:location.origin+'/'}});if(r.error)throw r.error;if(r.data.session){await useUser(r.data.user);$('account-dialog').close()}else $('email-message').textContent='Revisá tu correo para confirmar la cuenta una sola vez. Después ingresá siempre con email y contraseña.'}catch(e){$('email-message').textContent='No se pudo crear la cuenta: '+e.message}}
-async function recover(){if(!db)return;var email=$('email-input').value.trim();if(!$('email-input').checkValidity()){ $('email-message').textContent='Ingresá tu email primero';return}try{var r=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/'});if(r.error)throw r.error;$('email-message').textContent='Si ese correo está registrado, vas a recibir un enlace para elegir una contraseña nueva.'}catch(e){$('email-message').textContent='Error al enviar recuperación: '+e.message}}
-async function saveNewPassword(){if(!db)return;var password=$('new-password').value;if(password.length<8){$('email-message').textContent='La nueva contraseña debe tener al menos 8 caracteres';return}try{var r=await db.auth.updateUser({password:password});if(r.error)throw r.error;recovering=false;$('new-password-section').hidden=true;$('email-message').textContent='Contraseña actualizada. Se guardó tu nueva contraseña.';render();$('account-dialog').close();toast('Contraseña actualizada')}catch(e){$('email-message').textContent='No se pudo guardar: '+e.message}}
-async function logout(){if(!db)return;var r=await db.auth.signOut();if(r.error){toast('No se pudo cerrar sesión');return}await useUser(null);$('account-dialog').close();openAccount();toast('Sesión cerrada')}
+function authError(error){
+ var message=error&&error.message?error.message:'Revisá tus datos e intentá nuevamente.';
+ if(/invalid login credentials/i.test(message))return 'Email o contraseña incorrectos. Si todavía no tenés contraseña, tocá “Olvidé mi contraseña”.';
+ if(/email not confirmed/i.test(message))return 'Primero confirmá tu email desde el correo de activación.';
+ if(/rate limit/i.test(message))return 'Se enviaron demasiadas solicitudes. Esperá unos minutos e intentá nuevamente.';
+ return message;
+}
+function setAuthBusy(form,busy){form.querySelectorAll('button,input').forEach(function(x){x.disabled=busy})}
+async function login(event){
+ event.preventDefault();var form=$('login-form');
+ if(!db){$('auth-message').textContent='Sin conexión con Supabase. Revisá internet.';return}
+ setAuthBusy(form,true);
+ try{
+  var res=await db.auth.signInWithPassword({email:$('email-input').value.trim().toLowerCase(),password:$('login-password').value});
+  if(res.error)throw res.error;
+  if(!res.data.user)throw Error('No se pudo confirmar tu cuenta.');
+  await useUser(res.data.user);$('account-dialog').close();$('login-password').value='';toast('Sesión iniciada');
+ }catch(error){$('auth-message').textContent=authError(error)}
+ finally{setAuthBusy(form,false)}
+}
+async function signup(event){
+ event.preventDefault();var form=$('signup-form');
+ var password=$('signup-password').value;
+ if(password!==$('signup-confirm').value){$('auth-message').textContent='Las contraseñas no coinciden.';return}
+ if(!db){$('auth-message').textContent='Sin conexión con Supabase.';return}
+ setAuthBusy(form,true);
+ try{
+  var res=await db.auth.signUp({email:$('signup-email').value.trim().toLowerCase(),password:password,options:{emailRedirectTo:location.origin+'/'}});
+  if(res.error)throw res.error;
+  if(res.data.session&&res.data.user){await useUser(res.data.user);$('account-dialog').close();toast('Cuenta creada')}
+  else {$('auth-message').textContent='Cuenta creada. Revisá tu correo para confirmar el email una sola vez. Después ingresá normalmente con tu contraseña.';}
+ }catch(error){$('auth-message').textContent=authError(error)}
+ finally{setAuthBusy(form,false)}
+}
+async function requestReset(event){
+ event.preventDefault();var form=$('forgot-form');
+ if(!db){$('auth-message').textContent='Sin conexión con Supabase.';return}
+ setAuthBusy(form,true);
+ try{
+  var res=await db.auth.resetPasswordForEmail($('forgot-email').value.trim().toLowerCase(),{redirectTo:location.origin+'/'});
+  if(res.error)throw res.error;
+  $('auth-message').textContent='Te enviamos un correo. Al abrirlo en Mi Ritmo vas a ver directamente el formulario para elegir una contraseña nueva.';
+ }catch(error){$('auth-message').textContent=authError(error)}
+ finally{setAuthBusy(form,false)}
+}
+async function updatePassword(event){
+ event.preventDefault();var form=$('reset-form'),password=$('new-password').value;
+ if(password!==$('confirm-password').value){$('auth-message').textContent='Las contraseñas no coinciden.';return}
+ if(password.length<8){$('auth-message').textContent='Usá al menos 8 caracteres.';return}
+ if(!db){$('auth-message').textContent='Sin conexión con Supabase.';return}
+ setAuthBusy(form,true);
+ try{
+  var session=await db.auth.getSession();if(session.error)throw session.error;
+  if(!session.data.session)throw Error('El enlace venció. Volvé a “Olvidé mi contraseña” para solicitar uno nuevo.');
+  var res=await db.auth.updateUser({password:password});if(res.error)throw res.error;
+  recoveryFromUrl=false;
+  $('new-password').value='';$('confirm-password').value='';$('login-password').value='';
+  if(!user&&res.data.user)await useUser(res.data.user);
+  $('account-dialog').close();toast('Contraseña guardada. Ya podés ingresar con email y contraseña.');
+ }catch(error){$('auth-message').textContent=authError(error)}
+ finally{setAuthBusy(form,false)}
+}
+async function logout(){
+ if(!db)return;
+ var res=await db.auth.signOut();if(res.error){toast('No se pudo cerrar sesión');return}
+ await useUser(null);
+ showAuth('login');toast('Sesión cerrada');
+}
 async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.clear();if(u){storeKey='mi-ritmo-data-v2-'+u.id;state=loadCache(storeKey);try{var pending=JSON.parse(localStorage.getItem(pendingKey())||'[]');offlinePending=new Set(Array.isArray(pending)?pending:[])}catch(e){}syncLabel('Sincronizando con Supabase...');
  try{var results=await Promise.all([db.from('daily_logs').select('day,meals,gym,note').order('day',{ascending:false}).limit(1200),db.from('profile_settings').select('gym_target,gym_days').maybeSingle()]);
  if(results[0].error)throw results[0].error;var cached=state.days,remote={};(results[0].data||[]).forEach(function(r){remote[r.day]={meals:r.meals||{},gym:!!r.gym,note:r.note||''}});
@@ -284,17 +411,17 @@ function switchView(view,scroll){
  if(scroll!==false)window.scrollTo(0,0);
 }
 async function start(){if(initDone)return;initDone=true;
- if(window.supabase&&window.supabase.createClient){db=window.supabase.createClient(URL_SUPA,KEY_SUPA,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{var r=await db.auth.getSession();if(r.error)throw r.error;await useUser(r.data.session&&r.data.session.user||null);db.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session&&(!user||user.id!==session.user.id))setTimeout(function(){useUser(session.user)},0);if(event==='SIGNED_OUT'&&user)setTimeout(function(){useUser(null)},0);if(event==='PASSWORD_RECOVERY')setTimeout(function(){recovering=true;openAccount();$('login-content').hidden=false;$('logged-content').hidden=true;$('new-password-section').hidden=false;$('email-message').textContent='Elegí tu nueva contraseña.'},0)})}catch(e){syncLabel('Sin conexión con Supabase');render()}}else{syncLabel('Sin conexión con Supabase');render()}
+ if(window.supabase&&window.supabase.createClient){db=window.supabase.createClient(URL_SUPA,KEY_SUPA,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{var r=await db.auth.getSession();if(r.error)throw r.error;await useUser(r.data.session&&r.data.session.user||null);db.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session&&(!user||user.id!==session.user.id))setTimeout(function(){useUser(session.user)},0);if(event==='SIGNED_OUT'&&user)setTimeout(function(){useUser(null)},0);if(event==='PASSWORD_RECOVERY')setTimeout(function(){recoveryFromUrl=true;showAuth('reset')},0)})}catch(e){syncLabel('Sin conexión con Supabase');render()}}else{syncLabel('Sin conexión con Supabase');render()}
  $('nav-nutrition').addEventListener('click',function(){switchView('nutrition')});$('nav-gym').addEventListener('click',function(){switchView('gym')});
  $('gym-prev-week').addEventListener('click',function(){picked=plus(picked,-7);render()});$('gym-next-week').addEventListener('click',function(){picked=plus(picked,7);render()});
  $('gym-this-week').addEventListener('click',function(){picked=new Date(current);render()});$('gym-settings-btn').addEventListener('click',openSettings);
  $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});$('today-btn').addEventListener('click',function(){picked=new Date(current);render()});
- $('account-btn').addEventListener('click',openAccount);$('connect-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-btn').addEventListener('click',signup);$('recover-btn').addEventListener('click',recover);$('new-password-btn').addEventListener('click',saveNewPassword);$('account-dialog').addEventListener('cancel',function(e){if(!user||recovering)e.preventDefault()});$('logout-btn').addEventListener('click',logout);$('backup-btn').addEventListener('click',downloadBackup);$('import-previous').addEventListener('click',importPrevious);
+ $('account-btn').addEventListener('click',openAccount);$('connect-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);$('backup-btn').addEventListener('click',downloadBackup);$('import-previous').addEventListener('click',importPrevious);
  document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){$(b.dataset.close).close()})});
  $('day-note').addEventListener('input',function(){if(!user){openAccount();return}var date=new Date(picked);ensure(date).note=$('day-note').value;markDay(date)});
  window.addEventListener('online',function(){if(user)offlinePending.forEach(function(day){pushDay(day)})});
  if('serviceWorker'in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
- render();switchView(activeView,false);if(!user)openAccount();
+ render();switchView(activeView,false);if(recoveryFromUrl)showAuth('reset');else if(!user)showAuth('login');
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
