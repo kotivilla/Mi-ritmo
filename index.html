@@ -980,14 +980,64 @@ async function syncDishLibrary(){
 var dishDraft=null;
 function dishMeal(){return meals.find(function(m){return m.id===$('dish-meal').value})}
 function dishList(){return Array.isArray(state.dishes)?state.dishes:[]}
-function renderDishLibrary(){
- var meal=$('dish-library-meal').value,items=dishList().filter(function(d){return d.meal===meal});
- $('dish-library-list').innerHTML=items.length?items.map(function(d){return '<article class="dish-item"><div><b>'+safe(d.name)+'</b><p class="mini">'+safe(dishSummary(d))+'</p></div><button class="pill" type="button" data-dish-id="'+safe(d.id)+'">Ver / usar</button></article>'}).join(''):'<p class="mini dish-empty">Todavía no tenés platos guardados para esta comida.</p>';
- $('dish-library-list').querySelectorAll('[data-dish-id]').forEach(function(b){b.addEventListener('click',function(){var d=dishList().find(function(x){return x.id===b.dataset.dishId});if(d)openDish(d.meal,d)})});
+function dishHasBeenEaten(dish,date){
+ var item=state.days[date],entry=item&&item.meals&&item.meals[dish.meal];
+ return !!(entry&&Array.isArray(entry._dishes)&&entry._dishes.some(function(saved){return saved.id===dish.id}));
 }
-function dishSummary(d){var meal=meals.find(function(m){return m.id===d.meal});return meal.groups.concat([{id:'fruit',name:'Frutas',target:2}]).filter(function(g){return Number(d.portions[g.id])>0}).map(function(g){return g.name+': '+d.portions[g.id]+'/'+g.target}).join(' · ')||'Sin grupos asignados'}
-var dishStage='choose',foodVisibleCount=18,dishShowAll=false;
-var dishCategoryLabels=[['','Todos'],['protein','Proteínas'],['carb','Hidratos'],['veg','Vegetales'],['fruit','Frutas'],['fat','Grasas'],['other','Otros']];
+function registerSavedDish(dish,date){
+ if(!user){openAccount();return false}
+ var key=date||k(picked),meal=meals.find(function(row){return row.id===dish.meal});
+ if(!meal){toast('Esta comida ya no está disponible.');return false}
+ if(key>k(current)){toast('Elegí hoy o un día anterior para registrar una comida.');return false}
+ var previous=(keyDay(fromKey(key)).meals||{})[meal.id]||{};
+ var application=DishModel.apply(previous,dish,meal.groups);
+ if(application.duplicate){toast('Este plato ya está registrado en '+meal.name.toLowerCase()+' de ese día.');return false}
+ var day=ensure(fromKey(key)),prevFruit=dailyFruit(day),addedFruit=Number(dish.portions&&dish.portions.fruit)||0;
+ day.meals[meal.id]=application.entry;
+ if(addedFruit>0){
+  if(!day.meals.daily)day.meals.daily={};
+  day.meals.daily.fruit=Math.min(2,prevFruit+addedFruit);
+ }
+ markDay(fromKey(key));render();
+ toast('Registraste '+dish.name+' en '+meal.name.toLowerCase()+' del '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(fromKey(key)));
+ return true;
+}
+function renderDishLibrary(){
+ var mealFilter=$('dish-library-meal').value,search=DishModel.normalize($('dish-library-search').value);
+ var items=dishList().filter(function(d){return (!mealFilter||d.meal===mealFilter)&&(!search||DishModel.normalize(d.name+' '+(d.description||'')).includes(search))})
+  .sort(function(a,b){return meals.findIndex(function(m){return m.id===a.meal})-meals.findIndex(function(m){return m.id===b.meal})||a.name.localeCompare(b.name,'es')});
+ var date=k(picked),formatted=new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);
+ $('dish-library-selected-date').textContent=formatted;
+ $('dish-library-list').innerHTML=items.length?items.map(function(d){
+  var meal=meals.find(function(m){return m.id===d.meal}),registered=dishHasBeenEaten(d,date),future=date>k(current);
+  var detail=dishSummary(d),count=Array.isArray(d.portions&&d.portions._ingredients)?d.portions._ingredients.length:0;
+  return '<article class="dish-item">'+
+    '<div class="dish-item-main"><div class="dish-item-top"><span class="dish-item-tag">'+safe(meal?meal.icon+' '+meal.name:'Comida')+'</span>'+
+    (registered?'<span class="dish-item-mark">✓ Registrado</span>':'')+'</div>'+
+    '<b>'+safe(d.name)+'</b><p class="dish-item-description">'+safe(detail)+(count?' · '+count+(count===1?' ingrediente':' ingredientes'):'')+'</p></div>'+
+    '<div class="dish-item-actions"><button type="button" class="pill dish-record" data-log-dish="'+safe(d.id)+'" '+(registered||future?'disabled':'')+' aria-label="Registrar '+safe(d.name)+' como comido el '+safe(formatted)+'">'+(registered?'✓ Ya lo comí':future?'Elegí un día anterior':'Comí esto')+'</button>'+
+    '<button type="button" class="pill dish-edit" data-edit-dish="'+safe(d.id)+'" aria-label="Editar '+safe(d.name)+'">Editar</button></div></article>';
+ }).join(''):'<div class="dish-library-empty"><b>'+(dishList().length?'No encontramos platos':'Tu lista de platos está vacía')+'</b><p>'+(dishList().length?'Probá otra búsqueda o elegí otra comida.':'Creá un plato para tener opciones listas cuando las necesites.')+'</p></div>';
+ $('dish-library-list').querySelectorAll('[data-log-dish]').forEach(function(button){
+  button.addEventListener('click',function(){
+   var dish=dishList().find(function(d){return d.id===button.dataset.logDish});
+   if(dish)registerSavedDish(dish,k(picked));
+  });
+ });
+ $('dish-library-list').querySelectorAll('[data-edit-dish]').forEach(function(button){
+  button.addEventListener('click',function(){
+   var dish=dishList().find(function(d){return d.id===button.dataset.editDish});
+   if(dish)openDish(dish.meal,dish);
+  });
+ });
+}
+function dishSummary(d){
+ var meal=meals.find(function(m){return m.id===d.meal});
+ if(!meal)return 'Sin grupo de comida';
+ return meal.groups.concat([{id:'fruit',name:'Frutas',target:2}]).filter(function(g){
+  return Number(d.portions&&d.portions[g.id])>0;
+ }).map(function(g){return g.name+': '+d.portions[g.id]+'/'+g.target}).join(' · ')||'Sin grupos asignados';
+}
 function dishSuggestions(meal){
  var basic=meal==='breakfast'||meal==='snack';
  var names=basic?
@@ -1127,7 +1177,7 @@ function showDishReview(portions,notes){
   var f=FoodCatalog.items.find(function(x){return x.id===row.id});
   return f?'<span class="dish-review-ingredient">'+safe(f.name)+' · '+safe(row.quantity)+' '+safe(FoodCatalog.serving(f,$('dish-meal').value).unit)+'</span>':'';
  }).join(''):'<p class="mini">Este plato tiene porciones guardadas sin una lista detallada de ingredientes.</p>';
- $('dish-date').textContent='Guardar y registrar sumará este plato a '+dishMeal().name.toLowerCase()+' del '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long',year:'numeric'}).format(fromKey(dishDraft.date))+'. Guardar plato solo lo agrega a Mis platos.';
+ $('dish-date').textContent='Este plato se guarda en Mis platos. Para registrarlo en un día, usá el botón «Comí esto» desde tu lista.';
  updateDishResult();
 }
 function readDishPortions(){
@@ -1148,26 +1198,37 @@ function updateDishResult(){
   (p.fruit?' Frutas del día: '+Math.min(2,dailyFruit(keyDay(fromKey(dishDraft.date)))+p.fruit)+'/2.':'');
 }
 function saveDish(event){
- event.preventDefault();if(!dishDraft||!user||user.id!==dishDraft.owner){$('dish-dialog').close();return}
+ event.preventDefault();
+ if(!dishDraft||!user||user.id!==dishDraft.owner){$('dish-dialog').close();return}
  if($('dish-review').hidden)return;
- var name=$('dish-name').value.trim();if(!name){$('dish-feedback').textContent='Dale un nombre al plato.';return}
- var meal=dishMeal(),p=readDishPortions();if(!dishDraft.selected.length&&!meal.groups.some(function(g){return p[g.id]>0})&&!p.fruit){$('dish-feedback').textContent='Asigná al menos un grupo al plato antes de guardar.';return}
- p._ingredients=JSON.parse(JSON.stringify(dishDraft.selected));
- var list=dishList().slice(),existing=list.find(function(d){return d.meal===meal.id&&DishModel.normalize(d.name)===DishModel.normalize(name)});
- var id=existing?existing.id:dishDraft.id||crypto.randomUUID();
- var dish={id:id,meal:meal.id,name:name,description:selectedFoodDescription().slice(0,1000),portions:p,updated_at:new Date().toISOString(),_pending:true};
- var eat=event.submitter&&event.submitter.value==='eat',day=keyDay(fromKey(dishDraft.date)),result;
- if(eat){result=DishModel.apply((day.meals||{})[meal.id],dish,meal.groups);if(result.duplicate){$('dish-feedback').textContent='Este plato ya está registrado en esa comida y fecha.';return}}
- var next=JSON.parse(JSON.stringify(state));next.dishes=list.filter(function(d){return d.id!==id}).concat([dish]);
- if(eat){if(!next.days[dishDraft.date])next.days[dishDraft.date]={meals:{},gym:false,note:''};if(!next.days[dishDraft.date].meals)next.days[dishDraft.date].meals={};next.days[dishDraft.date].meals[meal.id]=result.entry;
-  if(p.fruit){var daily=next.days[dishDraft.date].meals.daily||{};daily.fruit=Math.min(2,dailyFruit(day)+p.fruit);next.days[dishDraft.date].meals.daily=daily}
+ var name=$('dish-name').value.trim();
+ if(!name){$('dish-feedback').textContent='Dale un nombre al plato.';return}
+ var meal=dishMeal(),p=readDishPortions();
+ if(!dishDraft.selected.length&&!meal.groups.some(function(g){return p[g.id]>0})&&!p.fruit){
+  $('dish-feedback').textContent='Agregá alimentos o asigná porciones al plato antes de guardarlo.';return;
  }
- try{localStorage.setItem(storeKey,JSON.stringify(next))}catch(e){$('dish-feedback').textContent='No se pudo guardar en este dispositivo. Liberá espacio e intentá de nuevo.';return}
- state=next;syncDishLibrary();if(eat)markDay(fromKey(dishDraft.date));$('dish-library-meal').value=meal.id;$('dish-dialog').close();render();toast(eat?'Plato registrado y guardado en tu lista':'Plato guardado sin modificar el día');
+ p._ingredients=JSON.parse(JSON.stringify(dishDraft.selected));
+ var list=dishList().slice(),duplicate=list.find(function(d){
+  return d.meal===meal.id&&DishModel.normalize(d.name)===DishModel.normalize(name)&&d.id!==dishDraft.id;
+ });
+ if(duplicate){$('dish-feedback').textContent='Ya guardaste otro plato con ese nombre para esta comida.';return}
+ var id=dishDraft.id||crypto.randomUUID();
+ var dish={id:id,meal:meal.id,name:name,description:selectedFoodDescription().slice(0,1000),portions:p,updated_at:new Date().toISOString(),_pending:true};
+ var next=JSON.parse(JSON.stringify(state));
+ next.dishes=list.filter(function(d){return d.id!==id}).concat([dish]);
+ try{localStorage.setItem(storeKey,JSON.stringify(next))}catch(e){
+  $('dish-feedback').textContent='No se pudo guardar en este dispositivo. Liberá espacio e intentá de nuevo.';return;
+ }
+ state=next;
+ syncDishLibrary();
+ $('dish-dialog').close();
+ render();
+ toast('Plato guardado en Mis platos. No se registró como comido.');
 }
 function setupDishes(){
- $('new-dish').addEventListener('click',function(){openDish($('dish-library-meal').value)});
+ $('new-dish').addEventListener('click',function(){openDish($('dish-library-meal').value||'lunch')});
  $('dish-library-meal').addEventListener('change',renderDishLibrary);
+ $('dish-library-search').addEventListener('input',renderDishLibrary);
  $('food-search').addEventListener('input',function(){foodVisibleCount=18;dishShowAll=false;renderFoodCatalog()});
  $('food-search').addEventListener('keydown',function(event){if(event.key==='Enter'){event.preventDefault();this.blur()}});
  $('food-filter').addEventListener('change',function(){foodVisibleCount=18;dishShowAll=false;renderFoodCatalog()});
