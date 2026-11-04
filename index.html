@@ -567,7 +567,7 @@ function trainingData(){return TrainingModel.migrate(state.training)}
 function resetTrainingOwner(){var owner=user&&user.id||'guest';if(owner!==trainingOwner){trainingDrafts={};selectedRoutine=null;trainingOwner=owner}}
 function activeRoutine(){var days=trainingData().routineDays.filter(function(d){return !d.archived});return days.find(function(d){return d.id===selectedRoutine})}
 function routineRows(){var day=activeRoutine();if(!day)return [];if(!trainingDrafts[day.id])trainingDrafts[day.id]=JSON.parse(JSON.stringify(day.rows));return trainingDrafts[day.id]}
-function persistTraining(data){state.training=data;saveCache();renderGymDashboard();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}}
+function persistTraining(data){state.training=data;saveCache();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}}
 function trainingMessage(text){$('training-feedback').textContent=text}
 function renderTraining(){
  resetTrainingOwner();var data=trainingData(),day=activeRoutine();selectedRoutine=day?day.id:null;
@@ -679,39 +679,19 @@ function renderGym(){
  if(logged)btn.title=logged.routineName;
  btn.addEventListener('click',function(date){return function(){openGymSession(date)}}(d));w.append(btn);$('gymweek').append(w);
  }
- $('gymscore').textContent=sum+'/'+target;$('planned-text').textContent=planned.map(function(i){return days[i]}).join(' · ')||'Sin días predeterminados';
+ $('gym-week-count').textContent=sum?(sum+' '+(sum===1?'entrenamiento':'entrenamientos')+' esta semana'):'Todavía no registraste entrenamientos esta semana.';
 }
 function openRoutineSettings(dayId){
  if(!user){openAccount();return}
  if(dayId)selectedRoutine=dayId;
- else if(!activeRoutine()){var days=trainingData().routineDays.filter(function(d){return !d.archived});selectedRoutine=days.length?days[0].id:null}
- renderTraining();$('gym-plan-dialog').showModal();
-}
-function renderGymDashboard(){
- var d=trainingData(),active=d.routineDays.filter(function(row){return !row.archived&&row.rows.length>0});
- var target=$('gym-plan-overview');
- if(!active.length){
-  target.innerHTML='<div class="gym-plan-empty"><p>Todavía no cargaste tus ejercicios. Configurá la rutina una vez y después solo registrá cada día.</p><button class="pill primary" id="gym-create-plan" type="button">Armar mi rutina</button></div>';
-  $('gym-create-plan').addEventListener('click',function(){openRoutineSettings()});
- }else{
-  var count=active.reduce(function(total,row){return total+row.rows.length},0);
-  target.innerHTML='<div class="gym-plan-day-grid">'+active.map(function(row){
-    return '<button class="gym-plan-day" type="button" data-plan-id="'+safe(row.id)+'"><b>'+safe(row.name)+'</b><small>'+row.rows.length+' '+(row.rows.length===1?'ejercicio':'ejercicios')+'</small></button>'
-  }).join('')+'</div><p class="mini">'+active.length+' '+(active.length===1?'día configurado':'días configurados')+' · '+count+' ejercicios</p>';
-  target.querySelectorAll('[data-plan-id]').forEach(function(btn){btn.addEventListener('click',function(){openRoutineSettings(btn.dataset.planId)})});
- }
- var dates=Object.keys(d.workouts||{}).sort().reverse().slice(0,4);
- $('gym-recent-list').innerHTML=dates.length?dates.map(function(date){
-  var w=d.workouts[date],day=fromKey(date),month=new Intl.DateTimeFormat('es-AR',{month:'short'}).format(day),exercises=w.exercises||[],sets=exercises.reduce(function(total,ex){return total+(ex.sets||[]).length},0);
-  return '<button class="gym-recent-item" type="button" data-session-date="'+safe(date)+'"><span class="gym-recent-date"><b>'+day.getDate()+'</b><small>'+safe(month)+'</small></span><span class="gym-recent-details"><b>'+safe(w.routineName||'Entrenamiento')+'</b><small>'+exercises.length+' ejercicios · '+sets+' series</small></span><span class="gym-recent-next" aria-hidden="true">›</span></button>';
- }).join(''):'<div class="gym-plan-empty"><p>Acá vas a poder consultar los ejercicios, pesos y repeticiones de tus últimos entrenamientos.</p></div>';
- $('gym-recent-list').querySelectorAll('[data-session-date]').forEach(function(btn){btn.addEventListener('click',function(){openGymSession(fromKey(btn.dataset.sessionDate))})});
+ else if(!activeRoutine()){var list=trainingData().routineDays.filter(function(d){return !d.archived});selectedRoutine=list.length?list[0].id:null}
+ renderTraining();openSettings('routine');
 }
 function renderGymProgress(){
  var first=monday(picked),goal=state.settings.gymTarget||3;
  var fmt=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('gym-week-title').textContent=fmt(first)+' al '+fmt(plus(first,6));
- $('gym-settings-summary').textContent=goal+(goal===1?' vez por semana':' veces por semana');
+
  var records=[],highest=Math.max(goal,1),sumSix=0;
  for(var j=5;j>=0;j--){var week=plus(first,-7*j),cnt=weeklyGym(week);records.push({day:week,count:cnt});highest=Math.max(highest,cnt);sumSix+=cnt}
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
@@ -725,7 +705,7 @@ function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.ro
  var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
  $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
 }
-function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();renderGymDashboard();
+function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
 }
@@ -748,8 +728,17 @@ function showAuth(mode){
  if(!$('account-dialog').open)$('account-dialog').showModal();
 }
 function openAccount(){showAuth(user?'logged':'login')}
-function openSettings(){$('gym-target').value=state.settings.gymTarget||3;draftDays=(state.settings.gymDays||[1,3,5]).slice();settingPrefs();$('settings-dialog').showModal()}
-function saveSettings(){var n=Number($('gym-target').value);if(!Number.isInteger(n)||n<1||n>7){toast('Elegí entre 1 y 7 entrenamientos');return}state.settings.gymTarget=n;state.settings.gymDays=draftDays.slice().sort(function(a,b){return (a+6)%7-(b+6)%7});saveCache();if(user)pushSettings();$('settings-dialog').close();render();toast('Plan actualizado')}
+function showConfigTab(tab){
+ var onRoutine=tab==='routine';
+ $('config-goal-content').hidden=onRoutine;$('config-routine-content').hidden=!onRoutine;
+ $('config-tab-goal').classList.toggle('active',!onRoutine);$('config-tab-routine').classList.toggle('active',onRoutine);
+ $('config-tab-goal').setAttribute('aria-selected',String(!onRoutine));$('config-tab-routine').setAttribute('aria-selected',String(onRoutine));
+}
+function openSettings(tab){
+ $('gym-target').value=state.settings.gymTarget||3;draftDays=(state.settings.gymDays||[1,3,5]).slice();settingPrefs();
+ showConfigTab(tab==='routine'?'routine':'goal');if(!$('settings-dialog').open)$('settings-dialog').showModal();
+}
+function saveSettings(){var n=Number($('gym-target').value);if(!Number.isInteger(n)||n<1||n>7){toast('Elegí entre 1 y 7 entrenamientos');return}state.settings.gymTarget=n;state.settings.gymDays=draftDays.slice().sort(function(a,b){return (a+6)%7-(b+6)%7});saveCache();if(user)pushSettings();render();toast('Objetivo actualizado')}
 function authError(error){
  var message=error&&error.message?error.message:'Revisá tus datos e intentá nuevamente.';
  if(/invalid login credentials/i.test(message))return 'Email o contraseña incorrectos. Si todavía no tenés contraseña, tocá “Olvidé mi contraseña”.';
@@ -876,11 +865,9 @@ async function start(){if(initDone)return;initDone=true;setupDishes();setupTrain
  if(window.supabase&&window.supabase.createClient){db=window.supabase.createClient(URL_SUPA,KEY_SUPA,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{var r=await db.auth.getSession();if(r.error)throw r.error;await useUser(r.data.session&&r.data.session.user||null);db.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session&&(!user||user.id!==session.user.id))setTimeout(function(){useUser(session.user)},0);if(event==='SIGNED_OUT'&&user)setTimeout(function(){useUser(null)},0);if(event==='PASSWORD_RECOVERY')setTimeout(function(){recoveryFromUrl=true;showAuth('reset')},0)})}catch(e){syncLabel('Sin conexión con Supabase');render()}}else{syncLabel('Sin conexión con Supabase');render()}
  $('nav-nutrition').addEventListener('click',function(){switchView('nutrition')});$('nav-gym').addEventListener('click',function(){switchView('gym')});
  $('gym-prev-week').addEventListener('click',function(){picked=plus(picked,-7);render()});$('gym-next-week').addEventListener('click',function(){picked=plus(picked,7);render()});
- $('gym-settings-btn').addEventListener('click',openSettings);
  $('gym-register-today').addEventListener('click',function(){openGymSession(new Date(current))});
- $('gym-configure').addEventListener('click',function(){openRoutineSettings()});
- $('gym-edit-plan').addEventListener('click',function(){openRoutineSettings()});
- $('gym-edit-goal').addEventListener('click',function(){$('gym-plan-dialog').close();openSettings()});
+ $('config-tab-goal').addEventListener('click',function(){showConfigTab('goal')});
+ $('config-tab-routine').addEventListener('click',function(){showConfigTab('routine')});
  $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});
  $('account-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);
  document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){$(b.dataset.close).close()})});
