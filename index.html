@@ -993,7 +993,7 @@ function registerSavedDish(dish,date){
  if(!user){openAccount();return false}
  var key=date||k(picked),meal=meals.find(function(row){return row.id===dish.meal});
  if(!meal){toast('Esta comida ya no está disponible.');return false}
- if(key>k(current)){toast('Elegí hoy o un día anterior para registrar una comida.');return false}
+ if(key>k(new Date())){toast('Elegí hoy o un día anterior para registrar una comida.');return false}
  var previous=(keyDay(fromKey(key)).meals||{})[meal.id]||{};
  var application=DishModel.apply(previous,dish,meal.groups);
  if(application.duplicate){toast('Este plato ya está registrado en '+meal.name.toLowerCase()+' de ese día.');return false}
@@ -1011,10 +1011,10 @@ function renderDishLibrary(){
  var mealFilter=$('dish-library-meal').value,search=DishModel.normalize($('dish-library-search').value);
  var items=dishList().filter(function(d){return (!mealFilter||d.meal===mealFilter)&&(!search||DishModel.normalize(d.name+' '+(d.description||'')).includes(search))})
   .sort(function(a,b){return meals.findIndex(function(m){return m.id===a.meal})-meals.findIndex(function(m){return m.id===b.meal})||a.name.localeCompare(b.name,'es')});
- var date=k(picked),formatted=new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);
+ var date=k(picked),today=k(new Date()),formatted=new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);
  $('dish-library-selected-date').textContent=formatted;
  $('dish-library-list').innerHTML=items.length?items.map(function(d){
-  var meal=meals.find(function(m){return m.id===d.meal}),registered=dishHasBeenEaten(d,date),future=date>k(current);
+  var meal=meals.find(function(m){return m.id===d.meal}),registered=dishHasBeenEaten(d,date),future=date>today;
   var detail=dishSummary(d),count=Array.isArray(d.portions&&d.portions._ingredients)?d.portions._ingredients.length:0;
   return '<article class="dish-item">'+
     '<div class="dish-item-main"><div class="dish-item-top"><span class="dish-item-tag">'+safe(meal?meal.icon+' '+meal.name:'Comida')+'</span>'+
@@ -1262,7 +1262,7 @@ function setupDishes(){
 }
 
 function renderMeals(){
- var todayKey=k(picked),expanded=[];
+ var todayKey=k(picked),calendarToday=k(new Date()),expanded=[];
  if(mealViewDate===todayKey)$('mealgrid').querySelectorAll('details.meal[open]').forEach(function(el){expanded.push(el.dataset.mealCard)});
  mealViewDate=todayKey;
  $('mealgrid').innerHTML=meals.map(function(m){
@@ -1283,7 +1283,7 @@ function renderMeals(){
     '<div class="meal-dish-opts">'+(savedOptions.length?savedOptions.map(function(d){
      var eaten=!!(entry._dishes||[]).some(function(existing){return existing.id===d.id});
      return '<div class="meal-dish-opt"><span>'+safe(d.name)+'</span><button type="button" class="pill" data-log-meal-dish="'+safe(d.id)+'" '+
-      (eaten||k(picked)>k(current)?'disabled':'')+'>'+(eaten?'✓ Registrado':k(picked)>k(current)?'Fecha futura':'Comí esto')+'</button></div>';
+      (eaten||todayKey>calendarToday?'disabled':'')+'>'+(eaten?'✓ Registrado':todayKey>calendarToday?'Fecha futura':'Comí esto')+'</button></div>';
     }).join(''):'<div class="meal-dish-empty">Todavía no tenés opciones para esta comida. <button class="pill" type="button" data-add-dish="'+m.id+'">+ Crear plato para mi lista</button></div>')+
    '</div></details>'+
    (entry._dishes||[]).map(function(d){return '<div class="dish-log">✓ Registrado: '+safe(d.name)+'</div>'}).join('')+
