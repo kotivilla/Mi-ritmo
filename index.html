@@ -440,7 +440,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .dish-item-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
 .dish-item-actions .pill{min-width:0;min-height:43px;border-radius:10px;padding:10px 12px;font-size:12px}
 .dish-item-actions .dish-record{background:var(--green);border-color:var(--green);color:#fff}
-.dish-item-actions .dish-record:disabled{background:#eef6ef;border-color:#d7e9da;color:#568767;cursor:default}
+.dish-item-actions .dish-record:disabled{background:#eef6ef;border-color:#d7e9da;color:#568767;cursor:default}.dish-item-actions .dish-record[aria-pressed="true"]{background:#e9f5ed;color:var(--green);border-color:#b9ddc4}.meal-dish-opt .pill[aria-pressed="true"]{border-color:#b9ddc4;color:var(--green);background:#e9f5ed}
 .dish-item-actions .dish-edit{background:#fff;font-size:11px}
 .dish-library-empty{padding:24px 15px;text-align:center;border:1px dashed #cedfce;border-radius:14px;background:#f9fbf8;grid-column:1/-1}
 .dish-library-empty b{display:block;font-size:14px}
@@ -472,7 +472,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  .dish-library-date{margin-top:13px}
 }
 </style>
-<script src="/dish-model.js"></script>
+<script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
 <script src="/insights-model.js?v=2"></script>
@@ -523,7 +523,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
     </label>
    </div>
    <div id="dish-library-list" class="dish-list" aria-live="polite"></div>
-   <p class="mini dish-library-help">Crear un plato solo lo agrega a esta lista. Para anotarlo en un día, tocá <b>Comí esto</b>.</p>
+   <p class="mini dish-library-help">Crear un plato solo lo agrega a esta lista. Para anotarlo en un día, tocá <b>Comí esto</b>. Tocá <b>✓ Ya lo comí</b> para deshacer.</p>
    <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
   </section>
    <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
@@ -989,6 +989,22 @@ function dishHasBeenEaten(dish,date){
  var item=state.days[date],entry=item&&item.meals&&item.meals[dish.meal];
  return !!(entry&&Array.isArray(entry._dishes)&&entry._dishes.some(function(saved){return saved.id===dish.id}));
 }
+function fruitFromLoggedDishes(day){
+ return meals.reduce(function(total,meal){
+  var entry=day.meals&&day.meals[meal.id],logs=entry&&entry._dishes;
+  return total+(Array.isArray(logs)?logs.reduce(function(sum,log){return sum+Math.max(0,Number(log.portions&&log.portions.fruit)||0)},0):0);
+ },0);
+}
+function fruitBaselineBeforeDishChange(day){
+ var daily=day.meals&&day.meals.daily||{};
+ if(Number.isFinite(daily._dishFruitBase))return cap(daily._dishFruitBase,2);
+ return Math.max(0,dailyFruit(day)-fruitFromLoggedDishes(day));
+}
+function updateFruitAfterDishChange(day,base){
+ if(!day.meals.daily)day.meals.daily={};
+ day.meals.daily._dishFruitBase=cap(base,2);
+ day.meals.daily.fruit=cap(base+fruitFromLoggedDishes(day),2);
+}
 function registerSavedDish(dish,date){
  if(!user){openAccount();return false}
  var key=date||k(picked),meal=meals.find(function(row){return row.id===dish.meal});
@@ -997,15 +1013,31 @@ function registerSavedDish(dish,date){
  var previous=(keyDay(fromKey(key)).meals||{})[meal.id]||{};
  var application=DishModel.apply(previous,dish,meal.groups);
  if(application.duplicate){toast('Este plato ya está registrado en '+meal.name.toLowerCase()+' de ese día.');return false}
- var day=ensure(fromKey(key)),prevFruit=dailyFruit(day),addedFruit=Number(dish.portions&&dish.portions.fruit)||0;
+ var day=ensure(fromKey(key)),hasFruit=Number(dish.portions&&dish.portions.fruit)>0;
+ var fruitBase=hasFruit?fruitBaselineBeforeDishChange(day):0;
  day.meals[meal.id]=application.entry;
- if(addedFruit>0){
-  if(!day.meals.daily)day.meals.daily={};
-  day.meals.daily.fruit=Math.min(2,prevFruit+addedFruit);
- }
+ if(hasFruit)updateFruitAfterDishChange(day,fruitBase);
  markDay(fromKey(key));render();
  toast('Registraste '+dish.name+' en '+meal.name.toLowerCase()+' del '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(fromKey(key)));
  return true;
+}
+function undoSavedDish(dish,date){
+ if(!user){openAccount();return false}
+ var key=date||k(picked),meal=meals.find(function(row){return row.id===dish.meal});
+ if(!meal){toast('Esta comida ya no está disponible.');return false}
+ var day=ensure(fromKey(key)),previous=(day.meals||{})[meal.id]||{};
+ var removal=DishModel.remove(previous,dish,meal.groups);
+ if(removal.missing){toast('Este plato ya no figura como comido ese día.');render();return false}
+ var hasFruit=Number(dish.portions&&dish.portions.fruit)>0;
+ var fruitBase=hasFruit?fruitBaselineBeforeDishChange(day):0;
+ day.meals[meal.id]=removal.entry;
+ if(hasFruit)updateFruitAfterDishChange(day,fruitBase);
+ markDay(fromKey(key));render();
+ toast('Deshiciste el registro de '+dish.name+'. Sigue guardado en Mis platos.');
+ return true;
+}
+function toggleSavedDish(dish,date){
+ return dishHasBeenEaten(dish,date)?undoSavedDish(dish,date):registerSavedDish(dish,date);
 }
 function renderDishLibrary(){
  var mealFilter=$('dish-library-meal').value,search=DishModel.normalize($('dish-library-search').value);
@@ -1020,7 +1052,7 @@ function renderDishLibrary(){
     '<div class="dish-item-main"><div class="dish-item-top"><span class="dish-item-tag">'+safe(meal?meal.icon+' '+meal.name:'Comida')+'</span>'+
     (registered?'<span class="dish-item-mark">✓ Registrado</span>':'')+'</div>'+
     '<b>'+safe(d.name)+'</b><p class="dish-item-description">'+safe(detail)+(count?' · '+count+(count===1?' ingrediente':' ingredientes'):'')+'</p></div>'+
-    '<div class="dish-item-actions"><button type="button" class="pill dish-record" data-log-dish="'+safe(d.id)+'" '+(registered||future?'disabled':'')+' aria-label="Registrar '+safe(d.name)+' como comido el '+safe(formatted)+'">'+(registered?'✓ Ya lo comí':future?'Elegí un día anterior':'Comí esto')+'</button>'+
+    '<div class="dish-item-actions"><button type="button" class="pill dish-record" data-log-dish="'+safe(d.id)+'" '+(future&&!registered?'disabled':'')+' aria-pressed="'+String(registered)+'" aria-label="'+(registered?'Deshacer registro de ':'Registrar ')+safe(d.name)+(registered?' del ':' como comido el ')+safe(formatted)+'">'+(registered?'✓ Ya lo comí':future?'Elegí un día anterior':'Comí esto')+'</button>'+
     '<button type="button" class="pill dish-edit" data-edit-dish="'+safe(d.id)+'" aria-label="Editar '+safe(d.name)+'">Editar</button></div></article>';
  }).join(''):'<div class="dish-library-empty"><b>'+(dishList().length?'No encontramos platos':'Tu lista de platos está vacía')+'</b><p>'+(dishList().length?'Probá otra búsqueda o elegí otra comida.':'Creá un plato para tener opciones listas cuando las necesites.')+'</p></div>';
 }
@@ -1035,7 +1067,7 @@ function handleDishLibraryAction(event){
   openDish(dish.meal,dish);
   return;
  }
- registerSavedDish(dish,k(picked));
+ toggleSavedDish(dish,k(picked));
 }
 function handleSavedDishInMeal(event){
  var button=event.target&&event.target.closest&&event.target.closest('button[data-log-meal-dish],button[data-add-dish]');
@@ -1045,7 +1077,7 @@ function handleSavedDishInMeal(event){
  var id=button.dataset.logMealDish;
  var dish=dishList().find(function(item){return String(item.id)===String(id)});
  if(!dish){toast('No encontramos ese plato. Probá desde Mis platos.');return}
- registerSavedDish(dish,k(picked));
+ toggleSavedDish(dish,k(picked));
 }
 function dishSummary(d){
  var meal=meals.find(function(m){return m.id===d.meal});
@@ -1283,7 +1315,7 @@ function renderMeals(){
     '<div class="meal-dish-opts">'+(savedOptions.length?savedOptions.map(function(d){
      var eaten=!!(entry._dishes||[]).some(function(existing){return existing.id===d.id});
      return '<div class="meal-dish-opt"><span>'+safe(d.name)+'</span><button type="button" class="pill" data-log-meal-dish="'+safe(d.id)+'" '+
-      (eaten||todayKey>calendarToday?'disabled':'')+'>'+(eaten?'✓ Registrado':todayKey>calendarToday?'Fecha futura':'Comí esto')+'</button></div>';
+      (todayKey>calendarToday&&!eaten?'disabled':'')+' aria-pressed="'+String(eaten)+'" aria-label="'+(eaten?'Deshacer registro de ':'Registrar ')+safe(d.name)+'">'+(eaten?'✓ Ya lo comí':todayKey>calendarToday?'Fecha futura':'Comí esto')+'</button></div>';
     }).join(''):'<div class="meal-dish-empty">Todavía no tenés opciones para esta comida. <button class="pill" type="button" data-add-dish="'+m.id+'">+ Crear plato para mi lista</button></div>')+
    '</div></details>'+
    (entry._dishes||[]).map(function(d){return '<div class="dish-log">✓ Registrado: '+safe(d.name)+'</div>'}).join('')+
@@ -1317,6 +1349,7 @@ function renderFruit(){
    var day=ensure(picked),step=+btn.dataset.step,old=dailyFruit(day);
    if(!day.meals.daily)day.meals.daily={};
    day.meals.daily.fruit=old>=step?step-1:step;
+   if(Number.isFinite(day.meals.daily._dishFruitBase))day.meals.daily._dishFruitBase=Math.max(0,day.meals.daily.fruit-fruitFromLoggedDishes(day));
    if(day.meals.breakfast)delete day.meals.breakfast.fruit;
    if(day.meals.snack)delete day.meals.snack.fruit;
    markDay(picked);render();
