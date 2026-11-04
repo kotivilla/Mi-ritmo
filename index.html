@@ -346,11 +346,18 @@ function markDay(d){if(!user||!db){syncLabel('Iniciá sesión para guardar en Su
 function pendingKey(){return 'mi-ritmo-pending-'+(user&&user.id)}
 function savePending(){if(user)try{localStorage.setItem(pendingKey(),JSON.stringify(Array.from(offlinePending)))}catch(e){}}
 async function pushDay(key){if(!user||!db)return;var row=state.days[key];if(!row)return;
- var payload={user_id:user.id,day:key,meals:row.meals||{},gym:!!row.gym,note:(row.note||'').slice(0,1500),updated_at:new Date().toISOString()};
+ var payload={user_id:user.id,day:key,meals:row.meals||{},gym:!!row.gym,gym_session:(state.training&&state.training.workouts&&state.training.workouts[key])||null,note:(row.note||'').slice(0,1500),updated_at:new Date().toISOString()};
  try{var result=await db.from('daily_logs').upsert(payload,{onConflict:'user_id,day'});
  if(result.error)throw result.error;offlinePending.delete(key);savePending();syncLabel(offlinePending.size?'Cambios pendientes de sincronizar':'Guardado en Supabase');}
  catch(e){syncLabel('Sin conexión · pendiente de guardar');}}
-async function pushSettings(){if(!db||!user)return;try{var p={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,updated_at:new Date().toISOString()};var r=await db.from('profile_settings').upsert(p,{onConflict:'user_id'});if(r.error)throw r.error;syncLabel('Guardado en Supabase')}catch(e){syncLabel('Configuración guardada solo en este dispositivo')}}
+function routineDirtyKey(){return 'mi-ritmo-routines-dirty-'+(user&&user.id)}
+async function pushSettings(){if(!db||!user)return;
+ try{
+ var row={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,routine_days:trainingData().routineDays,updated_at:new Date().toISOString()};
+ var res=await db.from('profile_settings').upsert(row,{onConflict:'user_id'});if(res.error)throw res.error;
+ localStorage.removeItem(routineDirtyKey());syncLabel('Guardado en Supabase');
+ }catch(e){localStorage.setItem(routineDirtyKey(),'1');syncLabel('Configuración pendiente de sincronizar')}
+}
 function groupButtons(meal,group,value){var buttons='';for(var i=1;i<=group.target;i++){buttons+='<button type="button" class="tick'+(value>=i?' selected':'')+'" data-meal="'+meal.id+'" data-group="'+group.id+'" data-step="'+i+'" aria-pressed="'+(value>=i)+'" aria-label="'+safe(group.name)+' '+i+' de '+group.target+'">'+(value>=i?'✓':(group.target>1?i:'○'))+'</button>'}return buttons}
 // Activate only after the reviewed dish_library schema has been approved and applied.
 var DISH_CLOUD_ENABLED=false,dishSyncRunning=false;
@@ -511,7 +518,7 @@ function trainingData(){return TrainingModel.migrate(state.training)}
 function resetTrainingOwner(){var owner=user&&user.id||'guest';if(owner!==trainingOwner){trainingDrafts={};selectedRoutine=null;trainingOwner=owner}}
 function activeRoutine(){var days=trainingData().routineDays.filter(function(d){return !d.archived});return days.find(function(d){return d.id===selectedRoutine})}
 function routineRows(){var day=activeRoutine();if(!day)return [];if(!trainingDrafts[day.id])trainingDrafts[day.id]=JSON.parse(JSON.stringify(day.rows));return trainingDrafts[day.id]}
-function persistTraining(data){var next=JSON.parse(JSON.stringify(state));next.training=data;localStorage.setItem(storeKey,JSON.stringify(next));state=next}
+function persistTraining(data){state.training=data;saveCache();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}}
 function trainingMessage(text){$('training-feedback').textContent=text}
 function renderTraining(){
  resetTrainingOwner();var data=trainingData(),day=activeRoutine();selectedRoutine=day?day.id:null;
@@ -738,10 +745,42 @@ async function logout(){
  showAuth('login');toast('Sesión cerrada');
 }
 async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.clear();if(u){storeKey='mi-ritmo-data-v2-'+u.id;state=loadCache(storeKey);try{var pending=JSON.parse(localStorage.getItem(pendingKey())||'[]');offlinePending=new Set(Array.isArray(pending)?pending:[])}catch(e){}syncLabel('Sincronizando con Supabase...');
- try{var results=await Promise.all([db.from('daily_logs').select('day,meals,gym,note').order('day',{ascending:false}).limit(1200),db.from('profile_settings').select('gym_target,gym_days').maybeSingle()]);
- if(results[0].error)throw results[0].error;var cached=state.days,remote={};(results[0].data||[]).forEach(function(r){remote[r.day]={meals:r.meals||{},gym:!!r.gym,note:r.note||''}});
- state.days=Object.assign({},cached,remote);offlinePending.forEach(function(key){if(cached[key])state.days[key]=cached[key]});
- if(results[1].data&&!results[1].error)state.settings={gymTarget:results[1].data.gym_target,gymDays:results[1].data.gym_days||[1,3,5]};
+ try{
+ var results=await Promise.all([
+  db.from('daily_logs').select('day,meals,gym,note,gym_session').order('day',{ascending:false}).limit(1200),
+  db.from('profile_settings').select('gym_target,gym_days,routine_days').maybeSingle()
+ ]);
+ if(results[0].error)throw results[0].error;
+ var cached=state.days,localTraining=trainingData(),remote={},workouts=Object.assign({},localTraining.workouts),remoteSessions=new Set();
+ var importedKey='mi-ritmo-gym-import-v1-'+u.id,firstImport=localStorage.getItem(importedKey)!=='1';
+ (results[0].data||[]).forEach(function(row){
+   remote[row.day]={meals:row.meals||{},gym:!!row.gym,note:row.note||''};
+   if(offlinePending.has(row.day))return;
+   if(row.gym_session&&Array.isArray(row.gym_session.exercises)){workouts[row.day]=row.gym_session;remoteSessions.add(row.day)}
+   else if(!firstImport)delete workouts[row.day];
+ });
+ state.days=Object.assign({},cached,remote);
+ offlinePending.forEach(function(key){if(cached[key])state.days[key]=cached[key]});
+ if(firstImport){
+  Object.keys(localTraining.workouts).forEach(function(date){
+   if(!remoteSessions.has(date)&&!offlinePending.has(date)){
+    workouts[date]=localTraining.workouts[date];
+    if(!state.days[date])state.days[date]={meals:{},gym:false,note:''};
+    state.days[date].gym=true;offlinePending.add(date);
+   }
+  });
+  savePending();localStorage.setItem(importedKey,'1');
+ }
+ state.training={routineDays:localTraining.routineDays,workouts:workouts};
+ var profile=results[1].data;
+ if(profile&&!results[1].error){
+  state.settings={gymTarget:profile.gym_target,gymDays:profile.gym_days||[1,3,5]};
+  var remoteRoutine=Array.isArray(profile.routine_days)?profile.routine_days:[];
+  var dirty=localStorage.getItem(routineDirtyKey())==='1';
+  if(remoteRoutine.length&&!dirty)state.training.routineDays=remoteRoutine;
+  else if(!remoteRoutine.length&&state.training.routineDays.length)dirty=true;
+  if(dirty)pushSettings();
+ }else if(state.training.routineDays.length){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}
  saveCache();syncLabel('Guardado en Supabase');offlinePending.forEach(function(key){pushDay(key)});
  }catch(e){syncLabel('Sin conexión · datos guardados en este teléfono');toast('No se pudo sincronizar: '+(e.message||'problema de red'))}
  }else{storeKey=GUEST;state=loadCache(GUEST);syncLabel('Guardado en este dispositivo')}
