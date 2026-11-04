@@ -559,7 +559,7 @@ function trainingData(){return TrainingModel.migrate(state.training)}
 function resetTrainingOwner(){var owner=user&&user.id||'guest';if(owner!==trainingOwner){trainingDrafts={};selectedRoutine=null;trainingOwner=owner}}
 function activeRoutine(){var days=trainingData().routineDays.filter(function(d){return !d.archived});return days.find(function(d){return d.id===selectedRoutine})}
 function routineRows(){var day=activeRoutine();if(!day)return [];if(!trainingDrafts[day.id])trainingDrafts[day.id]=JSON.parse(JSON.stringify(day.rows));return trainingDrafts[day.id]}
-function persistTraining(data){state.training=data;saveCache();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}}
+function persistTraining(data){state.training=data;saveCache();renderGymDashboard();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}}
 function trainingMessage(text){$('training-feedback').textContent=text}
 function renderTraining(){
  resetTrainingOwner();var data=trainingData(),day=activeRoutine();selectedRoutine=day?day.id:null;
@@ -673,7 +673,12 @@ function renderGym(){
  }
  $('gymscore').textContent=sum+'/'+target;$('planned-text').textContent=planned.map(function(i){return days[i]}).join(' · ')||'Sin días predeterminados';
 }
-function openRoutineSettings(dayId){if(!user){openAccount();return}if(dayId){selectedRoutine=dayId;renderTraining()}$('gym-plan-dialog').showModal()}
+function openRoutineSettings(dayId){
+ if(!user){openAccount();return}
+ if(dayId)selectedRoutine=dayId;
+ else if(!activeRoutine()){var days=trainingData().routineDays.filter(function(d){return !d.archived});selectedRoutine=days.length?days[0].id:null}
+ renderTraining();$('gym-plan-dialog').showModal();
+}
 function renderGymDashboard(){
  var d=trainingData(),active=d.routineDays.filter(function(row){return !row.archived&&row.rows.length>0});
  var target=$('gym-plan-overview');
