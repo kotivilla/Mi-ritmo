@@ -196,12 +196,16 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .insights-recovery-form button{grid-column:1/-1}
 .nav-tab{gap:6px;font-size:12px}.nav-tab svg{width:19px;height:19px}
 }
+
+.insights-block-compare{border-top:1px solid var(--border);margin-top:18px;padding-top:16px}
+.insights-block-compare>b{display:block;font-size:13px;margin-bottom:8px}
+.insights-block-compare .insights-muscle-row{margin:8px 0}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
-<script src="/insights-model.js?v=1"></script>
-<script src="/insights-ui.js?v=1"></script>
+<script src="/insights-model.js?v=2"></script>
+<script src="/insights-ui.js?v=2"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -445,6 +449,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  </form>
  <p class="mini" id="insights-block-note" role="status"></p>
  <div id="insights-blocks-list" class="insights-blocks-list"></div>
+ <div id="insights-blocks-compare"></div>
 </section>
 </div></dialog>
 <dialog id="gym-session-dialog" aria-labelledby="gym-session-title"><form id="gym-session-form" class="dialog-body">
