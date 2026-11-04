@@ -13,7 +13,7 @@
 <style>
 :root{--green:#17664b;--dark:#163329;--light:#ecf5ee;--bg:#f5f7f2;--white:#fff;--muted:#77877b;--border:#e2eae1;--orange:#bc7e2c;--red:#b75050}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--dark);-webkit-font-smoothing:antialiased}button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #96cdb3;outline-offset:2px}
-.container{max-width:1100px;margin:auto;padding:22px 24px 100px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 22px;border-bottom:1px solid var(--border)}.logo{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:850;letter-spacing:-.8px}.logo-icon{display:grid;place-items:center;background:var(--green);border-radius:12px;color:white;width:38px;height:38px;font-size:21px}.top-right{display:flex;gap:8px;align-items:center}.sync{font-size:12px;color:var(--muted);max-width:220px;text-align:right}.pill{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;background:white;border:1px solid var(--border);border-radius:11px;font-size:12px;font-weight:750;color:var(--dark)}.pill.primary{background:var(--green);color:white;border-color:var(--green)}.eyebrow{font-size:11px;font-weight:850;letter-spacing:1.3px;color:var(--green);text-transform:uppercase;margin:0 0 9px}.intro{padding:30px 0 23px}.intro h1{font-size:clamp(29px,4vw,42px);letter-spacing:-1.6px;line-height:1.1;margin:0 0 9px}.intro p:last-child{color:var(--muted);margin:0;font-size:14px}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.9fr);gap:20px;align-items:start}.maincol,.sidecol{display:flex;flex-direction:column;gap:18px}.panel{border:1px solid var(--border);background:white;border-radius:20px;padding:21px;box-shadow:0 7px 25px rgba(25,57,39,.025)}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.heading h2{font-size:19px;letter-spacing:-.5px;margin:0}.sub{font-size:12px;color:var(--muted)}.daynav{display:flex;gap:7px;align-items:center}.square{height:35px;width:35px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--dark);font-size:19px}.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:20px 0}.weekdate{border:1px solid transparent;background:#f5f8f4;border-radius:13px;min-width:0;padding:10px 2px;color:#6c7f70}.weekdate.active{background:var(--green);color:white}.weekdate span{display:block;font-size:11px;font-weight:700}.weekdate strong{display:block;font-size:18px;margin:3px 0}.weekdate i{display:block;width:5px;height:5px;border-radius:50%;margin:auto;background:#c6d5c7}.weekdate.has-entry i{background:#62a884}.weekdate.active i{background:white}.mealgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.meal{border:1px solid var(--border);border-radius:16px;padding:17px;background:#fff}.meal.done{border-color:#b3dac2;background:#fbfefb}.mealhead{display:flex;justify-content:space-between;gap:8px;margin-bottom:15px}.mealname{display:flex;gap:8px;align-items:center;font-size:16px;font-weight:800;letter-spacing:-.35px}.mealname span{font-size:20px}.meal-count{font-size:12px;font-weight:800;color:var(--green);white-space:nowrap}.track{height:6px;background:#edf2ed;border-radius:12px;overflow:hidden;margin-bottom:13px}.track div{height:100%;background:#55a57b;border-radius:12px}.group{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 0;border-bottom:1px solid #f0f3f0}.group:last-child{border-bottom:0}.group-title{min-width:0}.group-title b{display:block;font-size:13px}.group-title small{display:block;color:var(--muted);font-size:11px;max-width:150px}.ticks{display:flex;gap:5px;flex-shrink:0}.tick{width:29px;height:29px;border-radius:9px;border:1px solid #d7e4d9;background:#f7faf7;color:#91a99b;font-weight:850}.tick.selected{color:white;background:var(--green);border-color:var(--green)}.guide{margin-top:13px;border-top:1px solid #ecf0eb;padding-top:10px;color:var(--muted);font-size:12px}.guide summary{color:var(--green);font-weight:750;cursor:pointer}.guide p{margin:9px 0 0}.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.score{background:#f6f9f5;border-radius:15px;padding:16px}.score small{display:block;font-size:12px;color:var(--muted);font-weight:700}.score strong{display:block;font-size:29px;letter-spacing:-1px;line-height:1.3}.score span{font-size:12px;color:var(--muted)}.notice{background:#eef5ee;border-radius:13px;padding:13px;font-size:12px;color:#516658}.barweek{display:flex;align-items:flex-end;gap:9px;height:110px;margin:20px 0 5px}.bcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;height:100%}.btrack{width:100%;max-width:28px;height:85px;background:#edf3ed;border-radius:7px;display:flex;align-items:flex-end;overflow:hidden}.bfill{width:100%;background:#8bbea2;border-radius:7px}.bcol.today .bfill{background:var(--green)}.bcol small{font-size:11px;color:var(--muted)}.gymweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:19px 0}.gymday{text-align:center;min-width:0}.gymday span{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.gymday button{height:43px;width:100%;border:1px solid #e3ede2;background:#f6f9f5;border-radius:11px;color:#9db09e;font-size:20px}.gymday button.planned{border:1px dashed #84a790}.gymday button.checked{border:1px solid var(--green);background:var(--green);color:white}.gym-result{display:flex;align-items:center;justify-content:space-between;background:#f3f8f3;border-radius:13px;padding:14px;gap:9px}.gym-result strong{color:var(--green);font-size:23px}.note{resize:vertical;width:100%;border:1px solid var(--border);padding:12px;border-radius:12px;min-height:76px;color:var(--dark);background:#fff;margin-top:12px}.sep{border:0;border-top:1px solid var(--border);margin:20px 0}.mini{font-size:12px;color:var(--muted)}.account-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.toast{position:fixed;z-index:12;bottom:30px;left:50%;transform:translate(-50%,20px);background:var(--dark);color:white;padding:12px 19px;border-radius:13px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+.container{max-width:1100px;margin:auto;padding:22px 24px 100px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 22px;border-bottom:1px solid var(--border)}.logo{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:850;letter-spacing:-.8px}.logo-icon{display:grid;place-items:center;background:var(--green);border-radius:12px;color:white;width:38px;height:38px;font-size:21px}.top-right{display:flex;gap:8px;align-items:center}.sync{font-size:12px;color:var(--muted);max-width:220px;text-align:right}.pill{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;background:white;border:1px solid var(--border);border-radius:11px;font-size:12px;font-weight:750;color:var(--dark)}.pill.primary{background:var(--green);color:white;border-color:var(--green)}.eyebrow{font-size:11px;font-weight:850;letter-spacing:1.3px;color:var(--green);text-transform:uppercase;margin:0 0 9px}.intro{padding:30px 0 23px}.intro h1{font-size:clamp(29px,4vw,42px);letter-spacing:-1.6px;line-height:1.1;margin:0 0 9px}.intro p:last-child{color:var(--muted);margin:0;font-size:14px}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.9fr);gap:20px;align-items:start}.maincol,.sidecol{display:flex;flex-direction:column;gap:18px}.panel{border:1px solid var(--border);background:white;border-radius:20px;padding:21px;box-shadow:0 7px 25px rgba(25,57,39,.025)}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.heading h2{font-size:19px;letter-spacing:-.5px;margin:0}.sub{font-size:12px;color:var(--muted)}.daynav{display:flex;gap:7px;align-items:center}.square{height:35px;width:35px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--dark);font-size:19px}.weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:20px 0}.weekdate{border:1px solid transparent;background:#f5f8f4;border-radius:13px;min-width:0;padding:10px 2px;color:#6c7f70}.weekdate.active{background:var(--green);color:white}.weekdate span{display:block;font-size:11px;font-weight:700}.weekdate strong{display:block;font-size:18px;margin:3px 0}.weekdate i{display:block;width:5px;height:5px;border-radius:50%;margin:auto;background:#c6d5c7}.weekdate.has-entry i{background:#62a884}.weekdate.active i{background:white}.mealgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.meal{border:1px solid var(--border);border-radius:16px;padding:17px;background:#fff}.meal.done{border-color:#b3dac2;background:#fbfefb}.mealhead{display:flex;justify-content:space-between;gap:8px;margin-bottom:15px}.mealname{display:flex;gap:8px;align-items:center;font-size:16px;font-weight:800;letter-spacing:-.35px}.mealname span{font-size:20px}.meal-count{font-size:12px;font-weight:800;color:var(--green);white-space:nowrap}.track{height:6px;background:#edf2ed;border-radius:12px;overflow:hidden;margin-bottom:13px}.track div{height:100%;background:#55a57b;border-radius:12px}.group{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 0;border-bottom:1px solid #f0f3f0}.group:last-child{border-bottom:0}.group-title{min-width:0}.group-title b{display:block;font-size:13px}.group-title small{display:block;color:var(--muted);font-size:11px;max-width:150px}.ticks{display:flex;gap:5px;flex-shrink:0}.tick{width:29px;height:29px;border-radius:9px;border:1px solid #d7e4d9;background:#f7faf7;color:#91a99b;font-weight:850}.tick.selected{color:white;background:var(--green);border-color:var(--green)}.guide{margin-top:13px;border-top:1px solid #ecf0eb;padding-top:10px;color:var(--muted);font-size:12px}.guide summary{color:var(--green);font-weight:750;cursor:pointer}.guide p{margin:9px 0 0}.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.score{background:#f6f9f5;border-radius:15px;padding:16px}.score small{display:block;font-size:12px;color:var(--muted);font-weight:700}.score strong{display:block;font-size:29px;letter-spacing:-1px;line-height:1.3}.score span{font-size:12px;color:var(--muted)}.notice{background:#eef5ee;border-radius:13px;padding:13px;font-size:12px;color:#516658}.barweek{display:flex;align-items:flex-end;gap:9px;height:110px;margin:20px 0 5px}.bcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;height:100%}.btrack{width:100%;max-width:28px;height:85px;background:#eef1ef;border-radius:7px;display:flex;align-items:flex-end;overflow:hidden}.bfill{width:100%;background:#8bbea2;border-radius:7px}.bcol small{font-size:11px;color:var(--muted)}.gymweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:19px 0}.gymday{text-align:center;min-width:0}.gymday span{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.gymday button{height:43px;width:100%;border:1px solid #e3ede2;background:#f6f9f5;border-radius:11px;color:#9db09e;font-size:20px}.gymday button.planned{border:1px dashed #84a790}.gymday button.checked{border:1px solid var(--green);background:var(--green);color:white}.gym-result{display:flex;align-items:center;justify-content:space-between;background:#f3f8f3;border-radius:13px;padding:14px;gap:9px}.gym-result strong{color:var(--green);font-size:23px}.note{resize:vertical;width:100%;border:1px solid var(--border);padding:12px;border-radius:12px;min-height:76px;color:var(--dark);background:#fff;margin-top:12px}.sep{border:0;border-top:1px solid var(--border);margin:20px 0}.mini{font-size:12px;color:var(--muted)}.account-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.toast{position:fixed;z-index:12;bottom:30px;left:50%;transform:translate(-50%,20px);background:var(--dark);color:white;padding:12px 19px;border-radius:13px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
 dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px #193b2b35;width:min(460px,calc(100vw - 30px));padding:0;color:var(--dark)}dialog::backdrop{background:rgba(13,37,25,.45)}.dialog-body{padding:24px}.dialog-body h2{margin:0 0 8px;font-size:23px}.dialog-body p{font-size:13px;color:var(--muted)}.field{width:100%;padding:12px;border:1px solid #cdded2;border-radius:11px;margin:7px 0 13px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.dayprefs{display:flex;gap:6px;margin:10px 0 16px}.daypref{flex:1;min-width:0;padding:10px 1px;font-size:11px;font-weight:750;color:var(--muted);border:1px solid var(--border);border-radius:9px;background:#f6f8f5}.daypref.active{background:var(--green);border-color:var(--green);color:white}.stack{display:flex;gap:8px;flex-wrap:wrap}.linkish{background:none;border:0;padding:0;color:var(--green);font-size:12px;text-decoration:underline}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.sidecol{display:grid;grid-template-columns:1fr 1fr}.sidecol .panel:last-child{grid-column:1/-1}}
 @media(max-width:610px){.container{padding:14px 13px 88px}.top{padding-bottom:13px}.logo{font-size:19px}.logo-icon{width:34px;height:34px}.sync{display:none}.pill{padding:8px 10px}.intro{padding:24px 6px 17px}.intro h1{font-size:30px}.panel{padding:15px;border-radius:18px}.mealgrid{grid-template-columns:1fr}.meal{padding:15px}.sidecol{display:flex}.weekdays{gap:4px}.weekdate{padding:9px 0}.weekdate strong{font-size:17px}.group-title small{max-width:none}.tick{width:33px;height:33px}.score strong{font-size:27px}}
@@ -37,9 +37,9 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .gym-history{height:170px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding-top:12px;margin-bottom:10px}
 .gym-hcol{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
 .gym-hval{font-size:12px;font-weight:800;color:var(--green);height:19px}
-.gym-hbar{height:105px;max-width:52px;width:100%;display:flex;align-items:flex-end;overflow:hidden;border-radius:11px;background:#edf4ee}
+.gym-hbar{height:105px;max-width:52px;width:100%;display:flex;align-items:flex-end;overflow:hidden;border-radius:11px;background:#eef1ef}
 .gym-hfill{background:#91bea2;border-radius:9px 9px 0 0;width:100%;min-height:0}
-.gym-hcol.current .gym-hfill{background:var(--green)}
+
 .gym-hlabel{font-size:11px;color:var(--muted);white-space:nowrap}
 @media(max-width:610px){
  .nav-tab{min-height:51px}
@@ -74,13 +74,24 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 #daily-fruit{margin-top:14px}
 .daily-fruit{border:1px solid var(--border);border-radius:16px;padding:17px;background:#fff}
 .daily-fruit.done{border-color:#b3dac2;background:#fbfefb}
-.daily-fruit .mealhead{align-items:center;margin-bottom:7px}
-.fruit-count{font-size:12px;font-weight:850;color:var(--green)}
-.fruit-hint{color:var(--muted);font-size:12px;margin:0 0 15px}
-.fruit-controls{border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.fruit-controls b{font-size:13px}
+.daily-fruit .mealhead{align-items:center;margin-bottom:0;gap:10px}
+.daily-fruit .ticks{flex-shrink:0}
 @media(max-width:610px){.meal-summary{padding:16px 15px}.meal-body{padding:4px 15px 15px}.daily-fruit{padding:16px 15px}}
-</style>
+.dish-library-panel{grid-column:1/-1}
+.dish-label{display:block;font-size:13px;font-weight:750;margin-top:16px}
+.dish-list{display:grid;gap:10px}.dish-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--border);border-radius:13px;padding:13px}.dish-item>div{min-width:0;overflow-wrap:anywhere}.dish-item .pill{flex-shrink:0}.dish-item p{margin:6px 0 0}.dish-empty{padding:12px 0}.dish-subtitle{font-size:15px;margin:18px 0 0}.dish-portion{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}.dish-portion small{color:var(--muted)}.dish-portion input{width:72px;padding:9px;border:1px solid var(--border);border-radius:9px;font:inherit}.dish-actions{flex-wrap:wrap}.dish-actions .pill{flex:1;min-height:43px}.dish-tools{margin-top:14px;display:flex;flex-direction:column;gap:8px}.dish-log{font-size:12px;color:var(--muted);overflow-wrap:anywhere}#dish-dialog{max-height:90dvh;overflow:auto}#dish-review[hidden]{display:none}
+
+.food-results{max-height:250px;overflow:auto;border:1px solid var(--border);border-radius:12px}.food-option{display:flex;width:100%;align-items:center;justify-content:space-between;text-align:left;padding:12px;background:white;border:0;border-bottom:1px solid var(--border);font:inherit;color:var(--dark);gap:12px}.food-option:hover{background:#f0f6f1}.food-option small,.food-chosen small{display:block;font-size:12px;color:var(--muted);margin-top:4px}.food-chosen{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.food-chosen>div{flex:1;min-width:0;font-size:13px}.food-chosen input{width:62px;padding:8px;border:1px solid var(--border);border-radius:8px;font:inherit}.sr-food{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.training-exercise{min-width:0;border:1px solid var(--border);border-radius:13px;padding:13px;margin:14px 0}.training-exercise h3{font-size:15px;margin:0 0 12px;overflow-wrap:anywhere}.training-set{display:grid;grid-template-columns:35px minmax(0,1fr) minmax(0,1fr) 34px;align-items:center;gap:8px;margin:8px 0}.training-set input,.routine-values input{width:100%;min-width:0;border:1px solid var(--border);border-radius:8px;padding:9px;font:inherit}.training-labels{font-size:11px;color:var(--muted)}.routine-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:12px;font-size:12px}.routine-values input{margin-top:6px}.training-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.training-stats>div{background:#f6f9f5;padding:13px;border-radius:12px}.training-stats small,.training-stats span{display:block;font-size:12px;color:var(--muted)}.training-stats strong{display:block;font-size:25px;margin:6px 0}.training-table{overflow:auto;max-height:300px}.training-table table{width:100%;border-collapse:collapse;font-size:12px}.training-table td,.training-table th{text-align:left;padding:10px 7px;border-bottom:1px solid var(--border)}.training-empty{padding:18px 0}#routine-dialog{max-height:90dvh;overflow:auto}#strength-history svg{width:100%;max-height:240px}
+
+
+.routine-tabs{display:flex;gap:8px;overflow-x:auto;padding:20px 0 14px}.routine-tab{flex:0 0 auto;min-width:84px;border:1px solid var(--border);border-radius:12px;padding:10px 16px;background:#f6f9f5;color:var(--dark);font-weight:800}.routine-tab small{display:block;font-size:10px;font-weight:500;margin-top:4px;opacity:.75}.routine-tab.active{background:var(--green);border-color:var(--green);color:white}.routine-heading{margin:4px 0 14px}.routine-heading h3{font-size:16px;margin:0}.routine-remove{border:0;background:none;color:#a74646;font-size:12px;padding:8px}.exercise-row{display:grid;grid-template-columns:minmax(0,1fr) 48px 48px 58px 24px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid #edf1ee}.exercise-row input{min-width:0;width:100%;padding:10px 4px;border:1px solid var(--border);border-radius:8px;background:#f8faf8;font:inherit;font-size:13px;text-align:center;color:var(--dark)}.exercise-row input[type=text]{text-align:left;padding-left:8px;background:white}.exercise-row input[type=number]{appearance:textfield;-moz-appearance:textfield}.exercise-row input::-webkit-inner-spin-button{appearance:none}.exercise-columns{border:0;color:var(--muted);font-size:11px;padding:0;text-align:center}.exercise-columns span:first-child{text-align:left}.row-remove{border:0;background:none;color:#87978d;font-size:20px;padding:0;min-height:38px}.add-exercise{width:100%;border:1px dashed #c9dcd0;border-radius:10px;color:var(--green);background:#f8fbf8;padding:12px;margin-top:14px;font-weight:700}.routine-save{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.routine-placeholder{padding:30px 10px;text-align:center;font-size:13px;color:var(--muted);background:#f7faf7;border-radius:12px}#restore-routine[hidden],#routine-editor[hidden],#routine-empty[hidden]{display:none}@media(max-width:420px){.routine-panel{padding:16px}.exercise-row{grid-template-columns:minmax(0,1fr) 38px 38px 47px 20px;gap:4px}.exercise-row input{font-size:12px;padding:10px 2px}.routine-save{align-items:flex-start}.routine-save .mini{max-width:140px}.routine-tab{padding:10px 12px}}
+
+.exercise-group{border:1px solid var(--border);border-radius:14px;background:#f8faf8;padding:12px;margin-bottom:18px}.exercise-group-head{display:flex;align-items:center;gap:10px;padding-bottom:12px}.exercise-group-head input{min-width:0;flex:1;border:1px solid var(--border);border-radius:8px;background:white;color:var(--dark);font:inherit;font-size:14px;font-weight:750;padding:10px}.exercise-group-head button{width:26px;flex-shrink:0}.series-row{display:grid;grid-template-columns:40px minmax(0,1fr) minmax(0,1fr) 26px;align-items:center;gap:10px;margin:5px 0}.series-row input{width:100%;min-width:0;padding:9px 5px;border:1px solid #e1e8e2;border-radius:8px;background:white;color:var(--dark);font:inherit;font-size:14px;text-align:center;appearance:textfield;-moz-appearance:textfield}.series-row input::-webkit-inner-spin-button{appearance:none}.series-head{color:var(--muted);font-size:11px;text-align:center;margin-bottom:8px}.series-number{text-align:center;font-size:12px;font-weight:750;color:var(--green)}.add-series{border:0;background:transparent;color:var(--green);font-weight:700;font-size:12px;padding:10px 0 2px;cursor:pointer}.row-remove:disabled{opacity:.25;cursor:default}
+.exercise-equipment{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}.exercise-equipment select{min-width:0;flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--dark);font:inherit}.equipment-hint{font-size:11px;color:var(--muted);margin:8px 0 12px}.equipment-hint:empty{display:none}</style>
+<script src="/dish-model.js"></script>
+<script src="/food-catalog.js"></script>
+<script src="/training-model.js?v=5"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -93,39 +104,32 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <div id="nutrition-view" class="view layout">
  <main class="maincol">
   <section class="panel">
-   <div class="heading"><div><h2 id="day-title">Hoy</h2><div class="sub">Marcá lo que realmente comiste en cada grupo</div></div><div class="daynav"><button class="square" id="prev-day" aria-label="Día anterior">‹</button><button class="square" id="next-day" aria-label="Día siguiente">›</button></div></div>
+   <div class="heading"><div><h2 id="day-title"></h2></div><div class="daynav"><button class="square" id="prev-day" aria-label="Día anterior">‹</button><button class="square" id="next-day" aria-label="Día siguiente">›</button></div></div>
    <div class="weekdays" id="weekdays"></div>
    <div class="mealgrid" id="mealgrid"></div>
    <div id="daily-fruit" aria-label="Registro de frutas diarias"></div>
-   <p class="mini" style="margin:14px 0 0">Los grupos y cantidades están basados en tu guía de alimentación de marzo de 2025. Podés consultar alternativas en cada comida.</p>
-  </section>
-  <section class="panel">
-   <div class="heading"><h2>Notas del día</h2><span class="sub">Opcional</span></div>
-   <textarea class="note" id="day-note" maxlength="1500" placeholder="¿Cómo te sentiste? ¿Qué te resultó difícil o fácil hoy?"></textarea>
-   <div class="mini" id="note-status">Se guarda automáticamente.</div>
   </section>
  </main>
  <aside class="sidecol">
   <section class="panel">
-   <div class="heading"><h2>Resumen de hoy</h2><button class="pill" id="today-btn" type="button">Ir a hoy</button></div>
+   <div class="heading"><h2>Resumen de hoy</h2></div>
    <div class="scoregrid" style="margin-top:17px"><div class="score"><small>Grupos cumplidos</small><strong id="daily-pct">0%</strong><span id="daily-groups">0 de 14 grupos</span></div><div class="score"><small>Comidas completas</small><strong id="complete-meals">0/4</strong><span>Todos sus grupos</span></div></div>
-   <div class="notice">La idea es registrar avances reales, no buscar días perfectos. Cada grupo cuenta.</div>
   </section>
   <section class="panel">
    <div class="heading"><h2>Progreso semanal</h2><span class="sub" id="week-range"></span></div>
    <div class="barweek" id="barweek"></div>
    <p class="mini" id="weekdetail">Cada barra muestra los grupos cumplidos por día.</p>
    <hr class="sep">
-   <div class="heading"><h2>Últimos 30 días</h2><b id="month-pct" style="color:var(--green);font-size:24px">—</b></div><p class="mini" id="month-detail">Promedio de los días con registros.</p>
-  </section>
-  <section class="panel">
-   <div class="heading"><h2>Guardado de datos</h2><span class="sub" id="storage-state">En este dispositivo</span></div>
-   <p class="mini" id="account-description">Iniciá sesión para guardar tu progreso en Supabase y verlo desde otros dispositivos.</p>
-   <div class="stack"><button class="pill primary" id="connect-btn" type="button">Conectar Supabase</button><button class="pill" id="backup-btn" type="button">Exportar respaldo</button></div>
-   <p class="mini" id="import-hint" hidden>Tenés registros anteriores en este teléfono. Podés importarlos a tu cuenta.</p>
-   <button class="pill" id="import-previous" type="button" hidden>Importar registros anteriores</button>
+   <div class="heading"><h2>Últimos 30 días</h2><b id="month-pct" style="color:var(--green);font-size:24px">—</b></div>
   </section>
  </aside>
+  <section class="panel dish-library-panel" aria-labelledby="dish-library-title">
+   <div class="heading"><h2 id="dish-library-title">Mis platos</h2><button class="pill primary" id="new-dish" type="button">+ Agregar plato</button></div>
+   <label class="dish-label" for="dish-library-meal">Comida</label><select class="field" id="dish-library-meal"><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
+   <p class="mini">Guardá ideas o registrá un plato en la fecha seleccionada.</p>
+   <div id="dish-library-list" class="dish-list"></div>
+   <p class="mini" id="dish-storage-note">Tus platos se guardan en este dispositivo, asociados a tu cuenta.</p>
+  </section>
 </div>
 
 <div id="gym-view" class="view layout" hidden>
@@ -138,7 +142,26 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <p class="sub">Tocá cada día para registrar si fuiste al gimnasio.</p>
    <div class="gymweek" id="gymweek"></div>
    <div class="gym-result"><div><b>Objetivo semanal</b><div class="mini" id="planned-text">Lun · Mié · Vie</div></div><strong id="gymscore">0/3</strong></div>
-   <button class="pill" type="button" id="gym-this-week" style="margin-top:13px">Volver a esta semana</button>
+  </section>
+  <section class="panel routine-panel" aria-labelledby="training-title">
+   <div class="heading"><h2 id="training-title">Mi rutina</h2><button class="pill" id="add-routine-day" type="button">+ Agregar día</button></div>
+   <div id="routine-tabs" class="routine-tabs" aria-label="Días de rutina"></div>
+   <p class="mini" id="routine-empty" hidden>No hay días en tu rutina. Agregá uno para empezar.</p>
+   <div id="routine-editor" hidden>
+    <div class="heading routine-heading"><h3 id="routine-current-name"></h3><button class="routine-remove" id="remove-routine-day" type="button">Quitar día</button></div>
+    <form id="routine-form">
+     <div id="training-exercises"></div>
+     <button class="add-exercise" id="add-routine-exercise" type="button">+ Agregar ejercicio</button>
+     <div class="routine-save"><span class="mini">Repeticiones y peso por serie.</span><button class="pill primary" type="submit">Guardar rutina</button></div>
+    </form>
+   </div>
+   <p id="training-feedback" class="mini" role="status" aria-live="polite"></p>
+   <button class="pill" id="restore-routine" type="button" hidden>Recuperar día</button>
+  </section>
+  <section class="panel" aria-labelledby="strength-title">
+   <h2 id="strength-title">Evolución de pesos</h2>
+   <label class="dish-label" for="strength-exercise">Ejercicio</label><select class="field" id="strength-exercise"></select>
+   <div id="strength-history"></div>
   </section>
   <section class="panel">
    <div class="heading"><div><h2>Evolución del gimnasio</h2><div class="sub">Entrenamientos por semana</div></div><span class="sub">Últimas 6 semanas</span></div>
@@ -148,15 +171,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  </main>
  <aside class="sidecol">
   <section class="panel">
-   <div class="heading"><h2>Tu progreso</h2><span class="sub">Semana seleccionada</span></div>
-   <div class="gym-bigscore" id="gym-progress-pct">0%</div>
-   <div class="track gym-score-track"><div id="gym-progress-track" style="width:0%"></div></div>
-   <p class="mini" id="gym-target-status">Te quedan 3 entrenamientos para cumplir el objetivo.</p>
-   <hr class="sep">
-   <div class="heading"><div><b>Últimos 30 días</b><div class="mini">Entrenamientos registrados</div></div><strong class="gym-month" id="gym-month-count">0</strong></div>
-  </section>
-  <section class="panel">
-   <div class="heading"><h2>Tu rutina</h2><span class="sub">Personalizable</span></div>
+   <div class="heading"><h2>Objetivo semanal</h2><span class="sub">Personalizable</span></div>
    <p class="mini">Configurá los días habituales y cuántas veces querés entrenar por semana.</p>
    <div class="routine-card"><span>Objetivo</span><b id="gym-settings-summary">3 veces por semana</b></div>
    <button class="pill primary" type="button" id="gym-settings-btn">⚙ Editar objetivo</button>
@@ -226,6 +241,25 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <label for="gym-target"><b>Entrenamientos por semana</b></label><input id="gym-target" type="number" min="1" max="7" class="field" value="3">
 <b>Días planificados</b><div id="dayprefs" class="dayprefs"></div>
 <div class="actions"><button class="pill" data-close="settings-dialog" type="button">Cancelar</button><button class="pill primary" id="save-settings" type="button">Guardar plan</button></div></div></dialog>
+<dialog id="dish-dialog" aria-labelledby="dish-dialog-title"><form id="dish-form" class="dialog-body">
+ <div class="heading"><h2 id="dish-dialog-title">Agregar plato</h2><button class="square" type="button" data-close="dish-dialog" aria-label="Cerrar plato">×</button></div>
+ <label class="dish-label" for="dish-meal">¿Para qué comida?</label><select class="field" id="dish-meal"><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
+ <label class="dish-label" for="food-search">Buscar alimentos</label><input class="field" type="search" id="food-search" placeholder="Huevo, tomate, arroz, yogur…" autocomplete="off">
+ <label class="dish-label" for="food-filter">Grupo</label><select class="field" id="food-filter"><option value="">Todos los grupos</option value="carb">Hidratos</option><option value="protein">Proteínas</option><option value="veg">Verduras y vegetales</option><option value="fruit">Frutas</option><option value="fat">Grasas</option><option value="other">Extras y bebidas</option></select>
+ <p class="mini" id="food-count" aria-live="polite"></p><div id="food-results" class="food-results" aria-label="Catálogo de alimentos"></div>
+ <h3 class="dish-subtitle">En tu plato</h3><div id="food-selected" aria-live="polite"></div>
+ <div id="dish-review" hidden>
+  <label class="dish-label" for="dish-name">Nombre para tu lista</label><input id="dish-name" class="field" maxlength="120" required>
+  <p class="mini" id="dish-analysis-note"></p>
+  <h3 class="dish-subtitle">Aporte del plato</h3><p class="mini">Grupos de los alimentos seleccionados. Ajustá las porciones si hace falta.</p>
+  <div id="dish-portions"></div><p class="mini" id="dish-result" aria-live="polite"></p>
+  <p class="mini" id="dish-date"></p>
+  <div class="actions dish-actions"><button class="pill" id="dish-save-only" type="submit" value="save">Solo guardar plato</button><button class="pill primary" id="dish-eat" type="submit" value="eat">Guardar y registrar</button></div>
+ </div>
+ <p id="dish-feedback" class="mini" role="status" aria-live="polite"></p>
+</form></dialog>
+
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function(){
@@ -265,6 +299,12 @@ function plus(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
 function monday(d){return plus(d,-((d.getDay()+6)%7))}
 function keyDay(d){return state.days[k(d)]||{meals:{},gym:false,note:''}}
 function ensure(d){var key=k(d);if(!state.days[key])state.days[key]={meals:{},gym:false,note:''};if(!state.days[key].meals)state.days[key].meals={};return state.days[key]}
+// Umbrales compartidos por todas las barras, según el porcentaje mostrado.
+function progressColor(percent,hasData){
+ if(!hasData)return '#dce2df';
+ var pct=Math.round(percent);
+ return pct<40?'#dc4545':pct<60?'#ed8b23':pct<80?'#e4bd28':'#24966b';
+}
 function cap(v,max){var n=Number(v)||0;return Math.max(0,Math.min(max,n))}
 function dailyFruit(item){
  var data=(item&&item.meals)||{};
@@ -279,7 +319,7 @@ function countDay(d){var item=keyDay(d),points=0,total=0,complete=0,any=false;
 function weeklyGym(d){var start=monday(d),sum=0;for(var i=0;i<7;i++)if(keyDay(plus(start,i)).gym)sum++;return sum}
 function loadCache(key){try{var obj=JSON.parse(localStorage.getItem(key)||'null');if(obj&&obj.days&&obj.settings)return obj}catch(e){}return defaultState()}
 function saveCache(){try{localStorage.setItem(storeKey,JSON.stringify(state))}catch(e){}}
-function syncLabel(msg){$('sync-label').textContent=msg;$('storage-state').textContent=msg}
+function syncLabel(msg){$('sync-label').textContent=msg}
 function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show')},3100)}
 function safe(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function markDay(d){if(!user||!db){syncLabel('Iniciá sesión para guardar en Supabase');openAccount();return}var key=k(d);saveCache();offlinePending.add(key);savePending();syncLabel('Guardando en Supabase...');clearTimeout(queueTimers[key]);queueTimers[key]=setTimeout(function(){pushDay(key)},550)}
@@ -292,6 +332,105 @@ async function pushDay(key){if(!user||!db)return;var row=state.days[key];if(!row
  catch(e){syncLabel('Sin conexión · pendiente de guardar');}}
 async function pushSettings(){if(!db||!user)return;try{var p={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,updated_at:new Date().toISOString()};var r=await db.from('profile_settings').upsert(p,{onConflict:'user_id'});if(r.error)throw r.error;syncLabel('Guardado en Supabase')}catch(e){syncLabel('Configuración guardada solo en este dispositivo')}}
 function groupButtons(meal,group,value){var buttons='';for(var i=1;i<=group.target;i++){buttons+='<button type="button" class="tick'+(value>=i?' selected':'')+'" data-meal="'+meal.id+'" data-group="'+group.id+'" data-step="'+i+'" aria-pressed="'+(value>=i)+'" aria-label="'+safe(group.name)+' '+i+' de '+group.target+'">'+(value>=i?'✓':(group.target>1?i:'○'))+'</button>'}return buttons}
+// Activate only after the reviewed dish_library schema has been approved and applied.
+var DISH_CLOUD_ENABLED=false,dishSyncRunning=false;
+async function syncDishLibrary(){
+ if(!DISH_CLOUD_ENABLED||!db||!user||dishSyncRunning)return;
+ dishSyncRunning=true;var owner=user.id,cacheKey=storeKey;
+ function stillCurrent(){return user&&user.id===owner&&storeKey===cacheKey}
+ try{
+  var pending=dishList().filter(function(d){return d._pending});
+  for(var i=0;i<pending.length;i++){
+   var dish=pending[i],payload={id:dish.id,user_id:owner,meal:dish.meal,name:dish.name,description:dish.description,portions:dish.portions,updated_at:dish.updated_at};
+   var saved=await db.from('dish_library').upsert(payload,{onConflict:'id'});if(saved.error)throw saved.error;
+   if(!stillCurrent())return;
+   var local=dishList().find(function(d){return d.id===dish.id});if(local&&local.updated_at===dish.updated_at){delete local._pending;saveCache()}
+  }
+  var response=await db.from('dish_library').select('id,meal,name,description,portions,updated_at').eq('user_id',owner).order('updated_at',{ascending:false});
+  if(response.error)throw response.error;if(!stillCurrent())return;
+  var merged=new Map();(response.data||[]).forEach(function(d){merged.set(d.id,d)});
+  dishList().forEach(function(d){if(d._pending||!merged.has(d.id))merged.set(d.id,d)});
+  state.dishes=Array.from(merged.values());saveCache();renderDishLibrary();
+  $('dish-storage-note').textContent=dishList().some(function(d){return d._pending})?'Hay platos pendientes de sincronizar.':'Platos guardados en tu cuenta.';
+ }catch(e){if(stillCurrent())$('dish-storage-note').textContent='Platos guardados en este dispositivo. Sincronización pendiente.'}
+ finally{dishSyncRunning=false}
+}
+
+var dishDraft=null;
+function dishMeal(){return meals.find(function(m){return m.id===$('dish-meal').value})}
+function dishList(){return Array.isArray(state.dishes)?state.dishes:[]}
+function renderDishLibrary(){
+ var meal=$('dish-library-meal').value,items=dishList().filter(function(d){return d.meal===meal});
+ $('dish-library-list').innerHTML=items.length?items.map(function(d){return '<article class="dish-item"><div><b>'+safe(d.name)+'</b><p class="mini">'+safe(dishSummary(d))+'</p></div><button class="pill" type="button" data-dish-id="'+safe(d.id)+'">Ver / usar</button></article>'}).join(''):'<p class="mini dish-empty">Todavía no tenés platos guardados para esta comida.</p>';
+ $('dish-library-list').querySelectorAll('[data-dish-id]').forEach(function(b){b.addEventListener('click',function(){var d=dishList().find(function(x){return x.id===b.dataset.dishId});if(d)openDish(d.meal,d)})});
+}
+function dishSummary(d){var meal=meals.find(function(m){return m.id===d.meal});return meal.groups.concat([{id:'fruit',name:'Frutas',target:2}]).filter(function(g){return Number(d.portions[g.id])>0}).map(function(g){return g.name+': '+d.portions[g.id]+'/'+g.target}).join(' · ')||'Sin grupos asignados'}
+function openDish(meal,dish){
+ if(!user){openAccount();return}
+ dishDraft={id:dish?dish.id:null,date:k(picked),owner:user.id,selected:dish&&dish.portions&&dish.portions._ingredients?JSON.parse(JSON.stringify(dish.portions._ingredients)):[]};
+ $('dish-form').reset();$('dish-meal').value=meal;$('dish-name').value=dish?dish.name:'';
+ $('dish-feedback').textContent='';$('dish-review').hidden=true;$('dish-name').required=false;
+ $('dish-dialog-title').textContent=dish?'Tu plato':'Elegir alimentos';
+ renderFoodCatalog();renderSelectedFoods(false);
+ if(dish)showDishReview(dish.portions,['Porciones guardadas. Podés ajustarlas antes de registrar.']);
+ $('dish-dialog').showModal();
+}
+function renderFoodCatalog(){
+ var items=FoodCatalog.search($('food-search').value,$('food-filter').value);
+ $('food-count').textContent=items.length+' de '+FoodCatalog.items.length+' alimentos';
+ $('food-results').innerHTML=items.length?items.map(function(f){return '<button type="button" class="food-option" data-food="'+f.id+'"><span>'+safe(f.name)+'<small>'+safe(FoodCatalog.labels[f.group])+'</small></span><span aria-hidden="true">＋</span><span class="sr-food">Agregar</span></button>'}).join(''):'<p class="mini">No hay coincidencias. Probá con otro nombre o grupo.</p>';
+ $('food-results').querySelectorAll('[data-food]').forEach(function(b){b.addEventListener('click',function(){var found=dishDraft.selected.find(function(x){return x.id===b.dataset.food});if(found)found.quantity++;else dishDraft.selected.push({id:b.dataset.food,quantity:1});renderSelectedFoods(true)})});
+}
+function selectedFoodDescription(){return dishDraft.selected.map(function(row){var f=FoodCatalog.items.find(function(x){return x.id===row.id});return f?row.quantity+' '+FoodCatalog.serving(f,$('dish-meal').value).unit+' · '+f.name:''}).filter(Boolean).join('; ')}
+function renderSelectedFoods(recalculate){
+ $('food-selected').innerHTML=dishDraft.selected.length?dishDraft.selected.map(function(row){var f=FoodCatalog.items.find(function(x){return x.id===row.id});if(!f)return '';return '<div class="food-chosen"><div><b>'+safe(f.name)+'</b><small>'+safe(FoodCatalog.labels[f.group])+' · '+safe(FoodCatalog.serving(f,$('dish-meal').value).unit)+'</small></div><input type="number" min="0.25" max="20" step="0.25" value="'+row.quantity+'" data-food-quantity="'+f.id+'" aria-label="Cantidad de '+safe(f.name)+'"><button type="button" class="pill" data-remove-food="'+f.id+'" aria-label="Quitar '+safe(f.name)+'">×</button></div>'}).join(''):'<p class="mini">Agregá alimentos del catálogo para armar tu plato.</p>';
+ $('food-selected').querySelectorAll('[data-remove-food]').forEach(function(b){b.addEventListener('click',function(){dishDraft.selected=dishDraft.selected.filter(function(x){return x.id!==b.dataset.removeFood});renderSelectedFoods(true)})});
+ $('food-selected').querySelectorAll('[data-food-quantity]').forEach(function(input){input.addEventListener('change',function(){var n=Number(input.value);if(!Number.isFinite(n)||n<0.25||n>20||n*4%1){input.reportValidity();return}dishDraft.selected.find(function(x){return x.id===input.dataset.foodQuantity}).quantity=n;refreshFoodPortions()})});
+ if(recalculate)refreshFoodPortions();
+}
+function refreshFoodPortions(){
+ if(!dishDraft.selected.length){$('dish-review').hidden=true;$('dish-name').required=false;return}
+ if(!$('dish-name').value.trim()||$('dish-name').value===dishDraft.generatedName)$('dish-name').value=dishDraft.generatedName=dishDraft.selected.map(function(row){return FoodCatalog.items.find(function(f){return f.id===row.id}).name}).join(' + ').slice(0,120);
+ showDishReview(FoodCatalog.totals(dishDraft.selected,$('dish-meal').value),['El grupo ya está definido. La cantidad representa porciones del plan, no gramos ni mililitros. Podés ajustar las marcas antes de registrar. Las frutas se suman a Frutas del día. Los extras y los grupos que no forman parte de esta comida no suman a su porcentaje.']);
+}
+function showDishReview(portions,notes){
+ $('dish-review').hidden=false;$('dish-name').required=true;$('dish-analysis-note').textContent=notes.join(' ');
+ var reviewGroups=dishMeal().groups.concat([{id:'fruit',name:'Frutas del día',target:2}]);
+ $('dish-portions').innerHTML=reviewGroups.map(function(g){return '<label class="dish-portion"><span>'+safe(g.name)+' <small>de '+g.target+'</small></span><input aria-label="Opciones de '+safe(g.name)+'" data-portion="'+g.id+'" type="number" min="0" max="'+g.target+'" step="0.25" value="'+cap(portions[g.id],g.target)+'" required></label>'}).join('');
+ $('dish-portions').querySelectorAll('input').forEach(function(input){input.addEventListener('input',updateDishResult)});
+ $('dish-date').textContent='Al registrar se suma a '+dishMeal().name.toLowerCase()+' del '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long',year:'numeric'}).format(fromKey(dishDraft.date))+'. Solo guardar no modifica tus registros.';
+ $('dish-eat').textContent=dishDraft.date===k(current)?'Comí esto hoy':'Registrar en esta fecha';updateDishResult();
+}
+function readDishPortions(){var p={};$('dish-portions').querySelectorAll('input').forEach(function(input){p[input.dataset.portion]=Number(input.value)});return p}
+function updateDishResult(){var meal=dishMeal(),p=readDishPortions(),entry=(keyDay(fromKey(dishDraft.date)).meals||{})[meal.id]||{};
+ var complete=[],pending=[];meal.groups.forEach(function(g){var n=Math.min(g.target,(Number(entry[g.id])||0)+(p[g.id]||0));(n>=g.target?complete:pending).push(g.name+(n<g.target?' ('+n+'/'+g.target+')':''))});
+ $('dish-result').textContent='Al sumarlo al día: '+(complete.length?'completos: '+complete.join(', ')+'. ':'')+(pending.length?'pendientes: '+pending.join(', ')+'.':'Todos los grupos completos.')+(p.fruit?' Frutas del día: '+Math.min(2,dailyFruit(keyDay(fromKey(dishDraft.date)))+p.fruit)+'/2.':'');
+}
+function saveDish(event){
+ event.preventDefault();if(!dishDraft||!user||user.id!==dishDraft.owner){$('dish-dialog').close();return}
+ if($('dish-review').hidden)return;
+ var name=$('dish-name').value.trim();if(!name){$('dish-feedback').textContent='Dale un nombre al plato.';return}
+ var meal=dishMeal(),p=readDishPortions();if(!dishDraft.selected.length&&!meal.groups.some(function(g){return p[g.id]>0})&&!p.fruit){$('dish-feedback').textContent='Asigná al menos un grupo al plato antes de guardar.';return}
+ p._ingredients=JSON.parse(JSON.stringify(dishDraft.selected));
+ var list=dishList().slice(),existing=list.find(function(d){return d.meal===meal.id&&DishModel.normalize(d.name)===DishModel.normalize(name)});
+ var id=existing?existing.id:dishDraft.id||crypto.randomUUID();
+ var dish={id:id,meal:meal.id,name:name,description:selectedFoodDescription().slice(0,1000),portions:p,updated_at:new Date().toISOString(),_pending:true};
+ var eat=event.submitter&&event.submitter.value==='eat',day=keyDay(fromKey(dishDraft.date)),result;
+ if(eat){result=DishModel.apply((day.meals||{})[meal.id],dish,meal.groups);if(result.duplicate){$('dish-feedback').textContent='Este plato ya está registrado en esa comida y fecha.';return}}
+ var next=JSON.parse(JSON.stringify(state));next.dishes=list.filter(function(d){return d.id!==id}).concat([dish]);
+ if(eat){if(!next.days[dishDraft.date])next.days[dishDraft.date]={meals:{},gym:false,note:''};if(!next.days[dishDraft.date].meals)next.days[dishDraft.date].meals={};next.days[dishDraft.date].meals[meal.id]=result.entry;
+  if(p.fruit){var daily=next.days[dishDraft.date].meals.daily||{};daily.fruit=Math.min(2,dailyFruit(day)+p.fruit);next.days[dishDraft.date].meals.daily=daily}
+ }
+ try{localStorage.setItem(storeKey,JSON.stringify(next))}catch(e){$('dish-feedback').textContent='No se pudo guardar en este dispositivo. Liberá espacio e intentá de nuevo.';return}
+ state=next;syncDishLibrary();if(eat)markDay(fromKey(dishDraft.date));$('dish-library-meal').value=meal.id;$('dish-dialog').close();render();toast(eat?'Plato registrado y guardado en tu lista':'Plato guardado sin modificar el día');
+}
+function setupDishes(){
+ $('new-dish').addEventListener('click',function(){openDish($('dish-library-meal').value)});
+ $('dish-library-meal').addEventListener('change',renderDishLibrary);
+ $('food-search').addEventListener('input',renderFoodCatalog);$('food-filter').addEventListener('change',renderFoodCatalog);
+ $('dish-meal').addEventListener('change',function(){renderSelectedFoods(true)});$('dish-form').addEventListener('submit',saveDish);
+}
+
 function renderMeals(){
  var todayKey=k(picked),expanded=[];
  if(mealViewDate===todayKey)$('mealgrid').querySelectorAll('details.meal[open]').forEach(function(el){expanded.push(el.dataset.mealCard)});
@@ -306,13 +445,16 @@ function renderMeals(){
   return '<details class="meal'+(done?' done':'')+'" data-meal-card="'+m.id+'">'+
   '<summary class="meal-summary"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div>'+
   '<div class="meal-meta"><span class="meal-count">'+pct+'%</span><span class="meal-chevron" aria-hidden="true">⌄</span></div></div>'+
-  '<div class="track"><div style="width:'+pct+'%"></div></div></summary>'+
+  '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,sum>0)+'"></div></div></summary>'+
   '<div class="meal-body">'+content+
+  '<div class="dish-tools"><button class="pill" type="button" data-add-dish="'+m.id+'">+ Registrar plato</button>'+
+  (entry._dishes||[]).map(function(d){return '<div class="dish-log">Registrado: '+safe(d.name)+'</div>'}).join('')+'</div>'+
   '<details class="guide"><summary>Ver cantidades y opciones</summary>'+
   m.groups.map(function(g){return '<p><b>'+safe(g.name)+':</b> '+safe(g.help)+'</p>'}).join('')+
   '</details></div></details>'
  }).join('');
  $('mealgrid').querySelectorAll('details.meal').forEach(function(el){if(expanded.includes(el.dataset.mealCard))el.open=true});
+ $('mealgrid').querySelectorAll('[data-add-dish]').forEach(function(b){b.addEventListener('click',function(){openDish(b.dataset.addDish)})});
  $('mealgrid').querySelectorAll('[data-group]').forEach(function(btn){
   btn.addEventListener('click',function(){
    if(!user){openAccount();return}
@@ -327,9 +469,7 @@ function renderMeals(){
 function renderFruit(){
  var fruits=dailyFruit(keyDay(picked));
  $('daily-fruit').innerHTML='<article class="daily-fruit'+(fruits===2?' done':'')+'">'+
- '<div class="mealhead"><div class="mealname"><span>🍎</span>Frutas del día</div><span class="fruit-count">'+fruits+'/2 frutas</span></div>'+
- '<p class="fruit-hint">Objetivo independiente: 2 frutas (aprox. 400 g) por día. No cuentan para el porcentaje de las comidas.</p>'+
- '<div class="fruit-controls"><b>Frutas consumidas</b><div class="ticks">'+groupButtons({id:'daily'},fruitGroup,fruits)+'</div></div>'+
+ '<div class="mealhead"><div class="mealname"><span>🍎</span>Frutas del día</div><div class="ticks">'+groupButtons({id:'daily'},fruitGroup,fruits)+'</div></div>'+
  '</article>';
  $('daily-fruit').querySelectorAll('[data-group]').forEach(function(btn){
   btn.addEventListener('click',function(){
@@ -346,36 +486,87 @@ function renderFruit(){
 function renderDays(){var first=monday(picked),selected=k(picked);$('weekdays').innerHTML='';
  for(var i=0;i<7;i++){var d=plus(first,i),b=document.createElement('button'),cnt=countDay(d);b.type='button';b.className='weekdate'+(k(d)===selected?' active':'')+(cnt.any?' has-entry':'');b.innerHTML='<span>'+days[d.getDay()]+'</span><strong>'+d.getDate()+'</strong><i></i>';b.setAttribute('aria-label',names[d.getDay()]+' '+d.getDate());b.setAttribute('aria-pressed',k(d)===selected);b.addEventListener('click',function(date){return function(){picked=date;render()}}(d));$('weekdays').append(b)}
 }
+var trainingDrafts={},selectedRoutine=null,trainingOwner=null;
+function trainingData(){return TrainingModel.migrate(state.training)}
+function resetTrainingOwner(){var owner=user&&user.id||'guest';if(owner!==trainingOwner){trainingDrafts={};selectedRoutine=null;trainingOwner=owner}}
+function activeRoutine(){var days=trainingData().routineDays.filter(function(d){return !d.archived});return days.find(function(d){return d.id===selectedRoutine})}
+function routineRows(){var day=activeRoutine();if(!day)return [];if(!trainingDrafts[day.id])trainingDrafts[day.id]=JSON.parse(JSON.stringify(day.rows));return trainingDrafts[day.id]}
+function persistTraining(data){var next=JSON.parse(JSON.stringify(state));next.training=data;localStorage.setItem(storeKey,JSON.stringify(next));state=next}
+function trainingMessage(text){$('training-feedback').textContent=text}
+function renderTraining(){
+ resetTrainingOwner();var data=trainingData(),day=activeRoutine();selectedRoutine=day?day.id:null;
+ $('routine-tabs').innerHTML=data.routineDays.filter(function(d){return !d.archived}).map(function(d){return '<button type="button" class="routine-tab '+(d.id===selectedRoutine?'active':'')+'" aria-expanded="'+(d.id===selectedRoutine)+'" aria-controls="routine-editor" data-routine="'+safe(d.id)+'">'+safe(d.name)+'<small>'+d.rows.length+' ejercicios</small></button>'}).join('');
+ $('routine-tabs').querySelectorAll('[data-routine]').forEach(function(b){b.addEventListener('click',function(){selectedRoutine=selectedRoutine===b.dataset.routine?null:b.dataset.routine;trainingMessage('');renderTraining()})});
+ $('routine-editor').hidden=!day;$('routine-empty').hidden=data.routineDays.some(function(d){return !d.archived});$('restore-routine').hidden=!data.routineDays.some(function(d){return d.archived});
+ if(day){$('routine-current-name').textContent=day.name;renderRoutineRows();}
+ renderStrengthHistory();
+}
+function renderRoutineRows(){var rows=routineRows();
+ $('training-exercises').innerHTML=rows.length?rows.map(function(ex,i){return '<section class="exercise-group" aria-label="Ejercicio '+(i+1)+'"><div class="exercise-group-head"><input aria-label="Nombre del ejercicio '+(i+1)+'" data-row="'+i+'" data-field="name" type="text" maxlength="100" placeholder="Nombre del ejercicio" required value="'+safe(ex.name)+'"><button class="row-remove" type="button" data-remove-row="'+i+'" aria-label="Quitar ejercicio '+(i+1)+'">×</button></div><div class="exercise-equipment"><label for="equipment-'+i+'">Equipamiento</label><select id="equipment-'+i+'" data-equipment="'+i+'">'+Object.keys(TrainingModel.equipmentLabels).map(function(key){return '<option value="'+key+'" '+((ex.equipment||'unspecified')===key?'selected':'')+'>'+TrainingModel.equipmentLabels[key]+'</option>'}).join('')+'</select></div><p class="equipment-hint">'+({barbell:'Peso total: barra y discos.',dumbbell:'Peso de cada mancuerna.',band:'Usá 0 kg si no conocés la resistencia de la banda.',bodyweight:'Usá 0 kg sin lastre; si agregás peso, registrá solo el lastre.',machine:'Peso indicado en la máquina.',unspecified:''}[ex.equipment||'unspecified'])+'</p><div class="series-row series-head"><span>Serie</span><span>Repeticiones</span><span>Peso (kg)</span><span></span></div>'+ex.sets.map(function(set,j){return '<div class="series-row"><span class="series-number">'+(j+1)+'</span>'+['reps','weight'].map(function(key){return '<input aria-label="'+(key==='reps'?'Repeticiones':'Peso en kg')+' de la serie '+(j+1)+' del ejercicio '+(i+1)+'" data-row="'+i+'" data-set="'+j+'" data-field="'+key+'" type="number" inputmode="'+(key==='weight'?'decimal':'numeric')+'" min="'+(key==='weight'?0:1)+'" max="'+(key==='weight'?2000:1000)+'" step="'+(key==='weight'?'any':1)+'" required value="'+safe(set[key]==null?'':set[key])+'">'}).join('')+'<button class="row-remove" type="button" data-remove-set="'+i+':'+j+'" aria-label="Quitar serie '+(j+1)+' del ejercicio '+(i+1)+'" '+(ex.sets.length===1?'disabled':'')+'>×</button></div>'}).join('')+'<button type="button" class="add-series" data-add-set="'+i+'">+ Agregar serie</button></section>'}).join(''):'<div class="routine-placeholder">Agregá los ejercicios de este día.</div>';
+ $('training-exercises').querySelectorAll('[data-equipment]').forEach(function(select){select.addEventListener('change',function(){rows[Number(select.dataset.equipment)].equipment=select.value;renderRoutineRows();trainingMessage('Cambios sin guardar.')})});
+ $('training-exercises').querySelectorAll('[data-field]').forEach(function(input){input.addEventListener('input',function(){var ex=rows[Number(input.dataset.row)];if(input.dataset.field==='name')ex.name=input.value;else ex.sets[Number(input.dataset.set)][input.dataset.field]=input.value===''?null:Number(input.value);trainingMessage('Cambios sin guardar.')})});
+ $('training-exercises').querySelectorAll('[data-remove-row]').forEach(function(b){b.addEventListener('click',function(){rows.splice(Number(b.dataset.removeRow),1);renderRoutineRows();trainingMessage('Cambios sin guardar.')})});
+ $('training-exercises').querySelectorAll('[data-add-set]').forEach(function(b){b.addEventListener('click',function(){var sets=rows[Number(b.dataset.addSet)].sets;if(sets.length>=30){trainingMessage('Máximo 30 series por ejercicio.');return}sets.push(Object.assign({},sets[sets.length-1]));renderRoutineRows();trainingMessage('Cambios sin guardar.')})});
+ $('training-exercises').querySelectorAll('[data-remove-set]').forEach(function(b){b.addEventListener('click',function(){var pair=b.dataset.removeSet.split(':').map(Number),sets=rows[pair[0]].sets;if(sets.length>1)sets.splice(pair[1],1);renderRoutineRows();trainingMessage('Cambios sin guardar.')})});
+}
+function addRoutineDay(){if(!user){openAccount();return}try{var data=trainingData(),n=1;while(data.routineDays.some(function(d){return d.name==='Día '+n}))n++;var day={id:crypto.randomUUID(),name:'Día '+n,rows:[]};data.routineDays.push(day);persistTraining(data);selectedRoutine=day.id;renderTraining();trainingMessage(day.name+' agregado.')}catch(e){trainingMessage('No se pudo guardar el día.')}}
+function removeRoutineDay(){if(!user)return;try{var data=trainingData(),day=activeRoutine();if(!day)return;data.routineDays.find(function(d){return d.id===day.id}).archived=true;persistTraining(data);selectedRoutine=null;renderTraining();trainingMessage(day.name+' quitado. Podés recuperarlo con “Recuperar día”.')}catch(e){trainingMessage('No se pudo quitar el día.')}}
+function restoreRoutineDay(){if(!user)return;try{var data=trainingData(),day=data.routineDays.filter(function(d){return d.archived}).pop();if(!day)return;day.archived=false;persistTraining(data);selectedRoutine=day.id;renderTraining();trainingMessage(day.name+' recuperado.')}catch(e){trainingMessage('No se pudo recuperar el día.')}}
+function saveRoutine(event){event.preventDefault();if(!user){openAccount();return}try{var data=trainingData(),day=activeRoutine(),draft=routineRows(),rows=draft.length?TrainingModel.validateRoutine(draft):[];data.routineDays.find(function(d){return d.id===day.id}).rows=rows;persistTraining(data);trainingDrafts[day.id]=JSON.parse(JSON.stringify(rows));renderTraining();trainingMessage(day.name+' guardado.')}catch(e){trainingMessage(e.message||'No se pudo guardar la rutina.')}}
+function saveTraining(){if(!user){openAccount();return}var date=k(picked);if(date>k(current)){trainingMessage('Elegí hoy o una fecha pasada para registrar el entrenamiento.');return}
+ try{var data=trainingData();if(data.workouts[date]){trainingMessage('Ya hay un entrenamiento registrado en esta fecha. Podés verlo en el historial de pesos.');return}var day=activeRoutine(),rows=TrainingModel.validateRoutine(routineRows());data.workouts[date]={routineId:day.id,routineName:day.name,exercises:TrainingModel.fromRoutine(rows),updated_at:new Date().toISOString()};var next=JSON.parse(JSON.stringify(state));next.training=data;if(!next.days[date])next.days[date]={meals:{},gym:false,note:''};next.days[date].gym=true;localStorage.setItem(storeKey,JSON.stringify(next));state=next;markDay(fromKey(date));render();trainingMessage('Entrenamiento registrado. La evolución de pesos se actualizó.');}catch(e){trainingMessage(e.message||'No se pudo registrar.')}
+}
+function renderStrengthHistory(){
+ var data=TrainingModel.historyView(state.training),options=new Map(),selected=$('strength-exercise').value;
+ data.routineDays.filter(function(d){return !d.archived}).forEach(function(day){day.rows.forEach(function(ex){options.set(ex.id,TrainingModel.displayName(ex))})});Object.values(data.workouts).forEach(function(w){w.exercises.forEach(function(ex){options.set(ex.id,TrainingModel.displayName(ex))})});
+ $('strength-exercise').innerHTML=options.size?Array.from(options).sort(function(a,b){return a[1].localeCompare(b[1],'es')}).map(function(pair){return '<option value="'+safe(pair[0])+'">'+safe(pair[1])+'</option>'}).join(''):'<option value="">Todavía no hay ejercicios</option>';
+ if(options.has(selected))$('strength-exercise').value=selected;
+ var history=TrainingModel.history(data.workouts,$('strength-exercise').value);
+ if(!history.length){$('strength-history').innerHTML='';return}
+ var latest=history[history.length-1],delta=latest.max-history[0].max,shown=history.slice(-12),max=Math.max(1,...shown.map(function(r){return r.max}));
+ var rawStep=max/4,magnitude=Math.pow(10,Math.floor(Math.log10(rawStep))),step=[1,2,2.5,5,10].find(function(n){return n*magnitude>=rawStep})*magnitude,ceiling=Math.ceil(max/step)*step;
+ var dateLabel=function(date){var parts=date.split('-');return parts[2]+'/'+parts[1]},kgLabel=function(value){return Number(value.toFixed(4)).toLocaleString('es-AR')};
+ var firstTime=Date.parse(shown[0].date),lastTime=Date.parse(latest.date);
+ var points=shown.map(function(r){return {x:firstTime===lastTime?177:50+(Date.parse(r.date)-firstTime)/(lastTime-firstTime)*254,y:140-r.max/ceiling*110,row:r}});
+ var grid='';for(var tick=0;tick<=Math.round(ceiling/step);tick++){var value=tick*step,y=140-value/ceiling*110;grid+='<line x1="50" y1="'+y+'" x2="304" y2="'+y+'" stroke="#e4eae5"/><text x="42" y="'+(y+3)+'" text-anchor="end" font-size="10" fill="#607568">'+kgLabel(value)+'</text>'}
+ var labelIndexes=new Set([0,points.length-1]);if(points.length>2){labelIndexes.add(Math.round((points.length-1)/3));labelIndexes.add(Math.round(2*(points.length-1)/3))}
+ // Suppress labels that would overlap when sessions cluster on adjacent dates.
+ var lastLabelX=-Infinity;
+ var dates=points.map(function(p,i){if(!labelIndexes.has(i))return '';if(i!==points.length-1&&(p.x-lastLabelX<48||points[points.length-1].x-p.x<48))return '';lastLabelX=p.x;return '<line x1="'+p.x+'" y1="140" x2="'+p.x+'" y2="145" stroke="#a9bab0"/><text x="'+p.x+'" y="160" text-anchor="middle" font-size="10" fill="#607568">'+dateLabel(p.row.date)+'</text>'}).join('');
+ var svg='<svg viewBox="0 0 340 188" role="img" aria-label="Mayor peso por entrenamiento: fecha en el eje X y kilogramos en el eje Y"><text x="14" y="16" font-size="10" fill="#607568">kg</text>'+grid+'<path d="M50 30 V140 H304" fill="none" stroke="#a9bab0"/>'+dates+'<text x="177" y="182" text-anchor="middle" font-size="10" fill="#607568">Fecha (día/mes)</text><polyline fill="none" stroke="#24966b" stroke-width="3" points="'+points.map(function(p){return p.x+','+p.y}).join(' ')+'"/>'+points.map(function(p){return '<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#176650"><title>'+safe(p.row.date)+': '+p.row.max+' kg × '+p.row.reps+' repeticiones</title></circle>'}).join('')+'</svg>';
+ $('strength-history').innerHTML='<div class="training-stats"><div><small>Último máximo</small><strong>'+latest.max+' kg</strong><span>'+latest.reps+' repeticiones</span></div><div><small>Desde el primer registro</small><strong>'+(delta>0?'+':'')+delta+' kg</strong><span>'+history.length+' entrenamientos</span></div></div>'+svg+'<p class="mini">'+shown[0].date+' → '+latest.date+' · Últimos '+shown.length+' registros</p><div class="training-table"><table><thead><tr><th>Fecha</th><th>Series · repeticiones × kg</th></tr></thead><tbody>'+history.slice().reverse().map(function(row){return '<tr><td>'+safe(row.date)+'</td><td>'+row.sets.map(function(set){return set.reps+' × '+set.weight}).join(' / ')+'</td></tr>'}).join('')+'</tbody></table></div>';
+}
+function setupTraining(){
+ $('routine-form').addEventListener('submit',saveRoutine);
+ $('add-routine-day').addEventListener('click',addRoutineDay);$('remove-routine-day').addEventListener('click',removeRoutineDay);$('restore-routine').addEventListener('click',restoreRoutineDay);
+ $('add-routine-exercise').addEventListener('click',function(){var rows=routineRows();if(rows.length>=30){trainingMessage('Máximo 30 ejercicios por día.');return}rows.push({name:'',sets:Array.from({length:3},function(){return {reps:10,weight:0}})});renderRoutineRows();trainingMessage('Cambios sin guardar.');var inputs=$('training-exercises').querySelectorAll('[data-field="name"]');if(inputs.length)inputs[inputs.length-1].focus()});
+ $('strength-exercise').addEventListener('change',renderStrengthHistory);
+}
 function renderGym(){var first=monday(picked),sum=weeklyGym(picked),target=state.settings.gymTarget||3,planned=state.settings.gymDays||[1,3,5];
  $('gymweek').innerHTML='';for(var i=0;i<7;i++){var d=plus(first,i),enabled=!!keyDay(d).gym,w=document.createElement('div'),b=document.createElement('button');w.className='gymday';w.innerHTML='<span>'+days[d.getDay()]+'</span>';b.type='button';b.className=(enabled?'checked ': '')+(planned.includes(d.getDay())?'planned':'');b.textContent=enabled?'✓':'＋';b.setAttribute('aria-pressed',String(enabled));b.setAttribute('aria-label',days[d.getDay()]+' '+d.getDate()+': '+(enabled?'entrenamiento realizado':'registrar entrenamiento'));b.addEventListener('click',function(date){return function(){if(!user){openAccount();return}var v=ensure(date);v.gym=!v.gym;markDay(date);render()}}(d));w.append(b);$('gymweek').append(w)}
  $('gymscore').textContent=sum+'/'+target;$('planned-text').textContent=planned.map(function(i){return days[i]}).join(' · ')||'Sin días predeterminados';
 }
 function renderGymProgress(){
- var first=monday(picked),sum=weeklyGym(picked),goal=state.settings.gymTarget||3,pct=Math.round(Math.min(1,sum/goal)*100);
+ var first=monday(picked),goal=state.settings.gymTarget||3;
  var fmt=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('gym-week-title').textContent=fmt(first)+' al '+fmt(plus(first,6));
- $('gym-progress-pct').textContent=pct+'%';$('gym-progress-track').style.width=pct+'%';
- $('gym-target-status').textContent=sum>=goal?'¡Cumpliste tu objetivo de esta semana!':('Te '+(goal-sum===1?'queda 1 entrenamiento':'quedan '+(goal-sum)+' entrenamientos')+' para cumplir tu objetivo.');
  $('gym-settings-summary').textContent=goal+(goal===1?' vez por semana':' veces por semana');
- var month=0;for(var i=0;i<30;i++)if(keyDay(plus(current,-i)).gym)month++;
- $('gym-month-count').textContent=month;
  var records=[],highest=Math.max(goal,1),sumSix=0;
  for(var j=5;j>=0;j--){var week=plus(first,-7*j),cnt=weeklyGym(week);records.push({day:week,count:cnt});highest=Math.max(highest,cnt);sumSix+=cnt}
- $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
+ $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
  $('gym-history-caption').textContent='Llevás '+sumSix+' '+(sumSix===1?'entrenamiento':'entrenamientos')+' en estas 6 semanas. Cada barra representa una semana.';
 }
 function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.round(c.points/c.total*100)+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('week-range').textContent=range(first)+' – '+range(plus(first,6));var entries=0,pts=0;$('barweek').innerHTML='';
- for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col);if(cc.any){entries++;pts+=cc.points/cc.total}}
+ for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+progressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col);if(cc.any){entries++;pts+=cc.points/cc.total}}
  $('weekdetail').textContent=entries?('Promedio de '+entries+' día(s) con registros: '+Math.round(pts/entries*100)+'%.'):'Marcá al menos un grupo para comenzar a ver tu evolución.';
  var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
- $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';$('month-detail').textContent=recorded?'Promedio de grupos cumplidos en '+recorded+' día(s) con registros de los últimos 30.':'Todavía no hay días registrados en los últimos 30 días.';
+ $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
 }
-function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=k(picked)===k(current)?'Hoy · '+title:title;renderDays();renderMeals();renderFruit();renderGym();renderStats();renderGymProgress();if(document.activeElement!==$('day-note'))$('day-note').value=keyDay(picked).note||'';$('storage-state').textContent=user?'Supabase conectado':'En este dispositivo';
- $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';$('connect-btn').textContent=user?'Ver mi cuenta':'Conectar Supabase';$('account-description').textContent=user?'Tus registros están asociados a '+user.email+'. Se sincronizan con tu cuenta cuando hay internet.':'Iniciá sesión por email para guardar el progreso en Supabase y recuperarlo en otros dispositivos.';
+function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();
+ $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
- var hasOld=!!legacyDays().length;$('import-hint').hidden=!user||!hasOld;$('import-previous').hidden=!user||!hasOld;
 }
 function legacyDays(){var old=[];var a=loadCache(GUEST);if(a.days)old=Object.keys(a.days);try{var prev=JSON.parse(localStorage.getItem(OLD)||'null');if(prev&&prev.days)old=old.concat(Object.keys(prev.days))}catch(e){}return Array.from(new Set(old))}
 function legacyMerged(){var guest=loadCache(GUEST).days||{},all={};try{var prev=JSON.parse(localStorage.getItem(OLD)||'null');if(prev&&prev.days)Object.keys(prev.days).forEach(function(key){var d=prev.days[key],m={};meals.forEach(function(meal){if(d.meals&&d.meals[meal.id]&&d.meals[meal.id].status==='done'){m[meal.id]={};meal.groups.forEach(function(g){m[meal.id][g.id]=g.target})}});all[key]={meals:m,gym:!!d.gym,note:''}})}catch(e){}
@@ -475,7 +666,7 @@ async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.c
  saveCache();syncLabel('Guardado en Supabase');offlinePending.forEach(function(key){pushDay(key)});
  }catch(e){syncLabel('Sin conexión · datos guardados en este teléfono');toast('No se pudo sincronizar: '+(e.message||'problema de red'))}
  }else{storeKey=GUEST;state=loadCache(GUEST);syncLabel('Guardado en este dispositivo')}
- loading=false;render();}
+ loading=false;render();syncDishLibrary();}
 function downloadBackup(){var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mi-ritmo-'+k(current)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1500)}
 function switchView(view,scroll){
  activeView=view==='gym'?'gym':'nutrition';var gym=activeView==='gym';
@@ -488,16 +679,15 @@ function switchView(view,scroll){
  try{localStorage.setItem('mi-ritmo-active-view',activeView)}catch(e){}
  if(scroll!==false)window.scrollTo(0,0);
 }
-async function start(){if(initDone)return;initDone=true;
+async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();
  if(window.supabase&&window.supabase.createClient){db=window.supabase.createClient(URL_SUPA,KEY_SUPA,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{var r=await db.auth.getSession();if(r.error)throw r.error;await useUser(r.data.session&&r.data.session.user||null);db.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session&&(!user||user.id!==session.user.id))setTimeout(function(){useUser(session.user)},0);if(event==='SIGNED_OUT'&&user)setTimeout(function(){useUser(null)},0);if(event==='PASSWORD_RECOVERY')setTimeout(function(){recoveryFromUrl=true;showAuth('reset')},0)})}catch(e){syncLabel('Sin conexión con Supabase');render()}}else{syncLabel('Sin conexión con Supabase');render()}
  $('nav-nutrition').addEventListener('click',function(){switchView('nutrition')});$('nav-gym').addEventListener('click',function(){switchView('gym')});
  $('gym-prev-week').addEventListener('click',function(){picked=plus(picked,-7);render()});$('gym-next-week').addEventListener('click',function(){picked=plus(picked,7);render()});
- $('gym-this-week').addEventListener('click',function(){picked=new Date(current);render()});$('gym-settings-btn').addEventListener('click',openSettings);
- $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});$('today-btn').addEventListener('click',function(){picked=new Date(current);render()});
- $('account-btn').addEventListener('click',openAccount);$('connect-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);$('backup-btn').addEventListener('click',downloadBackup);$('import-previous').addEventListener('click',importPrevious);
+ $('gym-settings-btn').addEventListener('click',openSettings);
+ $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});
+ $('account-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);
  document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){$(b.dataset.close).close()})});
- $('day-note').addEventListener('input',function(){if(!user){openAccount();return}var date=new Date(picked);ensure(date).note=$('day-note').value;markDay(date)});
- window.addEventListener('online',function(){if(user)offlinePending.forEach(function(day){pushDay(day)})});
+ window.addEventListener('online',function(){syncDishLibrary();if(user)offlinePending.forEach(function(day){pushDay(day)})});
  if('serviceWorker'in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
  render();switchView(activeView,false);if(recoveryFromUrl)showAuth('reset');else if(!user)showAuth('login');
 }

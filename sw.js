@@ -1,5 +1,5 @@
-const CACHE = 'mi-ritmo-shell-v2';
-const ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
+const CACHE = 'mi-ritmo-shell-v12-chart-axes';
+const ASSETS = ['/', '/index.html', '/dish-model.js', '/food-catalog.js', '/training-model.js?v=5', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

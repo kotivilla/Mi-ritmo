@@ -1,0 +1,36 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const root=require('path').resolve(__dirname,'..');
+let src=[...fs.readFileSync(root+'/index.html','utf8').matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('function saveDish'));
+const data=new Map(),nodes={};const el=id=>nodes[id]||(nodes[id]={value:'',hidden:false,textContent:'',close(){},querySelectorAll(){return []}});
+const ctx={console,Date,Set,Map,Intl,JSON,Number,String,Array,Math,crypto:require('crypto').webcrypto,DishModel:require(root+'/dish-model'),FoodCatalog:require(root+'/food-catalog'),location:{search:'',hash:''},document:{getElementById:el},localStorage:{getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v)}};
+src=src.replace(/if\(document.readyState==='loading'\)[\s\S]*?start\(\);\n\}\)\(\);/,`globalThis.test={init(){user={id:'test-user'};storeKey='test-user';state=defaultState();dishDraft={date:'2026-11-03',owner:'test-user',id:null,selected:[]};render=function(){};markDay=function(){globalThis.marked=(globalThis.marked||0)+1};toast=function(){}},save:saveDish,getState:()=>state,getDraft:()=>dishDraft,load:()=>loadCache(storeKey)};})();`);
+vm.runInNewContext(src,ctx);ctx.test.init();
+el('dish-meal').value='breakfast';el('dish-name').value='Huevos revueltos';el('dish-description').value='3 huevos revueltos';el('dish-portions').querySelectorAll=()=>[{dataset:{portion:'protein'},value:'3'},{dataset:{portion:'carb'},value:'0'},{dataset:{portion:'fat'},value:'0'}];
+ctx.test.save({preventDefault(){},submitter:{value:'save'}});assert.equal(Object.keys(ctx.test.getState().days).length,0);assert.equal(ctx.test.getState().dishes.length,1);assert.equal(ctx.test.load().dishes[0].portions.protein,3);assert.equal(ctx.marked,undefined);
+ctx.test.save({preventDefault(){},submitter:{value:'eat'}});assert.equal(ctx.test.getState().dishes.length,1);assert.equal(ctx.test.getState().days['2026-11-03'].meals.breakfast.protein,3);assert.equal(ctx.marked,1);
+ctx.test.save({preventDefault(){},submitter:{value:'eat'}});assert.equal(ctx.marked,1);assert.match(el('dish-feedback').textContent,/ya está registrado/);
+ctx.test.getDraft().date='2026-11-04';ctx.test.save({preventDefault(){},submitter:{value:'eat'}});assert.equal(ctx.marked,2);assert.equal(ctx.test.getState().days['2026-11-04'].meals.breakfast.protein,3);
+console.log('Guardar sin comer, persistencia, registrar, reutilizar otro día y evitar doble registro: OK');
+
+
+const catalog=require(root+'/food-catalog');
+assert.ok(catalog.items.length>=300);
+assert.equal(new Set(catalog.items.map(f=>f.id)).size,catalog.items.length);
+assert.ok(catalog.items.every(f=>catalog.labels[f.group]));
+assert.ok(catalog.search('brocoli','veg').length);
+assert.equal(catalog.search('huevo','fruit').length,0);
+const egg=catalog.items.find(f=>f.name==='Huevo');
+assert.equal(catalog.totals([{id:egg.id,quantity:3}],'breakfast').protein,3);
+const bread=catalog.items.find(f=>f.name==='Pan integral');
+assert.equal(catalog.totals([{id:bread.id,quantity:2}],'breakfast').carb,0.5);
+const apple=catalog.items.find(f=>f.name==='Manzana roja');
+assert.equal(catalog.totals([{id:apple.id,quantity:1}],'snack').fruit,1);
+const water=catalog.items.find(f=>f.name==='Agua');
+assert.ok(Object.values(catalog.totals([{id:water.id,quantity:1}],'lunch')).every(n=>n===0));
+console.log(catalog.items.length+' alimentos: grupos, IDs, búsqueda, cantidades, frutas y extras: OK');
+ctx.test.getDraft().date='2026-11-05';ctx.test.getDraft().selected=[{id:apple.id,quantity:1}];el('dish-name').value='Manzana';el('dish-meal').value='snack';el('dish-portions').querySelectorAll=()=>[{dataset:{portion:'fruit'},value:'1'},{dataset:{portion:'protein'},value:'0'},{dataset:{portion:'carb'},value:'0'},{dataset:{portion:'fat'},value:'0'}];
+ctx.test.save({preventDefault(){},submitter:{value:'save'}});assert.equal(ctx.test.getState().days['2026-11-05'],undefined);
+ctx.test.save({preventDefault(){},submitter:{value:'eat'}});assert.equal(ctx.test.getState().days['2026-11-05'].meals.daily.fruit,1);assert.equal(ctx.test.getState().days['2026-11-05'].meals.snack.carb,0);
+ctx.test.save({preventDefault(){},submitter:{value:'eat'}});assert.equal(ctx.test.getState().days['2026-11-05'].meals.daily.fruit,1);
+assert.equal(ctx.test.load().dishes.find(d=>d.name==='Manzana').portions._ingredients[0].id,apple.id);
+console.log('Frutas separadas, ingredientes persistidos y doble registro: OK');
