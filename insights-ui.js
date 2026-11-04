@@ -21,7 +21,7 @@ function renderNutrition(){
  $('insights-nutrition-date').textContent=displayWeek(start);
  if(nut.rate===null){$('insights-nutrition-body').innerHTML='<div class="insights-empty">Todavía no hay comidas registradas en esta semana. Cuando las cargues, vas a ver qué grupos pudiste cubrir.</div>';return}
  var order=[['protein','Proteínas'],['veg','Vegetales'],['carb','Hidratos'],['fat','Grasas']];
- $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de los <b>'+nut.registeredDays+' '+(nut.registeredDays===1?'día':'días')+' con registros</b>: '+nut.rate+'% de grupos completos. Los días sin cargar no cuentan como incumplidos.</p><div class="insights-metrics">'+order.map(function(group){
+ $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de los <b>'+nut.registeredMeals+' '+(nut.registeredMeals===1?'comida registrada':'comidas registradas')+'</b>: '+nut.rate+'% de grupos completos. Los días sin cargar no cuentan como incumplidos.</p><div class="insights-metrics">'+order.map(function(group){
   var item=nut.groups[group[0]];if(!item)return '';
   return '<div class="insights-bar-row"><div class="insights-bar-head"><b>'+group[1]+'</b><strong>'+item.pct+'%</strong></div><div class="insights-bar"><span style="width:'+item.pct+'%"></span></div></div>'
  }).join('')+'</div>';
@@ -156,6 +156,30 @@ function renderBlocks(){
  return '<article class="insights-block-item"><div><b>'+clean(block.name)+'</b><small>'+shortDate(block.start)+' – '+shortDate(block.end)+(active?' · En curso':'')+'</small><span>'+stats.sessions+' entrenamientos · '+fmt(stats.totalVolume,0)+' kg de volumen registrado</span></div>'+(active?'<button type="button" class="pill" data-finish-block="'+clean(block.id)+'">Finalizar</button>':'')+'</article>';
  }).join(''):'<div class="insights-empty">Todavía no creaste un bloque. Empezá uno de ocho semanas cuando quieras seguir una rutina durante un período concreto.</div>';
  $('insights-blocks-list').querySelectorAll('[data-finish-block]').forEach(function(btn){btn.addEventListener('click',function(){if(!active())return;var block=settings().trainingBlocks.find(function(b){return b.id===btn.dataset.finishBlock});if(!block)return;if(!confirm('¿Finalizar este bloque hoy? No se borrarán los entrenamientos.'))return;block.end=today();writeSettings()})});
+ var completed=list.filter(function(block){return block.end<today()}).sort(function(a,b){return a.end.localeCompare(b.end)});
+ var compare=completed.slice(-2);
+ if(compare.length===2){
+  var a=InsightsModel.blockStats(compare[0],w),z=InsightsModel.blockStats(compare[1],w);
+  var comparable={};
+  var normalized=TrainingModel.historyView({routineDays:[],workouts:w}).workouts;
+  function peaks(block){
+   var found={};Object.keys(normalized).filter(function(date){return date>=block.start&&date<=block.end}).forEach(function(date){
+    (normalized[date].exercises||[]).forEach(function(ex){
+     var kg=Math.max(0,...(ex.sets||[]).map(function(set){return Number(set.weight)||0}));
+     if(!found[ex.id]||kg>found[ex.id].kg)found[ex.id]={name:ex.name,kg:kg};
+    });
+   });return found;
+  }
+  var oldPeaks=peaks(compare[0]),newPeaks=peaks(compare[1]);
+  Object.keys(oldPeaks).forEach(function(id){
+   if(newPeaks[id])comparable[id]={name:newPeaks[id].name,change:newPeaks[id].kg-oldPeaks[id].kg};
+  });
+  var shared=Object.values(comparable).sort(function(a,b){return b.change-a.change}).slice(0,3);
+  $('insights-blocks-compare').innerHTML='<div class="insights-block-compare"><b>Comparación de los últimos dos bloques finalizados</b>'+
+   '<p class="mini">'+clean(compare[0].name)+': '+a.sessions+' entrenamientos · '+clean(compare[1].name)+': '+z.sessions+' entrenamientos.</p>'+
+   (shared.length?'<p class="mini">Pico de peso en ejercicios presentes en ambos bloques:</p>'+shared.map(function(ex){return '<div class="insights-muscle-row"><span>'+clean(ex.name)+'</span><strong>'+(ex.change>0?'+':'')+fmt(ex.change,1)+' kg</strong></div>'}).join(''):'<p class="mini">Todavía no hay ejercicios en común con registros en ambos bloques.</p>')+
+   '<p class="mini">Compará ejercicios equivalentes: el volumen total depende de cuántas sesiones y series hiciste.</p></div>';
+ }else $('insights-blocks-compare').innerHTML='';
  var last=list.filter(function(x){return x.start<=today()&&x.end>=today()})[0];
  $('insights-block-ongoing').textContent=last?'Bloque actual: '+last.name+' · hasta '+shortDate(last.end):'No hay ningún bloque activo.';
  $('insights-block-note').textContent=blockNotice;
@@ -166,7 +190,8 @@ function createBlock(e){e.preventDefault();if(!active())return;
  var end=InsightsModel.addDay(start,weeks*7-1),list=settings().trainingBlocks;
  var overlap=list.some(function(b){return start<=b.end&&end>=b.start});
  if(overlap){blockNotice='Ya hay un bloque que se superpone con esas fechas. Finalizalo o elegí otro período.';renderBlocks();return}
- var routine=b.trainingData().routineDays.filter(function(d){return !d.archived});
+ var routine=b.trainingData().routineDays.filter(function(d){return !d.archived&&d.rows.length});
+ if(!routine.length){blockNotice='Guardá al menos un día de rutina con ejercicios antes de crear el bloque.';renderBlocks();return}
  list.push({id:crypto.randomUUID(),name:name||'Bloque '+(list.length+1),start:start,end:end,routineSnapshot:JSON.parse(JSON.stringify(routine))});
  blockNotice='Bloque creado. Los entrenamientos ya guardados en ese período cuentan automáticamente.';
  $('insights-block-name').value='';writeSettings();
