@@ -731,43 +731,56 @@ body.nutrition-mode .intro{display:none}
 </div>
 
 <div id="gym-view" class="view gym-layout" hidden>
- <main class="maincol">
-  <section class="panel gym-hero">
-   <div class="heading">
-    <div><p class="eyebrow">SEGUIMIENTO SEMANAL</p><h2 id="gym-week-title">Tus entrenamientos</h2></div>
-    <div class="daynav"><button type="button" id="gym-prev-week" class="square" aria-label="Semana anterior">‹</button><button type="button" id="gym-next-week" class="square" aria-label="Semana siguiente">›</button></div>
+ <main class="maincol gym-main">
+  <section class="panel gym-hero gym-focus-panel">
+   <div class="gym-focus-top">
+    <div><h2>Gimnasio</h2><span class="gym-range-label" id="gym-week-title"></span></div>
+    <div class="daynav">
+     <button type="button" id="gym-prev-week" class="square" aria-label="Semana anterior">‹</button>
+     <button type="button" id="gym-next-week" class="square" aria-label="Semana siguiente">›</button>
+    </div>
    </div>
-   <p class="sub">Tocá un día para registrar las series reales de tu entrenamiento.</p>
+   <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">+ Registrar entrenamiento</button></div>
    <div class="gymweek" id="gymweek"></div>
-   <p class="gym-week-count" id="gym-week-count">Todavía no registraste entrenamientos esta semana.</p>
-   <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">＋ Registrar entrenamiento de hoy</button></div>
+   <p class="gym-week-count" id="gym-week-count"></p>
   </section>
-  <section class="panel">
-   <div class="heading"><div><h2>Evolución del gimnasio</h2><div class="sub">Entrenamientos por semana</div></div><span class="sub">Últimas 6 semanas</span></div>
-   <div id="gym-history" class="gym-history" aria-label="Gráfico de entrenamientos de las últimas seis semanas"></div>
-   <p class="mini" id="gym-history-caption">Se actualizará a medida que registres tus entrenamientos.</p>
-  </section>
-  <section class="panel" aria-labelledby="strength-title">
-   <h2 id="strength-title">Evolución de pesos y volumen</h2>
-   <label class="dish-label" for="strength-exercise">Ejercicio</label><select class="field" id="strength-exercise"></select>
-   <div class="strength-switch" role="group" aria-label="Métrica para el gráfico de progreso">
-    <button class="strength-switch-btn active" id="strength-mode-weight" type="button" aria-pressed="true">Peso máximo</button>
-    <button class="strength-switch-btn" id="strength-mode-volume" type="button" aria-pressed="false">Volumen</button>
+  <details class="panel gym-analysis-panel" id="gym-analysis-panel">
+   <summary class="gym-analysis-main-summary"><span class="gym-analysis-symbol" aria-hidden="true">⌁</span><span>Ver evolución</span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
+   <div class="gym-analysis-content">
+    <details class="gym-analysis-detail">
+     <summary><span><strong>Constancia</strong><small>Últimas 6 semanas</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
+     <div class="gym-analysis-inner">
+      <div id="gym-history" class="gym-history" aria-label="Gráfico de entrenamientos de las últimas seis semanas"></div>
+      <p class="mini" id="gym-history-caption"></p>
+     </div>
+    </details>
+    <details class="gym-analysis-detail">
+     <summary><span><strong>Pesos y volumen</strong><small>Por ejercicio</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
+     <div class="gym-analysis-inner">
+      <label class="dish-label" for="strength-exercise">Ejercicio</label>
+      <select class="field" id="strength-exercise"></select>
+      <div class="strength-switch" role="group" aria-label="Métrica para el gráfico">
+       <button class="strength-switch-btn active" id="strength-mode-weight" type="button" aria-pressed="true">Peso máximo</button>
+       <button class="strength-switch-btn" id="strength-mode-volume" type="button" aria-pressed="false">Volumen</button>
+      </div>
+      <p class="mini" id="strength-metric-help"></p>
+      <div id="strength-history"></div>
+     </div>
+    </details>
+    <details class="gym-analysis-detail">
+     <summary><span><strong>Mejoras recientes</strong><small>Últimas 4 semanas</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
+     <div id="insights-progression-list" class="insights-activity-list gym-analysis-inner"></div>
+    </details>
+    <details class="gym-analysis-detail">
+     <summary><span><strong>Grupos musculares</strong><small>Series por semana</small></span><span class="gym-analysis-chevron" aria-hidden="true">⌄</span></summary>
+     <div class="gym-analysis-inner">
+      <span class="sub" id="insights-muscle-week"></span>
+      <div id="insights-muscle-list" class="insights-muscle-list"></div>
+     </div>
+    </details>
    </div>
-   <p class="mini" id="strength-metric-help">Mayor peso registrado en una serie de cada entrenamiento.</p>
-   <div id="strength-history"></div>
-  </section>
-  <section class="panel" aria-labelledby="insights-progression-title">
-   <div class="heading"><div><h2 id="insights-progression-title">Mejoras recientes</h2><span class="sub">Pesos y volumen · últimas 4 semanas</span></div></div>
-   <div id="insights-progression-list" class="insights-activity-list"></div>
-  </section>
-  <section class="panel" aria-labelledby="insights-muscles-title">
-   <div class="heading"><h2 id="insights-muscles-title">Series por grupo muscular</h2><span class="sub" id="insights-muscle-week"></span></div>
-   <p class="mini">Series que registraste esta semana para cada músculo. Es una referencia para observar tu distribución de entrenamiento.</p>
-   <div id="insights-muscle-list" class="insights-muscle-list"></div>
-  </section>
+  </details>
  </main>
- 
 </div>
 
 <div id="progress-view" class="view insights-progress-view" hidden>
