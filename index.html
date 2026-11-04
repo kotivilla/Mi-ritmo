@@ -134,7 +134,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .gym-week-count{font-size:12px;color:var(--green);font-weight:750;margin:8px 0 0}
 #settings-dialog{width:min(740px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
 #settings-dialog .dialog-body{padding:25px}
-.config-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:19px 0 23px}
+.config-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:19px 0 23px}
 .config-tab{border:1px solid var(--border);background:#f6f9f5;border-radius:12px;padding:12px;font-size:13px;color:var(--dark);font-weight:800}
 .config-tab.active{background:var(--green);border-color:var(--green);color:white}
 #config-goal-content[hidden],#config-routine-content[hidden]{display:none}
@@ -353,6 +353,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <div class="config-tabs" role="tablist" aria-label="Ajustes de gimnasio">
 <button type="button" id="config-tab-goal" class="config-tab active" role="tab" aria-selected="true" aria-controls="config-goal-content">Objetivo</button>
 <button type="button" id="config-tab-routine" class="config-tab" role="tab" aria-selected="false" aria-controls="config-routine-content">Rutina</button>
+<button type="button" id="config-tab-blocks" class="config-tab" role="tab" aria-selected="false" aria-controls="config-blocks-content">Bloques</button>
 </div>
 <section id="config-goal-content" role="tabpanel" aria-labelledby="config-tab-goal">
 <h3 class="config-section-title">Objetivo semanal</h3>
@@ -378,6 +379,26 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <p id="training-feedback" class="mini" role="status" aria-live="polite"></p>
    <button class="pill" id="restore-routine" type="button" hidden>Recuperar día</button>
   </section>
+</section>
+<section id="config-blocks-content" role="tabpanel" aria-labelledby="config-tab-blocks" hidden>
+ <h3 class="config-section-title">Objetivo personal</h3>
+ <p class="mini">Elegí qué querés priorizar. No se establecen objetivos numéricos sin tus indicaciones.</p>
+ <div class="insights-setting-row">
+  <select class="field" id="insights-block-goal"><option value="muscle">Ganar masa muscular</option><option value="strength">Mejorar fuerza</option><option value="consistency">Mantener constancia y salud</option></select>
+  <button class="pill" type="button" id="insights-block-goal-save">Guardar</button>
+ </div>
+ <hr class="sep">
+ <h3 class="config-section-title">Bloques de entrenamiento</h3>
+ <p class="mini">Creá un bloque de unas ocho semanas, o elegí otra duración. Tus entrenamientos anteriores se conservan.</p>
+ <p class="mini" id="insights-block-ongoing"></p>
+ <form id="insights-block-form" class="insights-block-form">
+  <label>Nombre <input class="field" type="text" id="insights-block-name" maxlength="60" placeholder="Bloque 1"></label>
+  <label>Fecha de inicio <input class="field" type="date" id="insights-block-start" required></label>
+  <label>Duración <select class="field" id="insights-block-duration"><option value="4">4 semanas</option><option value="6">6 semanas</option><option value="8" selected>8 semanas</option><option value="10">10 semanas</option><option value="12">12 semanas</option><option value="16">16 semanas</option></select></label>
+  <button class="pill primary" type="submit">Crear bloque</button>
+ </form>
+ <p class="mini" id="insights-block-note" role="status"></p>
+ <div id="insights-blocks-list" class="insights-blocks-list"></div>
 </section>
 </div></dialog>
 <dialog id="gym-session-dialog" aria-labelledby="gym-session-title"><form id="gym-session-form" class="dialog-body">
