@@ -1028,7 +1028,8 @@ function undoSavedDish(dish,date){
  var day=ensure(fromKey(key)),previous=(day.meals||{})[meal.id]||{};
  var removal=DishModel.remove(previous,dish,meal.groups);
  if(removal.missing){toast('Este plato ya no figura como comido ese día.');render();return false}
- var hasFruit=Number(dish.portions&&dish.portions.fruit)>0;
+ var consumedLog=Array.isArray(previous._dishes)?previous._dishes.find(function(item){return item.id===dish.id}):null;
+ var hasFruit=Number(consumedLog&&consumedLog.portions&&consumedLog.portions.fruit)>0;
  var fruitBase=hasFruit?fruitBaselineBeforeDishChange(day):0;
  day.meals[meal.id]=removal.entry;
  if(hasFruit)updateFruitAfterDishChange(day,fruitBase);
