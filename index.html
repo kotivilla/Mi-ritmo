@@ -1896,9 +1896,40 @@ async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.c
  }else{storeKey=GUEST;state=loadCache(GUEST);syncLabel('Guardado en este dispositivo')}
  loading=false;render();syncDishLibrary();}
 function downloadBackup(){var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mi-ritmo-'+k(current)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1500)}
+function showProgressTab(name,moveFocus){
+ var tab=['summary','weight','recovery'].includes(name)?name:'summary';
+ ['summary','weight','recovery'].forEach(function(id){
+  var active=id===tab;
+  $('progress-tab-'+id).classList.toggle('active',active);
+  $('progress-tab-'+id).setAttribute('aria-selected',String(active));
+  $('progress-tab-'+id).tabIndex=active?0:-1;
+  $('progress-panel-'+id).hidden=!active;
+ });
+ if(moveFocus)$('progress-tab-'+tab).focus();
+}
+function setupProgressTabs(){
+ var tabs=['summary','weight','recovery'];
+ tabs.forEach(function(name,index){
+  var button=$('progress-tab-'+name);
+  button.addEventListener('click',function(){showProgressTab(name,false)});
+  button.addEventListener('keydown',function(event){
+   var next=index;
+   if(event.key==='ArrowRight')next=(index+1)%tabs.length;
+   else if(event.key==='ArrowLeft')next=(index+tabs.length-1)%tabs.length;
+   else if(event.key==='Home')next=0;
+   else if(event.key==='End')next=tabs.length-1;
+   else return;
+   event.preventDefault();
+   showProgressTab(tabs[next],true);
+  });
+ });
+ showProgressTab('summary',false);
+}
 function switchView(view,scroll){
  activeView=view==='gym'?'gym':view==='progress'?'progress':'nutrition';
  document.body.classList.toggle('nutrition-mode',activeView==='nutrition');
+ document.body.classList.toggle('gym-mode',activeView==='gym');
+ document.body.classList.toggle('progress-mode',activeView==='progress');
  ['nutrition','gym','progress'].forEach(function(name){
   var selected=activeView===name;
   $(name+'-view').hidden=!selected;
@@ -1914,7 +1945,7 @@ function switchView(view,scroll){
  try{localStorage.setItem('mi-ritmo-active-view',activeView)}catch(e){}
  if(scroll!==false)window.scrollTo(0,0);
 }
-async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();
+async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();setupProgressTabs();
  InsightsUI.init({
   state:function(){return state},
   user:function(){return user},
