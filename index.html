@@ -978,6 +978,11 @@ async function syncDishLibrary(){
 }
 
 var dishDraft=null;
+var dishStage='choose',foodVisibleCount=18,dishShowAll=false;
+var dishCategoryLabels=[
+ ['', 'Todos'],['protein','Proteínas'],['carb','Hidratos'],
+ ['veg','Vegetales'],['fruit','Frutas'],['fat','Grasas'],['other','Otros']
+];
 function dishMeal(){return meals.find(function(m){return m.id===$('dish-meal').value})}
 function dishList(){return Array.isArray(state.dishes)?state.dishes:[]}
 function dishHasBeenEaten(dish,date){
