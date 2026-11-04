@@ -849,6 +849,65 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  .ui-chevron{width:27px!important;height:27px!important;min-width:27px!important;flex-basis:27px!important}
 }
 @media(prefers-reduced-motion:reduce){button.square.ui-nav-arrow,.ui-chevron{transition:none!important}}
+
+/* Calendario mensual de alimentación — colores de cumplimiento */
+.ui-calendar-trigger{
+ display:inline-grid;place-items:center;flex:none;width:43px;height:43px;min-width:43px;
+ padding:0;border:1px solid #d7e6dd;background:#edf6ef;color:var(--green);
+ border-radius:12px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+ transition:background-color .16s,border-color .16s,transform .16s
+}
+.ui-calendar-trigger svg{width:19px;height:19px;pointer-events:none}
+.ui-calendar-trigger:active{transform:scale(.95);background:#dfece1}
+.ui-calendar-trigger:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+@media(hover:hover){.ui-calendar-trigger:hover{background:#dfeee3;border-color:#b6d9c3}}
+.nutrition-calendar-dialog{
+ width:min(450px,calc(100vw - 28px));max-width:none;max-height:min(740px,calc(100dvh - 28px));
+ padding:0;overflow:hidden;border:1px solid #dce9de;border-radius:23px;
+ background:#fff;box-shadow:0 20px 70px rgba(20,55,32,.2)
+}
+.nutrition-calendar-sheet{padding:22px;max-height:inherit;overflow-y:auto;overscroll-behavior:contain}
+.nutrition-calendar-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.nutrition-calendar-eyebrow{color:var(--green);font-size:10px;letter-spacing:1.3px;font-weight:850}
+.nutrition-calendar-head h2{font-size:22px;letter-spacing:-.6px;margin:3px 0 0;line-height:1.3}
+.nutrition-calendar-close{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;border:1px solid var(--border);border-radius:11px;background:#f6faf6;color:#607b68;padding:0}
+.nutrition-calendar-close svg{width:18px;height:18px;pointer-events:none}
+.nutrition-calendar-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:23px 0 13px}
+.nutrition-calendar-controls strong{text-transform:capitalize;font-size:16px;font-weight:850;letter-spacing:-.3px;text-align:center}
+.nutrition-calendar-controls .ui-nav-arrow{width:41px;height:41px;min-width:41px;min-height:41px}
+.nutrition-calendar-weekdays,.nutrition-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.nutrition-calendar-weekdays{margin:0 0 7px}
+.nutrition-calendar-weekdays span{text-align:center;font-size:10px;font-weight:750;color:#84978a;padding:7px 0}
+.nutrition-calendar-day{position:relative;min-width:0;min-height:53px;border:1px solid transparent;border-radius:11px;padding:6px 2px 5px;background:#f5f8f5;color:#748576;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.nutrition-calendar-day .nutrition-calendar-number{font-size:14px;font-weight:800;line-height:1.1}
+.nutrition-calendar-day .nutrition-calendar-percent{font-size:9px;font-weight:850;line-height:1.1}
+.nutrition-calendar-day.is-recorded{background:var(--calendar-day-color);color:#fff}
+.nutrition-calendar-day.is-recorded.is-amber{color:#4c3a11}
+.nutrition-calendar-day.is-other-month{opacity:.43}
+.nutrition-calendar-day.is-today:not(.is-recorded){border-color:#8cb7a0;color:var(--green)}
+.nutrition-calendar-day.is-selected{outline:2px solid var(--green);outline-offset:1px}
+.nutrition-calendar-day.is-selected.is-recorded{outline-color:#1f4531}
+.nutrition-calendar-day:focus-visible{outline:3px solid var(--green);outline-offset:1px}
+.nutrition-calendar-legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:20px 0 8px}
+.nutrition-calendar-legend span{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:750;color:#607768;white-space:nowrap}
+.nutrition-calendar-swatch{width:23px;height:6px;border-radius:20px;display:block}
+.nutrition-calendar-help{font-size:11px;line-height:1.45;color:#849689;text-align:center;margin:10px 3px 18px}
+.nutrition-calendar-today{display:block;width:100%;min-height:44px;background:#f1f8f3;border:1px solid #d4e6d9;border-radius:11px;color:var(--green);font-weight:850;font-size:13px}
+@media(max-width:610px){
+ .nutrition-day-top .ui-calendar-trigger{width:41px;height:41px;min-width:41px}
+ .nutrition-calendar-dialog{width:calc(100vw - 20px);max-height:calc(100dvh - 22px);border-radius:20px}
+ .nutrition-calendar-sheet{padding:19px 15px calc(18px + env(safe-area-inset-bottom,0px))}
+ .nutrition-calendar-controls{margin:21px 0 12px}
+ .nutrition-calendar-weekdays,.nutrition-calendar-grid{gap:4px}
+ .nutrition-calendar-day{min-height:54px;border-radius:10px}
+ .nutrition-calendar-legend{margin-top:18px}
+}
+@media(max-width:355px){
+ .nutrition-calendar-sheet{padding-left:11px;padding-right:11px}
+ .nutrition-calendar-day{min-height:49px}
+ .nutrition-calendar-day .nutrition-calendar-percent{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){.ui-calendar-trigger{transition:none}}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -870,6 +929,9 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
    <div class="nutrition-day-top">
     <h2 id="day-title">Hoy</h2>
     <div class="daynav">
+     <button type="button" id="open-nutrition-calendar" class="ui-calendar-trigger" aria-label="Abrir calendario mensual" title="Ver calendario mensual">
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>
+     </button>
      <button class="square ui-nav-arrow" type="button" id="prev-day" aria-label="Día anterior"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
      <button class="square ui-nav-arrow" type="button" id="next-day" aria-label="Día siguiente"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
@@ -1113,6 +1175,31 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
    <div class="auth-logged-actions"><button id="change-password-btn" type="button" class="pill primary">Cambiar contraseña</button><button id="logout-btn" type="button" class="pill">Cerrar sesión</button></div>
   </section>
   <p id="auth-message" class="mini auth-feedback" role="status" aria-live="polite"></p>
+ </div>
+</dialog>
+<dialog id="nutrition-calendar-dialog" class="nutrition-calendar-dialog" aria-labelledby="nutrition-calendar-heading">
+ <div class="nutrition-calendar-sheet">
+  <header class="nutrition-calendar-head">
+   <div><span class="nutrition-calendar-eyebrow">ALIMENTACIÓN</span><h2 id="nutrition-calendar-heading">Calendario</h2></div>
+   <button class="nutrition-calendar-close" type="button" id="nutrition-calendar-close" aria-label="Cerrar calendario">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+   </button>
+  </header>
+  <div class="nutrition-calendar-controls">
+   <button class="square ui-nav-arrow" type="button" id="nutrition-calendar-prev" aria-label="Mes anterior"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+   <strong id="nutrition-calendar-month" aria-live="polite"></strong>
+   <button class="square ui-nav-arrow" type="button" id="nutrition-calendar-next" aria-label="Mes siguiente"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+  </div>
+  <div class="nutrition-calendar-weekdays" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+  <div class="nutrition-calendar-grid" id="nutrition-calendar-grid" role="group" aria-label="Días del mes"></div>
+  <div class="nutrition-calendar-legend" aria-label="Colores según porcentaje registrado">
+   <span><i class="nutrition-calendar-swatch" style="background:#dc4545"></i>0–39%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#ed8b23"></i>40–59%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#e4bd28"></i>60–79%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#24966b"></i>80–100%</span>
+  </div>
+  <p class="nutrition-calendar-help">Sin color: sin registro. El porcentaje corresponde a los grupos alimentarios.</p>
+  <button id="nutrition-calendar-today" type="button" class="nutrition-calendar-today">Ir a hoy</button>
  </div>
 </dialog>
 <dialog id="settings-dialog" aria-labelledby="config-title"><div class="dialog-body">
