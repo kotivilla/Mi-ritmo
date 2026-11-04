@@ -109,6 +109,24 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .gym-plan-goal{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 .gym-plan-goal p{margin:4px 0 0;color:var(--muted);font-size:11px}
 @media(max-width:610px){.gym-actions{display:grid;grid-template-columns:minmax(0,1fr) auto}.gym-actions .pill{font-size:12px}#gym-plan-dialog{width:100vw;height:100dvh;max-height:100dvh;border-radius:0;border:0;margin:0;max-width:none}#gym-plan-dialog .dialog-body{padding:22px 16px calc(35px + env(safe-area-inset-bottom,0px))}.gym-plan-goal{flex-direction:column;align-items:flex-start}}
+
+.gym-plan-overview{margin-top:15px}
+.gym-plan-day-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.gym-plan-day{min-width:0;text-align:left;padding:15px 12px;border-radius:12px;background:#f6faf6;color:var(--dark);border:1px solid var(--border)}
+.gym-plan-day:hover{background:#edf7ee;border-color:#9bc8a6}
+.gym-plan-day b,.gym-plan-day small{display:block}.gym-plan-day b{font-size:14px}.gym-plan-day small{font-size:11px;color:var(--muted);margin-top:5px}
+.gym-plan-empty{background:#f5f9f5;border:1px dashed #c8d9cc;border-radius:13px;padding:15px;margin:12px 0}
+.gym-plan-empty p{font-size:13px;color:var(--muted);margin:0 0 10px}
+.gym-plan-empty p:last-child{margin-bottom:0}
+.gym-recent-list{display:grid;gap:9px;margin-top:15px}
+.gym-recent-item{width:100%;display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--border);background:#fff;border-radius:13px;padding:11px;color:var(--dark)}
+.gym-recent-item:hover{border-color:#b0d3b7;background:#f8fbf8}
+.gym-recent-date{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:51px;background:#eaf4ea;color:var(--green);padding:8px 5px;border-radius:10px;line-height:1.2}
+.gym-recent-date b{font-size:19px}.gym-recent-date small{font-size:10px}
+.gym-recent-details{min-width:0;flex:1}.gym-recent-details b,.gym-recent-details small{display:block}
+.gym-recent-details b{font-size:14px}.gym-recent-details small{font-size:11px;color:var(--muted);margin-top:4px}
+.gym-recent-next{font-size:25px;color:var(--green)}
+@media(max-width:610px){.gym-plan-day-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
@@ -165,7 +183,16 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <div class="gym-result"><div><b>Objetivo semanal</b><div class="mini" id="planned-text">Lun · Mié · Vie</div></div><strong id="gymscore">0/3</strong></div>
    <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">＋ Registrar entrenamiento de hoy</button><button class="pill" type="button" id="gym-configure">⚙ Rutina</button></div>
   </section>
-  <section class="panel" aria-labelledby="strength-title">
+  <section class="panel" aria-labelledby="gym-summary-title">
+    <div class="heading"><div><h2 id="gym-summary-title">Tu rutina activa</h2><span class="sub">Tu plan base para las próximas semanas</span></div><button class="pill" id="gym-edit-plan" type="button">Editar</button></div>
+    <div class="gym-plan-overview" id="gym-plan-overview"></div>
+    <p class="mini">El plan se configura una vez; acá solo consultás los ejercicios.</p>
+   </section>
+   <section class="panel" aria-labelledby="gym-recent-title">
+    <div class="heading"><div><h2 id="gym-recent-title">Últimos entrenamientos</h2><span class="sub">Tocá uno para ver o editar lo que hiciste</span></div></div>
+    <div class="gym-recent-list" id="gym-recent-list"></div>
+   </section>
+   <section class="panel" aria-labelledby="strength-title">
    <h2 id="strength-title">Evolución de pesos</h2>
    <label class="dish-label" for="strength-exercise">Ejercicio</label><select class="field" id="strength-exercise"></select>
    <div id="strength-history"></div>
@@ -647,6 +674,26 @@ function renderGym(){
  $('gymscore').textContent=sum+'/'+target;$('planned-text').textContent=planned.map(function(i){return days[i]}).join(' · ')||'Sin días predeterminados';
 }
 function openRoutineSettings(dayId){if(!user){openAccount();return}if(dayId){selectedRoutine=dayId;renderTraining()}$('gym-plan-dialog').showModal()}
+function renderGymDashboard(){
+ var d=trainingData(),active=d.routineDays.filter(function(row){return !row.archived&&row.rows.length>0});
+ var target=$('gym-plan-overview');
+ if(!active.length){
+  target.innerHTML='<div class="gym-plan-empty"><p>Todavía no cargaste tus ejercicios. Configurá la rutina una vez y después solo registrá cada día.</p><button class="pill primary" id="gym-create-plan" type="button">Armar mi rutina</button></div>';
+  $('gym-create-plan').addEventListener('click',function(){openRoutineSettings()});
+ }else{
+  var count=active.reduce(function(total,row){return total+row.rows.length},0);
+  target.innerHTML='<div class="gym-plan-day-grid">'+active.map(function(row){
+    return '<button class="gym-plan-day" type="button" data-plan-id="'+safe(row.id)+'"><b>'+safe(row.name)+'</b><small>'+row.rows.length+' '+(row.rows.length===1?'ejercicio':'ejercicios')+'</small></button>'
+  }).join('')+'</div><p class="mini">'+active.length+' '+(active.length===1?'día configurado':'días configurados')+' · '+count+' ejercicios</p>';
+  target.querySelectorAll('[data-plan-id]').forEach(function(btn){btn.addEventListener('click',function(){openRoutineSettings(btn.dataset.planId)})});
+ }
+ var dates=Object.keys(d.workouts||{}).sort().reverse().slice(0,4);
+ $('gym-recent-list').innerHTML=dates.length?dates.map(function(date){
+  var w=d.workouts[date],day=fromKey(date),month=new Intl.DateTimeFormat('es-AR',{month:'short'}).format(day),exercises=w.exercises||[],sets=exercises.reduce(function(total,ex){return total+(ex.sets||[]).length},0);
+  return '<button class="gym-recent-item" type="button" data-session-date="'+safe(date)+'"><span class="gym-recent-date"><b>'+day.getDate()+'</b><small>'+safe(month)+'</small></span><span class="gym-recent-details"><b>'+safe(w.routineName||'Entrenamiento')+'</b><small>'+exercises.length+' ejercicios · '+sets+' series</small></span><span class="gym-recent-next" aria-hidden="true">›</span></button>';
+ }).join(''):'<div class="gym-plan-empty"><p>Acá vas a poder consultar los ejercicios, pesos y repeticiones de tus últimos entrenamientos.</p></div>';
+ $('gym-recent-list').querySelectorAll('[data-session-date]').forEach(function(btn){btn.addEventListener('click',function(){openGymSession(fromKey(btn.dataset.sessionDate))})});
+}
 function renderGymProgress(){
  var first=monday(picked),goal=state.settings.gymTarget||3;
  var fmt=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
@@ -665,7 +712,7 @@ function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.ro
  var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
  $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
 }
-function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();
+function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();renderGymDashboard();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
 }
@@ -819,6 +866,7 @@ async function start(){if(initDone)return;initDone=true;setupDishes();setupTrain
  $('gym-settings-btn').addEventListener('click',openSettings);
  $('gym-register-today').addEventListener('click',function(){openGymSession(new Date(current))});
  $('gym-configure').addEventListener('click',function(){openRoutineSettings()});
+ $('gym-edit-plan').addEventListener('click',function(){openRoutineSettings()});
  $('gym-edit-goal').addEventListener('click',function(){$('gym-plan-dialog').close();openSettings()});
  $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});
  $('account-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);
