@@ -1,4 +1,4 @@
-const CACHE = 'mi-ritmo-shell-v13-gym-session';
+const CACHE = 'mi-ritmo-shell-v14-gym-ux';
 const ASSETS = ['/', '/index.html', '/dish-model.js', '/food-catalog.js', '/training-model.js?v=5', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
