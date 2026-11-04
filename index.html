@@ -58,6 +58,28 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .auth-logged-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
 .auth-body [hidden]{display:none!important}
 @media(max-width:610px){.auth-body{padding:20px}}
+
+/* Comidas plegadas y frutas contadas una sola vez por día */
+.meal{padding:0;overflow:hidden}
+.meal-summary{display:block;list-style:none;padding:16px 17px 15px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.meal-summary::-webkit-details-marker{display:none}
+.meal-summary::marker{content:""}
+.meal-summary .mealhead{align-items:center;margin:0 0 11px}
+.meal-summary .track{margin:0}
+.meal-meta{display:flex;gap:12px;align-items:center}
+.meal-chevron{font-size:20px;line-height:1;color:var(--green);display:inline-block;transition:transform .18s}
+.meal[open] .meal-chevron{transform:rotate(180deg)}
+.meal-body{padding:4px 17px 15px;border-top:1px solid var(--border)}
+.meal-body .guide{margin-top:12px}
+#daily-fruit{margin-top:14px}
+.daily-fruit{border:1px solid var(--border);border-radius:16px;padding:17px;background:#fff}
+.daily-fruit.done{border-color:#b3dac2;background:#fbfefb}
+.daily-fruit .mealhead{align-items:center;margin-bottom:7px}
+.fruit-count{font-size:12px;font-weight:850;color:var(--green)}
+.fruit-hint{color:var(--muted);font-size:12px;margin:0 0 15px}
+.fruit-controls{border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fruit-controls b{font-size:13px}
+@media(max-width:610px){.meal-summary{padding:16px 15px}.meal-body{padding:4px 15px 15px}.daily-fruit{padding:16px 15px}}
 </style>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
@@ -74,6 +96,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <div class="heading"><div><h2 id="day-title">Hoy</h2><div class="sub">Marcá lo que realmente comiste en cada grupo</div></div><div class="daynav"><button class="square" id="prev-day" aria-label="Día anterior">‹</button><button class="square" id="next-day" aria-label="Día siguiente">›</button></div></div>
    <div class="weekdays" id="weekdays"></div>
    <div class="mealgrid" id="mealgrid"></div>
+   <div id="daily-fruit" aria-label="Registro de frutas diarias"></div>
    <p class="mini" style="margin:14px 0 0">Los grupos y cantidades están basados en tu guía de alimentación de marzo de 2025. Podés consultar alternativas en cada comida.</p>
   </section>
   <section class="panel">
@@ -85,7 +108,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  <aside class="sidecol">
   <section class="panel">
    <div class="heading"><h2>Resumen de hoy</h2><button class="pill" id="today-btn" type="button">Ir a hoy</button></div>
-   <div class="scoregrid" style="margin-top:17px"><div class="score"><small>Grupos cumplidos</small><strong id="daily-pct">0%</strong><span id="daily-groups">0 de 16 grupos</span></div><div class="score"><small>Comidas completas</small><strong id="complete-meals">0/4</strong><span>Todos sus grupos</span></div></div>
+   <div class="scoregrid" style="margin-top:17px"><div class="score"><small>Grupos cumplidos</small><strong id="daily-pct">0%</strong><span id="daily-groups">0 de 15 grupos</span></div><div class="score"><small>Comidas completas</small><strong id="complete-meals">0/4</strong><span>Todos sus grupos</span></div></div>
    <div class="notice">La idea es registrar avances reales, no buscar días perfectos. Cada grupo cuenta.</div>
   </section>
   <section class="panel">
@@ -215,8 +238,7 @@ var names=['domingo','lunes','martes','miércoles','jueves','viernes','sábado']
 var basicGroups=[
 {id:'carb',name:'Hidratos de carbono',hint:'Elegir 1 opción',target:1,help:'Elegí una opción: 120 g de avena/quinoa o harinas; 80 g de granola; o 4 rodajas (120 g) de pan. La guía contempla equivalencias.'},
 {id:'protein',name:'Proteínas',hint:'Elegir 3 opciones',target:3,help:'Cada marca es una opción: 1 huevo; 50 g ricota; 30 g queso fresco; 200 ml yogur natural; ½ medida proteína en polvo; 15 g soja texturizada; 50 g tofu; o 20 g levadura nutricional. Según tu guía, combiná 3.'},
-{id:'fat',name:'Grasas',hint:'Elegir 1 opción',target:1,help:'20 g frutos secos o coco; 20 g pasta de maní; 40 g semillas molidas; ½ palta (50 g); o 60 g hummus.'},
-{id:'fruit',name:'Frutas',hint:'2 frutas · aprox. 400 g',target:2,help:'Dos frutas, en total aproximadamente 400 g. Ideal enteras, también pueden ser en licuados, budines o pancakes.'}
+{id:'fat',name:'Grasas',hint:'Elegir 1 opción',target:1,help:'20 g frutos secos o coco; 20 g pasta de maní; 40 g semillas molidas; ½ palta (50 g); o 60 g hummus.'}
 ];
 var mainGroups=[
 {id:'carb',name:'Hidratos de carbono',hint:'Elegir 1 opción',target:1,help:'Una opción de aproximadamente 300 g cocidos de papa/batata, legumbres, cereales, quinoa, arroz o fideos; también 3 fajitas, una porción de tarta o 3 medallones caseros de legumbres.'},
@@ -224,7 +246,9 @@ var mainGroups=[
 {id:'veg',name:'Vegetales',hint:'Al menos ½ plato',target:1,help:'Distintos colores, idealmente crudos y cocidos. Al menos medio plato: brócoli, hojas verdes, zanahoria, tomate, zapallo, morrón, etc.'},
 {id:'fat',name:'Grasas',hint:'Elegir 1 opción',target:1,help:'1 cucharada de aceite de oliva, lino o chía; o ½ palta; o 10 aceitunas más 2 cucharadas de frutos secos o semillas molidas.'}
 ];
-var meals=[{id:'breakfast',name:'Desayuno',icon:'☀️',groups:basicGroups},{id:'lunch',name:'Almuerzo',icon:'🥗',groups:mainGroups},{id:'snack',name:'Merienda',icon:'🍎',groups:basicGroups},{id:'dinner',name:'Cena',icon:'🌙',groups:mainGroups}];
+var meals=[{id:'breakfast',name:'Desayuno',icon:'☀️',groups:basicGroups},{id:'lunch',name:'Almuerzo',icon:'🥗',groups:mainGroups},{id:'snack',name:'Merienda',icon:'🥪',groups:basicGroups},{id:'dinner',name:'Cena',icon:'🌙',groups:mainGroups}];
+var fruitGroup={id:'fruit',name:'Frutas',hint:'2 frutas por día · aprox. 400 g',target:2,help:'Dos frutas en total durante el día, no dos por comida. Idealmente enteras, también pueden ser en licuados, budines o pancakes.'};
+var mealViewDate=null;
 var $=function(id){return document.getElementById(id)};
 var defaultState=function(){return {days:{},settings:{gymTarget:3,gymDays:[1,3,5]}}};
 var db=null,user=null,loading=false,offlinePending=new Set(),queueTimers={},settingsTimer;
@@ -242,8 +266,16 @@ function monday(d){return plus(d,-((d.getDay()+6)%7))}
 function keyDay(d){return state.days[k(d)]||{meals:{},gym:false,note:''}}
 function ensure(d){var key=k(d);if(!state.days[key])state.days[key]={meals:{},gym:false,note:''};if(!state.days[key].meals)state.days[key].meals={};return state.days[key]}
 function cap(v,max){var n=Number(v)||0;return Math.max(0,Math.min(max,n))}
+function dailyFruit(item){
+ var data=(item&&item.meals)||{};
+ if(data.daily&&data.daily.fruit!==undefined)return cap(data.daily.fruit,2);
+ return Math.min(2,cap(data.breakfast&&data.breakfast.fruit,2)+cap(data.snack&&data.snack.fruit,2));
+}
 function countDay(d){var item=keyDay(d),points=0,total=0,complete=0,any=false;
- meals.forEach(function(m){var all=true;m.groups.forEach(function(g){var val=cap((item.meals||{})[m.id]&&item.meals[m.id][g.id],g.target);points+=val/g.target;total++;if(val!==g.target)all=false;if(val>0)any=true});if(all)complete++});return {points:points,total:total,complete:complete,any:any}}
+ meals.forEach(function(m){var all=true;m.groups.forEach(function(g){var val=cap((item.meals||{})[m.id]&&item.meals[m.id][g.id],g.target);points+=val/g.target;total++;if(val!==g.target)all=false;if(val>0)any=true});if(all)complete++});
+ var fruits=dailyFruit(item);points+=fruits/2;total+=1;if(fruits>0)any=true;
+ return {points:points,total:total,complete:complete,any:any}
+}
 function weeklyGym(d){var start=monday(d),sum=0;for(var i=0;i<7;i++)if(keyDay(plus(start,i)).gym)sum++;return sum}
 function loadCache(key){try{var obj=JSON.parse(localStorage.getItem(key)||'null');if(obj&&obj.days&&obj.settings)return obj}catch(e){}return defaultState()}
 function saveCache(){try{localStorage.setItem(storeKey,JSON.stringify(state))}catch(e){}}
@@ -260,12 +292,57 @@ async function pushDay(key){if(!user||!db)return;var row=state.days[key];if(!row
  catch(e){syncLabel('Sin conexión · pendiente de guardar');}}
 async function pushSettings(){if(!db||!user)return;try{var p={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,updated_at:new Date().toISOString()};var r=await db.from('profile_settings').upsert(p,{onConflict:'user_id'});if(r.error)throw r.error;syncLabel('Guardado en Supabase')}catch(e){syncLabel('Configuración guardada solo en este dispositivo')}}
 function groupButtons(meal,group,value){var buttons='';for(var i=1;i<=group.target;i++){buttons+='<button type="button" class="tick'+(value>=i?' selected':'')+'" data-meal="'+meal.id+'" data-group="'+group.id+'" data-step="'+i+'" aria-pressed="'+(value>=i)+'" aria-label="'+safe(group.name)+' '+i+' de '+group.target+'">'+(value>=i?'✓':(group.target>1?i:'○'))+'</button>'}return buttons}
-function renderMeals(){$('mealgrid').innerHTML=meals.map(function(m){
- var item=(keyDay(picked).meals||{})[m.id]||{},sum=0;
- var content=m.groups.map(function(g){var v=cap(item[g.id],g.target);sum+=v/g.target;return '<div class="group"><div class="group-title"><b>'+safe(g.name)+'</b><small>'+safe(g.hint)+'</small></div><div class="ticks">'+groupButtons(m,g,v)+'</div></div>'}).join('');
- var full=sum===4;return '<article class="meal'+(full?' done':'')+'"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div><div class="meal-count">'+Math.round(sum/4*100)+'%</div></div><div class="track"><div style="width:'+(sum/4*100)+'%"></div></div>'+content+'<details class="guide"><summary>Ver cantidades y opciones</summary>'+m.groups.map(function(g){return '<p><b>'+safe(g.name)+':</b> '+safe(g.help)+'</p>'}).join('')+'</details></article>'
+function renderMeals(){
+ var todayKey=k(picked),expanded=[];
+ if(mealViewDate===todayKey)$('mealgrid').querySelectorAll('details.meal[open]').forEach(function(el){expanded.push(el.dataset.mealCard)});
+ mealViewDate=todayKey;
+ $('mealgrid').innerHTML=meals.map(function(m){
+  var entry=(keyDay(picked).meals||{})[m.id]||{},sum=0;
+  var content=m.groups.map(function(g){
+   var value=cap(entry[g.id],g.target);sum+=value/g.target;
+   return '<div class="group"><div class="group-title"><b>'+safe(g.name)+'</b><small>'+safe(g.hint)+'</small></div><div class="ticks">'+groupButtons(m,g,value)+'</div></div>'
+  }).join('');
+  var pct=Math.round(sum/m.groups.length*100),done=sum===m.groups.length;
+  return '<details class="meal'+(done?' done':'')+'" data-meal-card="'+m.id+'">'+
+  '<summary class="meal-summary"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div>'+
+  '<div class="meal-meta"><span class="meal-count">'+pct+'%</span><span class="meal-chevron" aria-hidden="true">⌄</span></div></div>'+
+  '<div class="track"><div style="width:'+pct+'%"></div></div></summary>'+
+  '<div class="meal-body">'+content+
+  '<details class="guide"><summary>Ver cantidades y opciones</summary>'+
+  m.groups.map(function(g){return '<p><b>'+safe(g.name)+':</b> '+safe(g.help)+'</p>'}).join('')+
+  '</details></div></details>'
  }).join('');
- $('mealgrid').querySelectorAll('[data-group]').forEach(function(b){b.addEventListener('click',function(){if(!user){openAccount();return}var meal=b.dataset.meal,group=b.dataset.group,step=+b.dataset.step;var entry=ensure(picked);if(!entry.meals[meal])entry.meals[meal]={};var prev=Number(entry.meals[meal][group])||0;entry.meals[meal][group]=prev>=step?step-1:step;markDay(picked);render()})})}
+ $('mealgrid').querySelectorAll('details.meal').forEach(function(el){if(expanded.includes(el.dataset.mealCard))el.open=true});
+ $('mealgrid').querySelectorAll('[data-group]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+   if(!user){openAccount();return}
+   var meal=btn.dataset.meal,group=btn.dataset.group,step=+btn.dataset.step;
+   var day=ensure(picked);if(!day.meals[meal])day.meals[meal]={};
+   var old=Number(day.meals[meal][group])||0;
+   day.meals[meal][group]=old>=step?step-1:step;
+   markDay(picked);render();
+  })
+ });
+}
+function renderFruit(){
+ var fruits=dailyFruit(keyDay(picked));
+ $('daily-fruit').innerHTML='<article class="daily-fruit'+(fruits===2?' done':'')+'">'+
+ '<div class="mealhead"><div class="mealname"><span>🍎</span>Frutas del día</div><span class="fruit-count">'+fruits+'/2 frutas</span></div>'+
+ '<p class="fruit-hint">Objetivo: 2 frutas (aprox. 400 g) en total. Podés comerlas en cualquier momento del día.</p>'+
+ '<div class="fruit-controls"><b>Frutas consumidas</b><div class="ticks">'+groupButtons({id:'daily'},fruitGroup,fruits)+'</div></div>'+
+ '</article>';
+ $('daily-fruit').querySelectorAll('[data-group]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+   if(!user){openAccount();return}
+   var day=ensure(picked),step=+btn.dataset.step,old=dailyFruit(day);
+   if(!day.meals.daily)day.meals.daily={};
+   day.meals.daily.fruit=old>=step?step-1:step;
+   if(day.meals.breakfast)delete day.meals.breakfast.fruit;
+   if(day.meals.snack)delete day.meals.snack.fruit;
+   markDay(picked);render();
+  });
+ });
+}
 function renderDays(){var first=monday(picked),selected=k(picked);$('weekdays').innerHTML='';
  for(var i=0;i<7;i++){var d=plus(first,i),b=document.createElement('button'),cnt=countDay(d);b.type='button';b.className='weekdate'+(k(d)===selected?' active':'')+(cnt.any?' has-entry':'');b.innerHTML='<span>'+days[d.getDay()]+'</span><strong>'+d.getDate()+'</strong><i></i>';b.setAttribute('aria-label',names[d.getDay()]+' '+d.getDate());b.setAttribute('aria-pressed',k(d)===selected);b.addEventListener('click',function(date){return function(){picked=date;render()}}(d));$('weekdays').append(b)}
 }
@@ -287,15 +364,15 @@ function renderGymProgress(){
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
  $('gym-history-caption').textContent='Llevás '+sumSix+' '+(sumSix===1?'entrenamiento':'entrenamientos')+' en estas 6 semanas. Cada barra representa una semana.';
 }
-function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.round(c.points/16*100)+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de 16 grupos';$('complete-meals').textContent=c.complete+'/4';
+function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.round(c.points/c.total*100)+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('week-range').textContent=range(first)+' – '+range(plus(first,6));var entries=0,pts=0;$('barweek').innerHTML='';
- for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/16*100)+'%"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/16*100)+'%';$('barweek').append(col);if(cc.any){entries++;pts+=cc.points/16}}
+ for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col);if(cc.any){entries++;pts+=cc.points/cc.total}}
  $('weekdetail').textContent=entries?('Promedio de '+entries+' día(s) con registros: '+Math.round(pts/entries*100)+'%.'):'Marcá al menos un grupo para comenzar a ver tu evolución.';
- var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/16}}
+ var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
  $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';$('month-detail').textContent=recorded?'Promedio de grupos cumplidos en '+recorded+' día(s) con registros de los últimos 30.':'Todavía no hay días registrados en los últimos 30 días.';
 }
-function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=k(picked)===k(current)?'Hoy · '+title:title;renderDays();renderMeals();renderGym();renderStats();renderGymProgress();if(document.activeElement!==$('day-note'))$('day-note').value=keyDay(picked).note||'';$('storage-state').textContent=user?'Supabase conectado':'En este dispositivo';
+function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=k(picked)===k(current)?'Hoy · '+title:title;renderDays();renderMeals();renderFruit();renderGym();renderStats();renderGymProgress();if(document.activeElement!==$('day-note'))$('day-note').value=keyDay(picked).note||'';$('storage-state').textContent=user?'Supabase conectado':'En este dispositivo';
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';$('connect-btn').textContent=user?'Ver mi cuenta':'Conectar Supabase';$('account-description').textContent=user?'Tus registros están asociados a '+user.email+'. Se sincronizan con tu cuenta cuando hay internet.':'Iniciá sesión por email para guardar el progreso en Supabase y recuperarlo en otros dispositivos.';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
  var hasOld=!!legacyDays().length;$('import-hint').hidden=!user||!hasOld;$('import-previous').hidden=!user||!hasOld;
