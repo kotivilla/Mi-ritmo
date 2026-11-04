@@ -921,46 +921,166 @@ function renderDishLibrary(){
  $('dish-library-list').querySelectorAll('[data-dish-id]').forEach(function(b){b.addEventListener('click',function(){var d=dishList().find(function(x){return x.id===b.dataset.dishId});if(d)openDish(d.meal,d)})});
 }
 function dishSummary(d){var meal=meals.find(function(m){return m.id===d.meal});return meal.groups.concat([{id:'fruit',name:'Frutas',target:2}]).filter(function(g){return Number(d.portions[g.id])>0}).map(function(g){return g.name+': '+d.portions[g.id]+'/'+g.target}).join(' · ')||'Sin grupos asignados'}
+var dishStage='choose',foodVisibleCount=18,dishShowAll=false;
+var dishCategoryLabels=[['','Todos'],['protein','Proteínas'],['carb','Hidratos'],['veg','Vegetales'],['fruit','Frutas'],['fat','Grasas'],['other','Otros']];
+function dishSuggestions(meal){
+ var basic=meal==='breakfast'||meal==='snack';
+ var names=basic?
+  ['Huevo','Avena arrollada','Pan integral','Yogur natural','Banana','Queso fresco','Leche descremada','Granola','Manzana roja','Pasta de maní sin azúcar','Nueces','Tostadas integrales']:
+  ['Pechuga de pollo','Arroz integral','Tomate','Zanahoria','Carne vacuna magra','Papa hervida','Brócoli','Atún al natural','Fideos secos','Palta','Aceite de oliva','Lentejas'];
+ return names.map(function(name){return FoodCatalog.items.find(function(f){return f.name===name})}).filter(Boolean);
+}
+function renderDishCategories(){
+ var group=$('food-filter').value;
+ $('food-category-chips').innerHTML=dishCategoryLabels.map(function(pair){
+  return '<button type="button" class="dish-category'+(group===pair[0]?' active':'')+'" data-category="'+pair[0]+'" aria-pressed="'+String(group===pair[0])+'">'+pair[1]+'</button>';
+ }).join('');
+ $('food-category-chips').querySelectorAll('[data-category]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+   $('food-filter').value=btn.dataset.category;
+   foodVisibleCount=18;dishShowAll=false;renderFoodCatalog();
+  });
+ });
+}
+function setDishStage(stage){
+ dishStage=stage==='review'?'review':'choose';
+ var review=dishStage==='review';
+ $('dish-choose').hidden=review;
+ $('dish-review').hidden=!review;
+ $('dish-choose-actions').hidden=review;
+ $('dish-review-actions').hidden=!review;
+ $('dish-step-choose').classList.toggle('active',!review);
+ $('dish-step-review').classList.toggle('active',review);
+ $('dish-name').required=review;
+ $('dish-feedback').textContent='';
+ if(document.activeElement&&typeof document.activeElement.blur==='function')document.activeElement.blur();
+ $('dish-scrollarea').scrollTop=0;
+}
 function openDish(meal,dish){
  if(!user){openAccount();return}
- dishDraft={id:dish?dish.id:null,date:k(picked),owner:user.id,selected:dish&&dish.portions&&dish.portions._ingredients?JSON.parse(JSON.stringify(dish.portions._ingredients)):[]};
- $('dish-form').reset();$('dish-meal').value=meal;$('dish-name').value=dish?dish.name:'';
- $('dish-feedback').textContent='';$('dish-review').hidden=true;$('dish-name').required=false;
- $('dish-dialog-title').textContent=dish?'Tu plato':'Elegir alimentos';
- renderFoodCatalog();renderSelectedFoods(false);
- if(dish)showDishReview(dish.portions,['Porciones guardadas. Podés ajustarlas antes de registrar.']);
+ dishDraft={id:dish?dish.id:null,date:k(picked),owner:user.id,selected:dish&&dish.portions&&Array.isArray(dish.portions._ingredients)?JSON.parse(JSON.stringify(dish.portions._ingredients)):[]};
+ foodVisibleCount=18;dishShowAll=false;
+ $('dish-form').reset();
+ $('dish-meal').value=meal;
+ $('dish-name').value=dish?dish.name:'';
+ $('dish-adjust-details').open=false;
+ $('dish-selected-drawer').open=false;
+ $('dish-dialog-title').textContent=dish?'Editar plato':'Crear plato';
+ setDishStage('choose');
+ renderSelectedFoods(false);
+ renderFoodCatalog();
+ if(dish){
+  showDishReview(dish.portions||{},['Estas son las porciones que guardaste. Podés ajustarlas antes de registrar.']);
+  setDishStage('review');
+ }
  $('dish-dialog').showModal();
 }
 function renderFoodCatalog(){
- var items=FoodCatalog.search($('food-search').value,$('food-filter').value);
- $('food-count').textContent=items.length+' de '+FoodCatalog.items.length+' alimentos';
- $('food-results').innerHTML=items.length?items.map(function(f){return '<button type="button" class="food-option" data-food="'+f.id+'"><span>'+safe(f.name)+'<small>'+safe(FoodCatalog.labels[f.group])+'</small></span><span aria-hidden="true">＋</span><span class="sr-food">Agregar</span></button>'}).join(''):'<p class="mini">No hay coincidencias. Probá con otro nombre o grupo.</p>';
- $('food-results').querySelectorAll('[data-food]').forEach(function(b){b.addEventListener('click',function(){var found=dishDraft.selected.find(function(x){return x.id===b.dataset.food});if(found)found.quantity++;else dishDraft.selected.push({id:b.dataset.food,quantity:1});renderSelectedFoods(true)})});
+ var query=$('food-search').value.trim(),group=$('food-filter').value;
+ var suggestions=!query&&!group&&!dishShowAll;
+ var items=suggestions?dishSuggestions($('dish-meal').value):FoodCatalog.search(query,group);
+ var shown=items.slice(0,foodVisibleCount),selected=new Map((dishDraft&&dishDraft.selected||[]).map(function(row){return [row.id,row.quantity]}));
+ $('food-count').textContent=suggestions?'Sugeridos para esta comida':items.length+' '+(items.length===1?'resultado':'resultados');
+ $('food-results').innerHTML=shown.length?shown.map(function(f){
+  var quantity=selected.get(f.id)||0;
+  return '<button type="button" class="food-option'+(quantity?' in-basket':'')+'" data-food="'+safe(f.id)+'" aria-label="Agregar '+safe(f.name)+' al plato"><span>'+safe(f.name)+'<small>'+safe(FoodCatalog.labels[f.group])+'</small></span><span class="dish-food-add" aria-hidden="true">'+(quantity?'✓ '+quantity:'+')+'</span></button>';
+ }).join(''):'<div class="insights-empty">No encontramos alimentos con ese nombre. Probá otra búsqueda.</div>';
+ $('food-more').hidden=!suggestions&&shown.length>=items.length;
+ $('food-more').textContent=suggestions?'Ver todo el catálogo':'Ver más alimentos ('+(items.length-shown.length)+')';
+ $('food-results').querySelectorAll('[data-food]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+   var current=dishDraft.selected.find(function(row){return row.id===btn.dataset.food});
+   if(current)current.quantity=Math.min(20,current.quantity+1);
+   else dishDraft.selected.push({id:btn.dataset.food,quantity:1});
+   renderSelectedFoods(true);renderFoodCatalog();
+  });
+ });
+ renderDishCategories();
 }
-function selectedFoodDescription(){return dishDraft.selected.map(function(row){var f=FoodCatalog.items.find(function(x){return x.id===row.id});return f?row.quantity+' '+FoodCatalog.serving(f,$('dish-meal').value).unit+' · '+f.name:''}).filter(Boolean).join('; ')}
+function selectedFoodDescription(){
+ return dishDraft.selected.map(function(row){
+  var f=FoodCatalog.items.find(function(x){return x.id===row.id});
+  return f?row.quantity+' '+FoodCatalog.serving(f,$('dish-meal').value).unit+' · '+f.name:'';
+ }).filter(Boolean).join('; ');
+}
 function renderSelectedFoods(recalculate){
- $('food-selected').innerHTML=dishDraft.selected.length?dishDraft.selected.map(function(row){var f=FoodCatalog.items.find(function(x){return x.id===row.id});if(!f)return '';return '<div class="food-chosen"><div><b>'+safe(f.name)+'</b><small>'+safe(FoodCatalog.labels[f.group])+' · '+safe(FoodCatalog.serving(f,$('dish-meal').value).unit)+'</small></div><input type="number" min="0.25" max="20" step="0.25" value="'+row.quantity+'" data-food-quantity="'+f.id+'" aria-label="Cantidad de '+safe(f.name)+'"><button type="button" class="pill" data-remove-food="'+f.id+'" aria-label="Quitar '+safe(f.name)+'">×</button></div>'}).join(''):'<p class="mini">Agregá alimentos del catálogo para armar tu plato.</p>';
- $('food-selected').querySelectorAll('[data-remove-food]').forEach(function(b){b.addEventListener('click',function(){dishDraft.selected=dishDraft.selected.filter(function(x){return x.id!==b.dataset.removeFood});renderSelectedFoods(true)})});
- $('food-selected').querySelectorAll('[data-food-quantity]').forEach(function(input){input.addEventListener('change',function(){var n=Number(input.value);if(!Number.isFinite(n)||n<0.25||n>20||n*4%1){input.reportValidity();return}dishDraft.selected.find(function(x){return x.id===input.dataset.foodQuantity}).quantity=n;refreshFoodPortions()})});
+ var chosen=dishDraft.selected,foods=chosen.map(function(row){return FoodCatalog.items.find(function(f){return f.id===row.id})}).filter(Boolean);
+ $('dish-selected-count').textContent=chosen.length+' '+(chosen.length===1?'alimento':'alimentos');
+ $('dish-selected-preview').textContent=foods.length?foods.slice(0,2).map(function(f){return f.name}).join(', ')+(foods.length>2?' +'+(foods.length-2)+' más':''):'Todavía no agregaste alimentos';
+ $('dish-choose-caption').textContent=chosen.length?chosen.length+' '+(chosen.length===1?'alimento seleccionado':'alimentos seleccionados'):'Agregá al menos un alimento';
+ $('dish-continue').disabled=!chosen.length;
+ $('food-selected').innerHTML=chosen.length?chosen.map(function(row){
+  var food=FoodCatalog.items.find(function(f){return f.id===row.id});
+  if(!food)return '';
+  return '<div class="dish-chosen-item"><div class="dish-chosen-info"><b>'+safe(food.name)+'</b><small>'+safe(FoodCatalog.serving(food,$('dish-meal').value).unit)+'</small></div>'+
+   '<div class="dish-quantity-control"><button type="button" data-qty-minus="'+safe(row.id)+'" aria-label="Restar una porción de '+safe(food.name)+'">−</button>'+
+   '<input type="number" inputmode="decimal" min="0.25" max="20" step="0.25" value="'+row.quantity+'" data-food-quantity="'+safe(row.id)+'" aria-label="Cantidad de '+safe(food.name)+'">'+
+   '<button type="button" data-qty-plus="'+safe(row.id)+'" aria-label="Agregar una porción de '+safe(food.name)+'">+</button></div>'+
+   '<button type="button" class="dish-food-remove" data-remove-food="'+safe(row.id)+'" aria-label="Quitar '+safe(food.name)+'">×</button></div>';
+ }).join(''):'<p class="mini">Agregá alimentos con el botón + del catálogo.</p>';
+ function changeQty(id,delta){
+  var row=dishDraft.selected.find(function(x){return x.id===id});if(!row)return;
+  if(row.quantity+delta<=0)dishDraft.selected=dishDraft.selected.filter(function(x){return x.id!==id});
+  else row.quantity=Math.min(20,Math.round((row.quantity+delta)*4)/4);
+  renderSelectedFoods(true);renderFoodCatalog();
+ }
+ $('food-selected').querySelectorAll('[data-qty-minus]').forEach(function(btn){btn.addEventListener('click',function(){changeQty(btn.dataset.qtyMinus,-1)})});
+ $('food-selected').querySelectorAll('[data-qty-plus]').forEach(function(btn){btn.addEventListener('click',function(){changeQty(btn.dataset.qtyPlus,1)})});
+ $('food-selected').querySelectorAll('[data-remove-food]').forEach(function(btn){btn.addEventListener('click',function(){dishDraft.selected=dishDraft.selected.filter(function(x){return x.id!==btn.dataset.removeFood});renderSelectedFoods(true);renderFoodCatalog()})});
+ $('food-selected').querySelectorAll('[data-food-quantity]').forEach(function(input){
+  input.addEventListener('change',function(){
+   var n=Number(input.value);
+   if(!Number.isFinite(n)||n<0.25||n>20||Math.abs(n*4-Math.round(n*4))>0.00001){
+    input.reportValidity();input.value=dishDraft.selected.find(function(x){return x.id===input.dataset.foodQuantity}).quantity;return;
+   }
+   dishDraft.selected.find(function(x){return x.id===input.dataset.foodQuantity}).quantity=n;
+   refreshFoodPortions();renderFoodCatalog();
+  });
+ });
  if(recalculate)refreshFoodPortions();
 }
 function refreshFoodPortions(){
- if(!dishDraft.selected.length){$('dish-review').hidden=true;$('dish-name').required=false;return}
- if(!$('dish-name').value.trim()||$('dish-name').value===dishDraft.generatedName)$('dish-name').value=dishDraft.generatedName=dishDraft.selected.map(function(row){return FoodCatalog.items.find(function(f){return f.id===row.id}).name}).join(' + ').slice(0,120);
- showDishReview(FoodCatalog.totals(dishDraft.selected,$('dish-meal').value),['El grupo ya está definido. La cantidad representa porciones del plan, no gramos ni mililitros. Podés ajustar las marcas antes de registrar. Las frutas se suman a Frutas del día. Los extras y los grupos que no forman parte de esta comida no suman a su porcentaje.']);
+ if(!dishDraft.selected.length){
+  if(dishStage==='review')setDishStage('choose');
+  return;
+ }
+ if(!$('dish-name').value.trim()||$('dish-name').value===dishDraft.generatedName){
+  $('dish-name').value=dishDraft.generatedName=dishDraft.selected.map(function(row){
+   var f=FoodCatalog.items.find(function(f){return f.id===row.id});return f?f.name:'';
+  }).filter(Boolean).join(' + ').slice(0,120);
+ }
+ showDishReview(FoodCatalog.totals(dishDraft.selected,$('dish-meal').value),['Las cantidades representan porciones de tu plan, no necesariamente gramos. Podés editar el aporte de cada grupo. Las frutas se registran en el objetivo diario.']);
 }
 function showDishReview(portions,notes){
- $('dish-review').hidden=false;$('dish-name').required=true;$('dish-analysis-note').textContent=notes.join(' ');
+ $('dish-analysis-note').textContent=notes.join(' ');
  var reviewGroups=dishMeal().groups.concat([{id:'fruit',name:'Frutas del día',target:2}]);
- $('dish-portions').innerHTML=reviewGroups.map(function(g){return '<label class="dish-portion"><span>'+safe(g.name)+' <small>de '+g.target+'</small></span><input aria-label="Opciones de '+safe(g.name)+'" data-portion="'+g.id+'" type="number" min="0" max="'+g.target+'" step="0.25" value="'+cap(portions[g.id],g.target)+'" required></label>'}).join('');
+ $('dish-portions').innerHTML=reviewGroups.map(function(g){
+  return '<label class="dish-portion"><span>'+safe(g.name)+' <small>de '+g.target+'</small></span><input aria-label="Opciones de '+safe(g.name)+'" data-portion="'+g.id+'" type="number" inputmode="decimal" min="0" max="'+g.target+'" step="0.25" value="'+cap(portions[g.id],g.target)+'" required></label>';
+ }).join('');
  $('dish-portions').querySelectorAll('input').forEach(function(input){input.addEventListener('input',updateDishResult)});
- $('dish-date').textContent='Al registrar se suma a '+dishMeal().name.toLowerCase()+' del '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long',year:'numeric'}).format(fromKey(dishDraft.date))+'. Solo guardar no modifica tus registros.';
- $('dish-eat').textContent=dishDraft.date===k(current)?'Comí esto hoy':'Registrar en esta fecha';updateDishResult();
+ $('dish-review-ingredients').innerHTML=dishDraft.selected.length?dishDraft.selected.map(function(row){
+  var f=FoodCatalog.items.find(function(x){return x.id===row.id});
+  return f?'<span class="dish-review-ingredient">'+safe(f.name)+' · '+safe(row.quantity)+' '+safe(FoodCatalog.serving(f,$('dish-meal').value).unit)+'</span>':'';
+ }).join(''):'<p class="mini">Este plato tiene porciones guardadas sin una lista detallada de ingredientes.</p>';
+ $('dish-date').textContent='Guardar y registrar sumará este plato a '+dishMeal().name.toLowerCase()+' del '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'long',year:'numeric'}).format(fromKey(dishDraft.date))+'. Guardar plato solo lo agrega a Mis platos.';
+ updateDishResult();
 }
-function readDishPortions(){var p={};$('dish-portions').querySelectorAll('input').forEach(function(input){p[input.dataset.portion]=Number(input.value)});return p}
-function updateDishResult(){var meal=dishMeal(),p=readDishPortions(),entry=(keyDay(fromKey(dishDraft.date)).meals||{})[meal.id]||{};
- var complete=[],pending=[];meal.groups.forEach(function(g){var n=Math.min(g.target,(Number(entry[g.id])||0)+(p[g.id]||0));(n>=g.target?complete:pending).push(g.name+(n<g.target?' ('+n+'/'+g.target+')':''))});
- $('dish-result').textContent='Al sumarlo al día: '+(complete.length?'completos: '+complete.join(', ')+'. ':'')+(pending.length?'pendientes: '+pending.join(', ')+'.':'Todos los grupos completos.')+(p.fruit?' Frutas del día: '+Math.min(2,dailyFruit(keyDay(fromKey(dishDraft.date)))+p.fruit)+'/2.':'');
+function readDishPortions(){
+ var p={};$('dish-portions').querySelectorAll('input').forEach(function(input){p[input.dataset.portion]=Number(input.value)});return p;
+}
+function updateDishResult(){
+ var meal=dishMeal(),p=readDishPortions(),entry=(keyDay(fromKey(dishDraft.date)).meals||{})[meal.id]||{},review=meal.groups.concat([{id:'fruit',name:'Frutas',target:2}]);
+ $('dish-contributions').innerHTML=review.filter(function(group){return p[group.id]>0}).map(function(g){
+  return '<span class="dish-contribution">'+safe(g.name)+' <b>'+safe(p[g.id])+'/'+g.target+'</b></span>';
+ }).join('')||'<p class="mini">Este plato todavía no aporta grupos de tu plan. Podés ajustar las porciones.</p>';
+ var complete=[],pending=[];
+ meal.groups.forEach(function(g){
+  var n=Math.min(g.target,(Number(entry[g.id])||0)+(p[g.id]||0));
+  (n>=g.target?complete:pending).push(g.name+(n<g.target?' ('+n+'/'+g.target+')':''));
+ });
+ $('dish-result').textContent=(complete.length?'Quedarían completos: '+complete.join(', ')+'. ':'')+
+  (pending.length?'Pendientes: '+pending.join(', ')+'.':'Todos los grupos completos.')+
+  (p.fruit?' Frutas del día: '+Math.min(2,dailyFruit(keyDay(fromKey(dishDraft.date)))+p.fruit)+'/2.':'');
 }
 function saveDish(event){
  event.preventDefault();if(!dishDraft||!user||user.id!==dishDraft.owner){$('dish-dialog').close();return}
@@ -983,8 +1103,17 @@ function saveDish(event){
 function setupDishes(){
  $('new-dish').addEventListener('click',function(){openDish($('dish-library-meal').value)});
  $('dish-library-meal').addEventListener('change',renderDishLibrary);
- $('food-search').addEventListener('input',renderFoodCatalog);$('food-filter').addEventListener('change',renderFoodCatalog);
- $('dish-meal').addEventListener('change',function(){renderSelectedFoods(true)});$('dish-form').addEventListener('submit',saveDish);
+ $('food-search').addEventListener('input',function(){foodVisibleCount=18;dishShowAll=false;renderFoodCatalog()});
+ $('food-search').addEventListener('keydown',function(event){if(event.key==='Enter'){event.preventDefault();this.blur()}});
+ $('food-filter').addEventListener('change',function(){foodVisibleCount=18;dishShowAll=false;renderFoodCatalog()});
+ $('food-more').addEventListener('click',function(){if(!dishShowAll&&!$('food-search').value.trim()&&!$('food-filter').value){dishShowAll=true;foodVisibleCount=24}else foodVisibleCount+=24;renderFoodCatalog()});
+ $('dish-meal').addEventListener('change',function(){renderSelectedFoods(true);renderFoodCatalog()});
+ $('dish-continue').addEventListener('click',function(){
+  if(!dishDraft||!dishDraft.selected.length)return;
+  refreshFoodPortions();setDishStage('review');
+ });
+ $('dish-back').addEventListener('click',function(){setDishStage('choose')});
+ $('dish-form').addEventListener('submit',saveDish);
 }
 
 function renderMeals(){
