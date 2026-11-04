@@ -1855,6 +1855,70 @@ function renderFruit(){
   });
  });
 }
+var nutritionCalendarMonth=null;
+function nutritionCalendarRegistered(date,info){
+ var item=keyDay(date),food=item.meals||{};
+ // Los registros de gimnasio o peso corporal no se cuentan como alimentación.
+ return !!(info.any||dailyFruit(item)>0||meals.some(function(meal){
+  var logged=food[meal.id];
+  return logged&&Array.isArray(logged._dishes)&&logged._dishes.length>0;
+ }));
+}
+function renderNutritionCalendar(){
+ if(!nutritionCalendarMonth)return;
+ var y=nutritionCalendarMonth.getFullYear(),m=nutritionCalendarMonth.getMonth();
+ var heading=new Intl.DateTimeFormat('es-AR',{month:'long',year:'numeric'}).format(nutritionCalendarMonth);
+ $('nutrition-calendar-month').textContent=heading.charAt(0).toUpperCase()+heading.slice(1);
+ var firstWeekday=(new Date(y,m,1,12).getDay()+6)%7;
+ var monthDays=new Date(y,m+1,0,12).getDate();
+ var slots=Math.max(35,Math.ceil((firstWeekday+monthDays)/7)*7);
+ var grid=$('nutrition-calendar-grid'),selected=k(picked),today=k(new Date());
+ grid.innerHTML='';
+ for(var i=0;i<slots;i++){
+  var d=new Date(y,m,1-firstWeekday+i,12),key=k(d);
+  var info=countDay(d),logged=nutritionCalendarRegistered(d,info);
+  var pct=Math.round(100*info.points/info.total);
+  var outside=d.getMonth()!==m;
+  var cell=document.createElement('button');
+  cell.type='button';
+  cell.className='nutrition-calendar-day'+(logged?' is-recorded':'')+
+   (logged&&pct>=40&&pct<80?' is-amber':'')+
+   (outside?' is-other-month':'')+(key===today?' is-today':'')+(key===selected?' is-selected':'');
+  if(logged)cell.style.setProperty('--calendar-day-color',progressColor(pct,true));
+  cell.innerHTML='<span class="nutrition-calendar-number">'+d.getDate()+'</span>'+
+   (logged?'<span class="nutrition-calendar-percent">'+pct+'%</span>':'');
+  var fullDate=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
+  cell.setAttribute('aria-label',fullDate+(logged?', '+pct+'% del plan alimentario':', sin registro de alimentación'));
+  if(key===selected)cell.setAttribute('aria-current','date');
+  cell.addEventListener('click',function(date){
+   return function(){picked=date;$('nutrition-calendar-dialog').close();render()};
+  }(d));
+  grid.append(cell);
+ }
+}
+function setupNutritionCalendar(){
+ var modal=$('nutrition-calendar-dialog');
+ $('open-nutrition-calendar').addEventListener('click',function(){
+  nutritionCalendarMonth=new Date(picked.getFullYear(),picked.getMonth(),1,12);
+  renderNutritionCalendar();
+  if(!modal.open)modal.showModal();
+ });
+ $('nutrition-calendar-close').addEventListener('click',function(){modal.close()});
+ $('nutrition-calendar-prev').addEventListener('click',function(){
+  nutritionCalendarMonth=new Date(nutritionCalendarMonth.getFullYear(),nutritionCalendarMonth.getMonth()-1,1,12);
+  renderNutritionCalendar();
+ });
+ $('nutrition-calendar-next').addEventListener('click',function(){
+  nutritionCalendarMonth=new Date(nutritionCalendarMonth.getFullYear(),nutritionCalendarMonth.getMonth()+1,1,12);
+  renderNutritionCalendar();
+ });
+ $('nutrition-calendar-today').addEventListener('click',function(){
+  var now=new Date();picked=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12);
+  modal.close();render();
+ });
+ modal.addEventListener('click',function(event){if(event.target===modal)modal.close()});
+}
+
 function renderDays(){var first=monday(picked),selected=k(picked);$('weekdays').innerHTML='';
  for(var i=0;i<7;i++){var d=plus(first,i),b=document.createElement('button'),cnt=countDay(d);b.type='button';b.className='weekdate'+(k(d)===selected?' active':'')+(cnt.any?' has-entry':'');b.innerHTML='<span>'+days[d.getDay()]+'</span><strong>'+d.getDate()+'</strong><i></i>';b.setAttribute('aria-label',names[d.getDay()]+' '+d.getDate());b.setAttribute('aria-pressed',k(d)===selected);b.addEventListener('click',function(date){return function(){picked=date;render()}}(d));$('weekdays').append(b)}
 }
@@ -2045,7 +2109,7 @@ function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*10
  var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
  $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
 }
-function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();
+function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();if($('nutrition-calendar-dialog').open)renderNutritionCalendar();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
 }
@@ -2249,7 +2313,7 @@ function switchView(view,scroll){
  try{localStorage.setItem('mi-ritmo-active-view',activeView)}catch(e){}
  if(scroll!==false)window.scrollTo(0,0);
 }
-async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();setupProgressTabs();
+async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();setupProgressTabs();setupNutritionCalendar();
  InsightsUI.init({
   state:function(){return state},
   user:function(){return user},
