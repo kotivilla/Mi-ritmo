@@ -301,6 +301,121 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  .progress-recovery-stats{grid-template-columns:1fr}
  .progress-recovery-stat.extra{grid-column:auto}
 }
+
+/* Crear platos — flujo mobile-first en dos pasos */
+#dish-dialog{width:min(700px,calc(100vw - 28px));max-width:none;height:min(790px,92dvh);max-height:92dvh;border-radius:22px;overflow:hidden}
+#dish-dialog[open]{display:flex;flex-direction:column}
+#dish-dialog .dish-shell{min-height:0;width:100%;height:100%;display:flex;flex-direction:column}
+.dish-sheet-head{flex:none;padding:23px 25px 0;background:#fff;border-bottom:1px solid #e8f0e9}
+.dish-sheet-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
+#dish-dialog-title{font-size:24px;letter-spacing:-.7px;line-height:1.2;margin:0;font-weight:850}
+.dish-kicker{margin:0 0 6px;color:var(--green);font-size:10px;font-weight:850;letter-spacing:1.6px}
+.dish-close{width:43px;height:43px;border:1px solid var(--border);border-radius:12px;background:#f8faf8;color:#4e6755;font-size:26px;line-height:1;flex-shrink:0}
+.dish-steps{display:flex;align-items:center;gap:12px;margin:19px 0 15px}
+.dish-step{display:flex;align-items:center;gap:7px;color:#97a79b;font-size:12px;font-weight:800;white-space:nowrap}
+.dish-step b{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;background:#edf2ee;color:#778b7c;font-size:11px}
+.dish-step.active{color:var(--green)}.dish-step.active b{background:var(--green);color:#fff}
+.dish-step-line{width:32px;height:1px;background:#dce8de}
+.dish-scrollarea{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px 25px 26px;scrollbar-gutter:stable}
+.dish-step-content[hidden],#dish-choose-actions[hidden],#dish-review-actions[hidden],#food-more[hidden]{display:none!important}
+.dish-mobile-label{display:block;font-size:12px;font-weight:800;margin:0 0 7px;color:#526a58}
+#dish-dialog .dish-mobile-field{margin:0 0 16px;background:#fff;font-size:16px;min-height:48px}
+.dish-basket{border:1px solid #d8eadd;border-radius:14px;background:#f5faf5;margin:0 0 23px;overflow:hidden}
+.dish-basket>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;padding:12px 14px;min-height:65px}
+.dish-basket>summary::-webkit-details-marker{display:none}.dish-basket>summary::marker{content:""}
+.dish-basket-icon{display:grid;place-items:center;background:#e0f1e6;color:var(--green);font-size:14px;font-weight:850;border-radius:11px;width:35px;height:35px;flex-shrink:0}
+.dish-basket-copy{min-width:0;flex:1}.dish-basket-copy b{display:block;font-size:13px;color:var(--dark)}
+#dish-selected-count{font-size:11px;color:var(--green);font-weight:750;margin-left:5px}
+.dish-basket-copy small{display:block;margin-top:3px;font-size:11px;color:#789181;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dish-basket-chevron{font-size:21px;line-height:1;color:var(--green);transition:transform .15s}
+.dish-basket[open] .dish-basket-chevron{transform:rotate(180deg)}
+.dish-chosen-list{padding:0 13px 12px;border-top:1px solid #e0ebe2}
+.dish-catalog-heading{margin-bottom:15px}
+.dish-catalog-heading h3{font-size:16px;letter-spacing:-.3px;margin:0 0 4px}
+.dish-catalog-heading p{margin:0;font-size:12px;color:var(--muted)}
+.dish-search-wrap{position:relative}
+.dish-search-wrap .field{margin:0;padding:13px 13px 13px 41px;min-height:49px;border-color:#cbded1;border-radius:13px;background:#fff;font-size:16px}
+.dish-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#7d9786;font-size:28px;line-height:1;pointer-events:none}
+.dish-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.dish-categories{display:flex;overflow-x:auto;gap:7px;margin:15px -4px 15px;padding:0 4px 5px;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.dish-categories::-webkit-scrollbar{display:none}
+.dish-category{display:inline-flex;flex:0 0 auto;align-items:center;gap:5px;white-space:nowrap;border:1px solid #dce9de;background:#f8faf7;border-radius:100px;padding:9px 12px;font-size:12px;font-weight:750;color:#5f7465;min-height:38px}
+.dish-category.active{background:var(--green);border-color:var(--green);color:#fff}
+.dish-results-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 9px}
+.dish-results-heading b{font-size:13px}.dish-results-heading span{font-size:11px;color:var(--muted)}
+#dish-dialog .dish-result-list{border:1px solid var(--border);border-radius:13px;overflow:hidden;max-height:none}
+#dish-dialog .food-option{min-height:54px;padding:11px 13px;gap:14px;transition:background .15s}
+#dish-dialog .food-option span:first-child{min-width:0;flex:1;font-size:13px;font-weight:750;line-height:1.3}
+#dish-dialog .food-option small{font-size:11px;font-weight:500;color:#829488;margin-top:4px}
+.dish-food-add{border:1px solid #cae7d3;border-radius:10px;display:grid;place-items:center;flex:none;background:#ebf6ef;color:var(--green);font-weight:850;width:34px;height:34px;font-size:20px;line-height:1}
+.food-option.in-basket .dish-food-add{background:var(--green);border-color:var(--green);color:#fff;font-size:12px}
+.dish-show-more{border:1px solid #d9e9de;background:#fff;color:var(--green);border-radius:11px;padding:13px;min-height:43px;font-weight:750;font-size:12px;width:100%;margin:12px 0 0}
+.dish-chosen-item{display:flex;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid #e0eae1}
+.dish-chosen-item:last-child{border-bottom:0}
+.dish-chosen-info{min-width:0;flex:1}
+.dish-chosen-info b{display:block;font-size:12px;overflow-wrap:anywhere;line-height:1.35}
+.dish-chosen-info small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.dish-quantity-control{display:flex;gap:0;border:1px solid #d3e3d7;border-radius:10px;background:#fff;overflow:hidden;align-items:center;flex-shrink:0}
+.dish-quantity-control button{border:0;background:transparent;min-width:31px;min-height:36px;padding:0;color:var(--green);font-weight:850;font-size:19px}
+.dish-quantity-control input{width:39px;min-width:0;border:0;padding:5px 2px;text-align:center;background:#fff;color:var(--dark);font-weight:750;font-size:13px;appearance:textfield;-moz-appearance:textfield}
+.dish-quantity-control input::-webkit-inner-spin-button{appearance:none}
+.dish-food-remove{border:0;background:transparent;color:#a45151;font-size:20px;min-width:31px;min-height:36px;border-radius:8px}
+.dish-review-heading{margin:4px 0 19px}
+.dish-review-heading h3{font-size:20px;letter-spacing:-.6px;margin:0 0 5px}
+.dish-review-heading p{font-size:12px;color:var(--muted);margin:0}
+.dish-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;background:none;border:0;color:var(--green);font-size:13px;font-weight:750;padding:5px 0;min-height:35px}
+.dish-review-block{margin:21px 0 0;padding-top:18px;border-top:1px solid var(--border)}
+.dish-review-block h4{font-size:14px;letter-spacing:-.2px;margin:0 0 10px}
+.dish-review-tip{font-size:11px;color:var(--muted);margin:-4px 0 12px}
+.dish-review-ingredients{display:flex;flex-wrap:wrap;gap:6px}
+.dish-review-ingredient{padding:8px 10px;border-radius:9px;font-size:11px;color:#476755;background:#f2f8f2;border:1px solid #dceadd}
+.dish-contributions{display:flex;flex-wrap:wrap;gap:7px}
+.dish-contribution{border:1px solid #d6eadc;background:#f6faf6;padding:8px 11px;border-radius:10px;display:flex;gap:7px;font-size:12px;color:#50705c;align-items:center}
+.dish-contribution b{color:var(--green);font-weight:850}
+.dish-adjust-details{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:16px}
+.dish-adjust-details>summary{list-style:none;padding:13px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:750;color:var(--green);background:#fbfdfb}
+.dish-adjust-details>summary::-webkit-details-marker{display:none}
+.dish-adjust-details>summary::marker{content:""}
+.dish-adjust-details[open]>summary span{transform:rotate(180deg)}
+.dish-adjust-body{padding:5px 14px 14px;background:#fff}
+#dish-dialog .dish-portion{padding:10px 0;gap:6px}
+#dish-dialog .dish-portion input{width:66px;text-align:center;min-height:39px;font-size:16px;flex-shrink:0}
+#dish-dialog .dish-portion span{font-size:12px}
+#dish-dialog .dish-portion span small{color:var(--muted)}
+#dish-result{line-height:1.5}
+.dish-date-note{font-size:12px;color:#667c6c;background:#f5f9f5;padding:12px 13px;border-radius:11px;margin:19px 0 4px}
+.dish-sheet-footer{flex:none;border-top:1px solid #dfeadf;padding:13px 24px calc(13px + env(safe-area-inset-bottom,0px));background:#fff;box-shadow:0 -6px 20px rgba(21,67,39,.035)}
+.dish-choose-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#dish-choose-caption{font-size:12px;color:#738d7c;min-width:0}
+.dish-choose-actions .pill{min-height:47px;font-size:13px;padding:12px 20px;flex-shrink:0}
+.dish-choose-actions .pill:disabled{background:#b8c8bc;border-color:#b8c8bc;cursor:default}
+.dish-review-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.dish-review-actions .pill{min-height:48px;font-size:13px;padding:10px 9px;white-space:normal}
+.dish-feedback{color:#ac4949;font-size:11px;margin:7px 0 0}
+.dish-feedback:empty{display:none}
+@media(max-width:610px){
+ #dish-dialog{position:fixed;inset:0;margin:0!important;width:100vw!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;border:0;border-radius:0;padding:0}
+ #dish-dialog .dish-shell{height:100dvh}
+ .dish-sheet-head{padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
+ #dish-dialog-title{font-size:22px}
+ .dish-steps{margin:13px 0 11px}
+ .dish-scrollarea{padding:16px 15px 23px;scrollbar-gutter:auto}
+ .dish-basket{margin-bottom:18px}
+ .dish-catalog-heading{margin-bottom:12px}
+ .dish-categories{margin-top:12px;margin-bottom:13px;gap:6px}
+ .dish-category{min-height:38px;padding:8px 11px}
+ #dish-dialog .food-option{min-height:55px}
+ .dish-sheet-footer{padding:11px 14px calc(10px + env(safe-area-inset-bottom,0px))}
+ .dish-choose-actions .pill{min-width:154px}
+ .dish-review-actions .pill{font-size:12px}
+}
+@media(max-width:360px){
+ .dish-sheet-head{padding-left:13px;padding-right:13px}
+ .dish-scrollarea{padding-left:12px;padding-right:12px}
+ .dish-sheet-footer{padding-left:12px;padding-right:12px}
+ .dish-quantity-control input{width:32px}
+ #dish-choose-caption{font-size:10px}
+}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
@@ -595,23 +710,89 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <div id="gym-session-exercises"></div><p id="gym-session-error" role="alert" aria-live="polite"></p>
 <div class="actions session-actions"><button class="pill session-danger" type="button" id="gym-session-delete" hidden>Eliminar registro</button><button class="pill primary" type="submit" id="gym-session-save">Guardar entrenamiento</button></div>
 </form></dialog>
-<dialog id="dish-dialog" aria-labelledby="dish-dialog-title"><form id="dish-form" class="dialog-body">
- <div class="heading"><h2 id="dish-dialog-title">Agregar plato</h2><button class="square" type="button" data-close="dish-dialog" aria-label="Cerrar plato">×</button></div>
- <label class="dish-label" for="dish-meal">¿Para qué comida?</label><select class="field" id="dish-meal"><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
- <label class="dish-label" for="food-search">Buscar alimentos</label><input class="field" type="search" id="food-search" placeholder="Huevo, tomate, arroz, yogur…" autocomplete="off">
- <label class="dish-label" for="food-filter">Grupo</label><select class="field" id="food-filter"><option value="">Todos los grupos</option value="carb">Hidratos</option><option value="protein">Proteínas</option><option value="veg">Verduras y vegetales</option><option value="fruit">Frutas</option><option value="fat">Grasas</option><option value="other">Extras y bebidas</option></select>
- <p class="mini" id="food-count" aria-live="polite"></p><div id="food-results" class="food-results" aria-label="Catálogo de alimentos"></div>
- <h3 class="dish-subtitle">En tu plato</h3><div id="food-selected" aria-live="polite"></div>
- <div id="dish-review" hidden>
-  <label class="dish-label" for="dish-name">Nombre para tu lista</label><input id="dish-name" class="field" maxlength="120" required>
-  <p class="mini" id="dish-analysis-note"></p>
-  <h3 class="dish-subtitle">Aporte del plato</h3><p class="mini">Grupos de los alimentos seleccionados. Ajustá las porciones si hace falta.</p>
-  <div id="dish-portions"></div><p class="mini" id="dish-result" aria-live="polite"></p>
-  <p class="mini" id="dish-date"></p>
-  <div class="actions dish-actions"><button class="pill" id="dish-save-only" type="submit" value="save">Solo guardar plato</button><button class="pill primary" id="dish-eat" type="submit" value="eat">Guardar y registrar</button></div>
- </div>
- <p id="dish-feedback" class="mini" role="status" aria-live="polite"></p>
-</form></dialog>
+<dialog id="dish-dialog" aria-labelledby="dish-dialog-title">
+ <form id="dish-form" class="dish-shell">
+  <header class="dish-sheet-head">
+   <div class="dish-sheet-heading">
+    <div><p class="dish-kicker">MIS PLATOS</p><h2 id="dish-dialog-title">Crear plato</h2></div>
+    <button class="dish-close" type="button" data-close="dish-dialog" aria-label="Cerrar sin guardar">×</button>
+   </div>
+   <div class="dish-steps" aria-label="Pasos para crear el plato">
+    <span id="dish-step-choose" class="dish-step active"><b>1</b> Alimentos</span>
+    <span class="dish-step-line" aria-hidden="true"></span>
+    <span id="dish-step-review" class="dish-step"><b>2</b> Revisar</span>
+   </div>
+  </header>
+  <div class="dish-scrollarea" id="dish-scrollarea">
+   <section id="dish-choose" class="dish-step-content" aria-label="Elegir alimentos">
+    <label class="dish-mobile-label" for="dish-meal">¿Para qué comida?</label>
+    <select class="field dish-mobile-field" id="dish-meal">
+     <option value="breakfast">☀️ Desayuno</option><option value="lunch">🥗 Almuerzo</option>
+     <option value="snack">🥪 Merienda</option><option value="dinner">🌙 Cena</option>
+    </select>
+    <details id="dish-selected-drawer" class="dish-basket">
+     <summary>
+      <span class="dish-basket-icon" aria-hidden="true">✓</span>
+      <span class="dish-basket-copy"><b>Tu plato <span id="dish-selected-count">0 alimentos</span></b><small id="dish-selected-preview">Todavía no agregaste alimentos</small></span>
+      <span class="dish-basket-chevron" aria-hidden="true">⌄</span>
+     </summary>
+     <div id="food-selected" class="dish-chosen-list"></div>
+    </details>
+    <div class="dish-catalog-heading"><h3>Agregar alimentos</h3><p>Buscá y tocá <b>+</b> para sumarlos al plato.</p></div>
+    <label class="dish-mobile-label" for="food-search">Buscar en el catálogo</label>
+    <div class="dish-search-wrap">
+     <span aria-hidden="true" class="dish-search-icon">⌕</span>
+     <input class="field" type="search" id="food-search" placeholder="Ej. pollo, arroz, tomate…" autocomplete="off" enterkeyhint="search">
+    </div>
+    <label class="dish-visually-hidden" for="food-filter">Filtrar por grupo</label>
+    <select class="dish-visually-hidden" id="food-filter">
+     <option value="">Todos</option><option value="carb">Hidratos</option><option value="protein">Proteínas</option>
+     <option value="veg">Vegetales</option><option value="fruit">Frutas</option>
+     <option value="fat">Grasas</option><option value="other">Otros</option>
+    </select>
+    <div id="food-category-chips" class="dish-categories" role="group" aria-label="Filtrar alimentos por grupo"></div>
+    <div class="dish-results-heading"><b>Alimentos</b><span id="food-count" aria-live="polite"></span></div>
+    <div id="food-results" class="food-results dish-result-list" aria-label="Resultados del catálogo de alimentos"></div>
+    <button type="button" id="food-more" class="dish-show-more" hidden>Ver más alimentos</button>
+   </section>
+   <section id="dish-review" class="dish-step-content" hidden aria-label="Revisar plato">
+    <button type="button" id="dish-back" class="dish-back">‹ Volver a los alimentos</button>
+    <div class="dish-review-heading"><h3>Terminemos tu plato</h3><p>Revisá el nombre y cómo suma a tu plan.</p></div>
+    <label class="dish-mobile-label" for="dish-name">Nombre del plato</label>
+    <input id="dish-name" class="field dish-mobile-field" maxlength="120" placeholder="Ej. Pollo con arroz y vegetales">
+    <div class="dish-review-block">
+     <h4>Ingredientes seleccionados</h4>
+     <div id="dish-review-ingredients" class="dish-review-ingredients"></div>
+    </div>
+    <div class="dish-review-block">
+     <h4>Aporte a tu plan</h4>
+     <p class="dish-review-tip">Estimación según las porciones de tu guía nutricional.</p>
+     <div id="dish-contributions" class="dish-contributions"></div>
+     <details id="dish-adjust-details" class="dish-adjust-details">
+      <summary>Ajustar porciones del plan <span aria-hidden="true">⌄</span></summary>
+      <div class="dish-adjust-body">
+       <p class="mini" id="dish-analysis-note"></p>
+       <div id="dish-portions"></div>
+       <p class="mini" id="dish-result" aria-live="polite"></p>
+      </div>
+     </details>
+    </div>
+    <p id="dish-date" class="dish-date-note"></p>
+   </section>
+  </div>
+  <footer class="dish-sheet-footer">
+   <div id="dish-choose-actions" class="dish-choose-actions">
+    <span id="dish-choose-caption">Agregá al menos un alimento</span>
+    <button type="button" id="dish-continue" class="pill primary" disabled>Revisar plato <span aria-hidden="true">→</span></button>
+   </div>
+   <div id="dish-review-actions" class="dish-review-actions" hidden>
+    <button class="pill" id="dish-save-only" type="submit" value="save">Guardar plato</button>
+    <button class="pill primary" id="dish-eat" type="submit" value="eat">Guardar y registrar</button>
+   </div>
+   <p id="dish-feedback" class="dish-feedback" role="status" aria-live="polite"></p>
+  </footer>
+ </form>
+</dialog>
 
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
