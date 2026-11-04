@@ -143,10 +143,17 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .session-prior-hint{margin:0 0 12px!important;color:#537960!important;font-size:11px!important}
 .session-set input::placeholder{color:#88998f;opacity:1}
 @media(max-width:610px){#settings-dialog{width:100vw;height:100dvh;max-height:100dvh;border:0;border-radius:0;max-width:none;margin:0}#settings-dialog .dialog-body{padding:22px 16px calc(35px + env(safe-area-inset-bottom,0px))}.top-right{gap:5px}.top-right .pill{font-size:11px;padding:8px}}
+
+.strength-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 11px}
+.strength-switch-btn{padding:11px;border:1px solid var(--border);background:#f6f9f5;border-radius:12px;color:var(--dark);font-size:13px;font-weight:750}
+.strength-switch-btn.active{background:var(--green);border-color:var(--green);color:#fff}
+#strength-metric-help{margin:0 0 14px;line-height:1.5}
+.training-table-volume{white-space:nowrap;font-weight:750;color:var(--green)}
+#strength-history .training-empty{padding:16px 0}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
-<script src="/training-model.js?v=5"></script>
+<script src="/training-model.js?v=6"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -205,8 +212,13 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <p class="mini" id="gym-history-caption">Se actualizará a medida que registres tus entrenamientos.</p>
   </section>
   <section class="panel" aria-labelledby="strength-title">
-   <h2 id="strength-title">Evolución de pesos</h2>
+   <h2 id="strength-title">Evolución de pesos y volumen</h2>
    <label class="dish-label" for="strength-exercise">Ejercicio</label><select class="field" id="strength-exercise"></select>
+   <div class="strength-switch" role="group" aria-label="Métrica para el gráfico de progreso">
+    <button class="strength-switch-btn active" id="strength-mode-weight" type="button" aria-pressed="true">Peso máximo</button>
+    <button class="strength-switch-btn" id="strength-mode-volume" type="button" aria-pressed="false">Volumen</button>
+   </div>
+   <p class="mini" id="strength-metric-help">Mayor peso registrado en una serie de cada entrenamiento.</p>
    <div id="strength-history"></div>
   </section>
  </main>
@@ -649,31 +661,63 @@ function deleteGymSession(){
  var d=trainingData();delete d.workouts[sessionDate];state.training=d;
  ensure(fromKey(sessionDate)).gym=false;markDay(fromKey(sessionDate));render();$('gym-session-dialog').close();toast('Registro eliminado.');
 }
+var strengthMetric='weight';
 function renderStrengthHistory(){
  var data=TrainingModel.historyView(state.training),options=new Map(),selected=$('strength-exercise').value;
- data.routineDays.filter(function(d){return !d.archived}).forEach(function(day){day.rows.forEach(function(ex){options.set(ex.id,TrainingModel.displayName(ex))})});Object.values(data.workouts).forEach(function(w){w.exercises.forEach(function(ex){options.set(ex.id,TrainingModel.displayName(ex))})});
+ data.routineDays.filter(function(d){return !d.archived}).forEach(function(day){day.rows.forEach(function(ex){options.set(ex.id,TrainingModel.displayName(ex))})});
+ Object.values(data.workouts).forEach(function(w){w.exercises.forEach(function(ex){options.set(ex.id,TrainingModel.displayName(ex))})});
  $('strength-exercise').innerHTML=options.size?Array.from(options).sort(function(a,b){return a[1].localeCompare(b[1],'es')}).map(function(pair){return '<option value="'+safe(pair[0])+'">'+safe(pair[1])+'</option>'}).join(''):'<option value="">Todavía no hay ejercicios</option>';
  if(options.has(selected))$('strength-exercise').value=selected;
+ var volumeMode=strengthMetric==='volume',valueKey=volumeMode?'volume':'max';
+ ['weight','volume'].forEach(function(mode){
+  var active=mode===strengthMetric,btn=$('strength-mode-'+mode);
+  btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));
+ });
+ $('strength-metric-help').textContent=volumeMode?'Volumen de carga = suma de (repeticiones × peso en kg) de todas las series de cada ejercicio.':'Peso máximo registrado en una serie de cada entrenamiento.';
  var history=TrainingModel.history(data.workouts,$('strength-exercise').value);
- if(!history.length){$('strength-history').innerHTML='';return}
- var latest=history[history.length-1],delta=latest.max-history[0].max,shown=history.slice(-12),max=Math.max(1,...shown.map(function(r){return r.max}));
+ if(!history.length){
+  $('strength-history').innerHTML='<p class="training-empty mini">Cuando registres este ejercicio, acá vas a ver la evolución de sus pesos y volumen.</p>';
+  return;
+ }
+ var latest=history[history.length-1],delta=latest[valueKey]-history[0][valueKey],shown=history.slice(-12);
+ var fmtKg=function(value){return Number(value.toFixed(3)).toLocaleString('es-AR',{maximumFractionDigits:3})};
+ var max=Math.max(1,...shown.map(function(r){return r[valueKey]}));
  var rawStep=max/4,magnitude=Math.pow(10,Math.floor(Math.log10(rawStep))),step=[1,2,2.5,5,10].find(function(n){return n*magnitude>=rawStep})*magnitude,ceiling=Math.ceil(max/step)*step;
- var dateLabel=function(date){var parts=date.split('-');return parts[2]+'/'+parts[1]},kgLabel=function(value){return Number(value.toFixed(4)).toLocaleString('es-AR')};
+ var dateLabel=function(date){var parts=date.split('-');return parts[2]+'/'+parts[1]};
  var firstTime=Date.parse(shown[0].date),lastTime=Date.parse(latest.date);
- var points=shown.map(function(r){return {x:firstTime===lastTime?177:50+(Date.parse(r.date)-firstTime)/(lastTime-firstTime)*254,y:140-r.max/ceiling*110,row:r}});
- var grid='';for(var tick=0;tick<=Math.round(ceiling/step);tick++){var value=tick*step,y=140-value/ceiling*110;grid+='<line x1="50" y1="'+y+'" x2="304" y2="'+y+'" stroke="#e4eae5"/><text x="42" y="'+(y+3)+'" text-anchor="end" font-size="10" fill="#607568">'+kgLabel(value)+'</text>'}
- var labelIndexes=new Set([0,points.length-1]);if(points.length>2){labelIndexes.add(Math.round((points.length-1)/3));labelIndexes.add(Math.round(2*(points.length-1)/3))}
- // Suppress labels that would overlap when sessions cluster on adjacent dates.
+ var points=shown.map(function(r){return {x:firstTime===lastTime?177:50+(Date.parse(r.date)-firstTime)/(lastTime-firstTime)*254,y:140-r[valueKey]/ceiling*110,row:r}});
+ var grid='';
+ for(var tick=0;tick<=Math.round(ceiling/step);tick++){
+  var value=tick*step,y=140-value/ceiling*110;
+  grid+='<line x1="50" y1="'+y+'" x2="304" y2="'+y+'" stroke="#e4eae5"/><text x="42" y="'+(y+3)+'" text-anchor="end" font-size="10" fill="#607568">'+fmtKg(value)+'</text>';
+ }
+ var labelIndexes=new Set([0,points.length-1]);
+ if(points.length>2){labelIndexes.add(Math.round((points.length-1)/3));labelIndexes.add(Math.round(2*(points.length-1)/3))}
  var lastLabelX=-Infinity;
- var dates=points.map(function(p,i){if(!labelIndexes.has(i))return '';if(i!==points.length-1&&(p.x-lastLabelX<48||points[points.length-1].x-p.x<48))return '';lastLabelX=p.x;return '<line x1="'+p.x+'" y1="140" x2="'+p.x+'" y2="145" stroke="#a9bab0"/><text x="'+p.x+'" y="160" text-anchor="middle" font-size="10" fill="#607568">'+dateLabel(p.row.date)+'</text>'}).join('');
- var svg='<svg viewBox="0 0 340 188" role="img" aria-label="Mayor peso por entrenamiento: fecha en el eje X y kilogramos en el eje Y"><text x="14" y="16" font-size="10" fill="#607568">kg</text>'+grid+'<path d="M50 30 V140 H304" fill="none" stroke="#a9bab0"/>'+dates+'<text x="177" y="182" text-anchor="middle" font-size="10" fill="#607568">Fecha (día/mes)</text><polyline fill="none" stroke="#24966b" stroke-width="3" points="'+points.map(function(p){return p.x+','+p.y}).join(' ')+'"/>'+points.map(function(p){return '<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#176650"><title>'+safe(p.row.date)+': '+p.row.max+' kg × '+p.row.reps+' repeticiones</title></circle>'}).join('')+'</svg>';
- $('strength-history').innerHTML='<div class="training-stats"><div><small>Último máximo</small><strong>'+latest.max+' kg</strong><span>'+latest.reps+' repeticiones</span></div><div><small>Desde el primer registro</small><strong>'+(delta>0?'+':'')+delta+' kg</strong><span>'+history.length+' entrenamientos</span></div></div>'+svg+'<p class="mini">'+shown[0].date+' → '+latest.date+' · Últimos '+shown.length+' registros</p><div class="training-table"><table><thead><tr><th>Fecha</th><th>Series · repeticiones × kg</th></tr></thead><tbody>'+history.slice().reverse().map(function(row){return '<tr><td>'+safe(row.date)+'</td><td>'+row.sets.map(function(set){return set.reps+' × '+set.weight}).join(' / ')+'</td></tr>'}).join('')+'</tbody></table></div>';
+ var dates=points.map(function(p,i){
+  if(!labelIndexes.has(i))return '';
+  if(i!==points.length-1&&(p.x-lastLabelX<48||points[points.length-1].x-p.x<48))return '';
+  lastLabelX=p.x;
+  return '<line x1="'+p.x+'" y1="140" x2="'+p.x+'" y2="145" stroke="#a9bab0"/><text x="'+p.x+'" y="160" text-anchor="middle" font-size="10" fill="#607568">'+dateLabel(p.row.date)+'</text>';
+ }).join('');
+ var metricLabel=volumeMode?'Volumen de carga':'Peso máximo';
+ var svg='<svg viewBox="0 0 340 188" role="img" aria-label="'+metricLabel+' por entrenamiento: fecha en el eje X y kilogramos en el eje Y"><text x="14" y="16" font-size="10" fill="#607568">kg</text>'+grid+'<path d="M50 30 V140 H304" fill="none" stroke="#a9bab0"/>'+dates+'<text x="177" y="182" text-anchor="middle" font-size="10" fill="#607568">Fecha (día/mes)</text><polyline fill="none" stroke="#24966b" stroke-width="3" points="'+points.map(function(p){return p.x+','+p.y}).join(' ')+'"/>'+points.map(function(p){return '<circle cx="'+p.x+'" cy="'+p.y+'" r="4" fill="#176650"><title>'+safe(p.row.date)+': '+fmtKg(p.row[valueKey])+' kg'+(volumeMode?' de volumen':' de peso máximo')+'</title></circle>'}).join('')+'</svg>';
+ var previous=history[0][valueKey],change=(delta>0?'+':'')+fmtKg(delta)+' kg';
+ var bodyweightNote=volumeMode&&latest.volume===0?'<p class="mini">Si registraste 0 kg (por ejemplo, ejercicios de peso corporal sin lastre), el volumen de carga externa será 0, aunque hayas hecho repeticiones.</p>':'';
+ $('strength-history').innerHTML=
+  '<div class="training-stats"><div><small>'+(volumeMode?'Último volumen':'Último máximo')+'</small><strong>'+fmtKg(latest[valueKey])+' kg</strong><span>'+(volumeMode?latest.totalReps+' repeticiones en '+latest.sets.length+' series':latest.reps+' repeticiones')+'</span></div>'+
+  '<div><small>Variación desde el primer registro</small><strong>'+change+'</strong><span>'+history.length+' entrenamientos</span></div></div>'+
+  svg+'<p class="mini">'+shown[0].date+' → '+latest.date+' · Últimos '+shown.length+' registros</p>'+
+  '<div class="training-table"><table><thead><tr><th>Fecha</th><th>Series · reps × kg</th><th>Volumen</th></tr></thead><tbody>'+
+  history.slice().reverse().map(function(row){return '<tr><td>'+safe(row.date)+'</td><td>'+row.sets.map(function(set){return set.reps+' × '+fmtKg(set.weight)}).join(' / ')+'</td><td class="training-table-volume">'+fmtKg(row.volume)+' kg</td></tr>'}).join('')+
+  '</tbody></table></div>'+bodyweightNote;
 }
 function setupTraining(){
  $('routine-form').addEventListener('submit',saveRoutine);
  $('add-routine-day').addEventListener('click',addRoutineDay);$('remove-routine-day').addEventListener('click',removeRoutineDay);$('restore-routine').addEventListener('click',restoreRoutineDay);
  $('add-routine-exercise').addEventListener('click',function(){var rows=routineRows();if(rows.length>=30){trainingMessage('Máximo 30 ejercicios por día.');return}rows.push({name:'',sets:Array.from({length:3},function(){return {reps:10,weight:0}})});renderRoutineRows();trainingMessage('Cambios sin guardar.');var inputs=$('training-exercises').querySelectorAll('[data-field="name"]');if(inputs.length)inputs[inputs.length-1].focus()});
  $('strength-exercise').addEventListener('change',renderStrengthHistory);
+ ['weight','volume'].forEach(function(metric){$('strength-mode-'+metric).addEventListener('click',function(){strengthMetric=metric;renderStrengthHistory()})});
  $('gym-session-routine').addEventListener('change',chooseGymSession);
  $('gym-session-form').addEventListener('submit',saveGymSession);
  $('gym-session-delete').addEventListener('click',deleteGymSession);
