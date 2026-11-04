@@ -1222,6 +1222,7 @@ function saveDish(event){
  state=next;
  syncDishLibrary();
  $('dish-dialog').close();
+ $('dish-library-search').value='';
  render();
  toast('Plato guardado en Mis platos. No se registró como comido.');
 }
