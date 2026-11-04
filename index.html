@@ -21,7 +21,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 /* Navegación inferior persistente y separación de secciones */
 .view[hidden]{display:none!important}
 .bottom-nav{position:fixed;z-index:30;left:0;right:0;bottom:0;background:rgba(255,255,255,.95);border-top:1px solid var(--border);box-shadow:0 -6px 25px rgba(22,51,41,.045);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}
-.nav-inner{max-width:470px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.nav-inner{max-width:540px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .nav-tab{appearance:none;-webkit-appearance:none;min-height:55px;border:1px solid transparent;border-radius:14px;background:transparent;color:#87978d;font-size:13px;font-weight:800;display:flex;justify-content:center;align-items:center;gap:10px;transition:color .18s,background .18s;touch-action:manipulation}
 .nav-tab svg{width:21px;height:21px;flex-shrink:0}
 .nav-tab.active{background:var(--light);color:var(--green);border-color:#cde6d5}
@@ -252,6 +252,41 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 </div>
 </div>
 
+<div id="progress-view" class="view layout insights-progress-view" hidden>
+ <main class="maincol">
+  <section class="panel insights-summary-panel">
+   <div class="heading"><div><p class="eyebrow">TU BALANCE</p><h2>Resumen semanal</h2></div><span class="sub" id="insights-report-range"></span></div>
+   <div class="insights-report-cards" id="insights-report-cards"></div>
+   <ul class="insights-report-notes" id="insights-report-notes"></ul>
+   <p class="mini">Los días sin registros no se consideran incumplimientos.</p>
+  </section>
+  <section class="panel">
+   <div class="heading"><h2>Peso corporal</h2><span class="sub">Seguí la tendencia, no un solo día</span></div>
+   <form id="insights-weight-form" class="insights-quick-form">
+    <label>Fecha <input class="field" type="date" id="insights-weight-date" required></label>
+    <label>Peso (kg) <input class="field" type="number" inputmode="decimal" step="0.01" min="20" max="350" placeholder="Ej. 75.5" id="insights-weight-value"></label>
+    <button class="pill primary" type="submit">Guardar peso</button>
+   </form>
+   <p class="mini" id="insights-weight-feedback" role="status" aria-live="polite"></p>
+   <div class="insights-weight-summary" id="insights-weight-summary"></div>
+   <div id="insights-weight-chart"></div>
+  </section>
+  <section class="panel">
+   <div class="heading"><h2>Recuperación</h2><span class="sub">Opcional y rápido</span></div>
+   <p class="mini">Registrá sueño, energía y cansancio muscular cuando te resulte útil.</p>
+   <form id="insights-recovery-form" class="insights-recovery-form">
+    <label>Fecha <input class="field" type="date" id="insights-recovery-date" required></label>
+    <label>Horas de sueño <input class="field" type="number" min="0" max="18" step="0.5" inputmode="decimal" id="insights-sleep" placeholder="Opcional"></label>
+    <label>Energía <select class="field" id="insights-energy"><option value="">Sin registrar</option><option value="1">1 · Muy baja</option><option value="2">2 · Baja</option><option value="3">3 · Normal</option><option value="4">4 · Buena</option><option value="5">5 · Muy buena</option></select></label>
+    <label>Fatiga muscular <select class="field" id="insights-soreness"><option value="">Sin registrar</option><option value="1">1 · Nada</option><option value="2">2 · Leve</option><option value="3">3 · Moderada</option><option value="4">4 · Alta</option><option value="5">5 · Muy alta</option></select></label>
+    <button class="pill primary" type="submit">Guardar recuperación</button>
+   </form>
+   <p class="mini" id="insights-recovery-feedback" role="status" aria-live="polite"></p>
+   <p class="mini" id="insights-recovery-summary"></p>
+  </section>
+ </main>
+</div>
+
 <nav class="bottom-nav" aria-label="Secciones principales">
  <div class="nav-inner" role="tablist" aria-label="Seguimiento">
   <button class="nav-tab active" id="nav-nutrition" type="button" role="tab" aria-selected="true" aria-controls="nutrition-view">
@@ -261,6 +296,10 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
   <button class="nav-tab" id="nav-gym" type="button" role="tab" aria-selected="false" aria-controls="gym-view">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" aria-hidden="true"><path d="M2.5 9v6m3-8v10m13-10v10m3-8v6M5.5 12h13M8 7v10m8-10v10"/></svg>
    <span>Gimnasio</span>
+  </button>
+  <button class="nav-tab" id="nav-progress" type="button" role="tab" aria-selected="false" aria-controls="progress-view">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 3 7-8"/><path d="M15 6h5v5"/></svg>
+   <span>Progreso</span>
   </button>
  </div>
 </nav>
