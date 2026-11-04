@@ -1248,6 +1248,7 @@ function renderMeals(){
  mealViewDate=todayKey;
  $('mealgrid').innerHTML=meals.map(function(m){
   var entry=(keyDay(picked).meals||{})[m.id]||{},sum=0;
+  var savedOptions=dishList().filter(function(d){return d.meal===m.id}).sort(function(a,b){return a.name.localeCompare(b.name,'es')});
   var content=m.groups.map(function(g){
    var value=cap(entry[g.id],g.target);sum+=value/g.target;
    return '<div class="group"><div class="group-title"><b>'+safe(g.name)+'</b><small>'+safe(g.hint)+'</small></div><div class="ticks">'+groupButtons(m,g,value)+'</div></div>'
@@ -1258,14 +1259,28 @@ function renderMeals(){
   '<div class="meal-meta"><span class="meal-count">'+pct+'%</span><span class="meal-chevron" aria-hidden="true">⌄</span></div></div>'+
   '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,sum>0)+'"></div></div></summary>'+
   '<div class="meal-body">'+content+
-  '<div class="dish-tools"><button class="pill" type="button" data-add-dish="'+m.id+'">+ Registrar plato</button>'+
-  (entry._dishes||[]).map(function(d){return '<div class="dish-log">Registrado: '+safe(d.name)+'</div>'}).join('')+'</div>'+
+  '<div class="dish-tools">'+
+   '<details class="meal-dish-picker"><summary>Elegir de Mis platos <span aria-hidden="true">⌄</span></summary>'+
+    '<div class="meal-dish-opts">'+(savedOptions.length?savedOptions.map(function(d){
+     var eaten=!!(entry._dishes||[]).some(function(existing){return existing.id===d.id});
+     return '<div class="meal-dish-opt"><span>'+safe(d.name)+'</span><button type="button" class="pill" data-log-meal-dish="'+safe(d.id)+'" '+
+      (eaten||k(picked)>k(current)?'disabled':'')+'>'+(eaten?'✓ Registrado':k(picked)>k(current)?'Fecha futura':'Comí esto')+'</button></div>';
+    }).join(''):'<div class="meal-dish-empty">Todavía no tenés opciones para esta comida. <button class="pill" type="button" data-add-dish="'+m.id+'">+ Crear plato para mi lista</button></div>')+
+   '</div></details>'+
+   (entry._dishes||[]).map(function(d){return '<div class="dish-log">✓ Registrado: '+safe(d.name)+'</div>'}).join('')+
+  '</div>'+
   '<details class="guide"><summary>Ver cantidades y opciones</summary>'+
   m.groups.map(function(g){return '<p><b>'+safe(g.name)+':</b> '+safe(g.help)+'</p>'}).join('')+
   '</details></div></details>'
  }).join('');
  $('mealgrid').querySelectorAll('details.meal').forEach(function(el){if(expanded.includes(el.dataset.mealCard))el.open=true});
  $('mealgrid').querySelectorAll('[data-add-dish]').forEach(function(b){b.addEventListener('click',function(){openDish(b.dataset.addDish)})});
+ $('mealgrid').querySelectorAll('[data-log-meal-dish]').forEach(function(b){
+  b.addEventListener('click',function(){
+   var dish=dishList().find(function(d){return d.id===b.dataset.logMealDish});
+   if(dish)registerSavedDish(dish,k(picked));
+  });
+ });
  $('mealgrid').querySelectorAll('[data-group]').forEach(function(btn){
   btn.addEventListener('click',function(){
    if(!user){openAccount();return}
