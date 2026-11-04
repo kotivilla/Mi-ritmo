@@ -512,28 +512,29 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  <div class="top-right"><span class="sync" id="sync-label">Preparando registros...</span><button class="pill" id="account-btn" type="button">☁ Cuenta</button><button class="pill" id="settings-btn" type="button">⚙ Configuración</button></div>
 </header>
 <section class="intro"><p class="eyebrow" id="view-eyebrow">TU CONSTANCIA, DÍA A DÍA</p><h1 id="view-title">Tu alimentación, a tu ritmo.</h1><p id="view-subtitle">Registrá cada grupo de alimentos y seguí tu progreso.</p></section>
-<div id="nutrition-view" class="view layout">
- <main class="maincol">
-  <section class="panel">
-   <div class="heading"><div><h2 id="day-title"></h2></div><div class="daynav"><button class="square" id="prev-day" aria-label="Día anterior">‹</button><button class="square" id="next-day" aria-label="Día siguiente">›</button></div></div>
-   <div class="weekdays" id="weekdays"></div>
+<div id="nutrition-view" class="view nutrition-layout">
+ <main class="nutrition-main">
+  <section class="panel nutrition-day-panel" aria-label="Registro diario de alimentación">
+   <div class="nutrition-day-top">
+    <h2 id="day-title">Hoy</h2>
+    <div class="daynav">
+     <button class="square" type="button" id="prev-day" aria-label="Día anterior">‹</button>
+     <button class="square" type="button" id="next-day" aria-label="Día siguiente">›</button>
+    </div>
+   </div>
+   <div class="weekdays" id="weekdays" aria-label="Elegir día de la semana"></div>
+   <div class="nutrition-daily-summary" aria-label="Progreso del día">
+    <div class="nutrition-daily-summary-top"><span>Avance del día</span><strong id="daily-pct">0%</strong></div>
+    <div class="nutrition-daily-track" aria-hidden="true"><span id="nutrition-progress-fill"></span></div>
+    <div class="nutrition-daily-meta">
+     <span id="daily-groups">0 de 14 grupos</span>
+     <span><strong id="complete-meals">0/4</strong> comidas completas</span>
+    </div>
+   </div>
+   <div class="nutrition-meals-heading"><h3>Comidas</h3></div>
    <div class="mealgrid" id="mealgrid"></div>
-   <div id="daily-fruit" aria-label="Registro de frutas diarias"></div>
+   <div id="daily-fruit" aria-label="Frutas del día"></div>
   </section>
- </main>
- <aside class="sidecol">
-  <section class="panel">
-   <div class="heading"><h2>Resumen de hoy</h2></div>
-   <div class="scoregrid" style="margin-top:17px"><div class="score"><small>Grupos cumplidos</small><strong id="daily-pct">0%</strong><span id="daily-groups">0 de 14 grupos</span></div><div class="score"><small>Comidas completas</small><strong id="complete-meals">0/4</strong><span>Todos sus grupos</span></div></div>
-  </section>
-  <section class="panel">
-   <div class="heading"><h2>Progreso semanal</h2><span class="sub" id="week-range"></span></div>
-   <div class="barweek" id="barweek"></div>
-   <p class="mini" id="weekdetail">Cada barra muestra los grupos cumplidos por día.</p>
-   <hr class="sep">
-   <div class="heading"><h2>Últimos 30 días</h2><b id="month-pct" style="color:var(--green);font-size:24px">—</b></div>
-  </section>
- </aside>
   <section class="panel dish-library-panel" aria-labelledby="dish-library-title">
    <div class="heading dish-library-heading">
     <h2 id="dish-library-title" class="dish-library-title">
@@ -560,11 +561,24 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
    </div>
   </section>
-   <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
+  <details class="panel nutrition-tools-panel" id="nutrition-tools-panel">
+   <summary class="nutrition-tools-summary">
+    <span class="nutrition-tools-icon" aria-hidden="true">⋯</span>
+    <span>Estadísticas y planificación</span>
+    <span class="nutrition-tools-chevron" aria-hidden="true">⌄</span>
+   </summary>
+   <div class="nutrition-tools-content">
+    <section class="nutrition-weekly-section" aria-label="Resumen semanal y mensual">
+     <div class="nutrition-tools-section-head"><h3>Últimos días</h3><span class="sub" id="week-range"></span></div>
+     <div class="barweek" id="barweek"></div>
+     <p class="mini" id="weekdetail"></p>
+     <div class="nutrition-monthly-line"><span>Promedio · 30 días</span><strong id="month-pct">—</strong></div>
+    </section>
+    <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
     <div class="heading"><h2 id="insights-nutrition-title">Cómo viene tu alimentación</h2><span class="sub" id="insights-nutrition-date"></span></div>
     <div id="insights-nutrition-body"></div>
    </section>
-   <details class="panel dish-library-panel insights-planner-panel">
+    <details class="panel dish-library-panel insights-planner-panel">
     <summary class="insights-details-title">Planificar comidas y compras <span>Ver planificador</span></summary>
     <p class="mini">Elegí platos guardados para organizar la semana. Podés generar una lista de compras con los ingredientes.</p>
     <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square" type="button" id="insights-plan-prev" aria-label="Semana anterior">‹</button><button class="square" type="button" id="insights-plan-next" aria-label="Semana siguiente">›</button></div></div>
@@ -575,6 +589,9 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
     <ul class="insights-shopping-list" id="insights-shopping-items"></ul>
     <p class="mini" id="insights-shopping-note"></p>
    </details>
+   </div>
+  </details>
+ </main>
 </div>
 
 <div id="gym-view" class="view gym-layout" hidden>
