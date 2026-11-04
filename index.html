@@ -854,7 +854,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <div class="dish-library-date"><span aria-hidden="true">◷</span> Para registrar una comida: <b id="dish-library-selected-date">fecha seleccionada</b></div>
    <div class="dish-library-controls">
     <label for="dish-library-meal"><span>Mostrar</span>
-     <select class="field" id="dish-library-meal"><option value="">Todas las comidas</option><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
+     <select class="field" id="dish-library-meal"><option value="">Todas las comidas</option><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Té</option><option value="dinner">Comida</option></select>
     </label>
     <label for="dish-library-search"><span>Buscar plato</span>
      <input class="field" id="dish-library-search" type="search" placeholder="Buscar mis opciones…" autocomplete="off">
@@ -1146,7 +1146,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
     <label class="dish-mobile-label" for="dish-meal">¿Para qué comida?</label>
     <select class="field dish-mobile-field" id="dish-meal">
      <option value="breakfast">☀️ Desayuno</option><option value="lunch">🥗 Almuerzo</option>
-     <option value="snack">🥪 Merienda</option><option value="dinner">🌙 Cena</option>
+     <option value="snack">🍵 Té</option><option value="dinner">🍽️ Comida</option>
     </select>
     <details id="dish-selected-drawer" class="dish-basket">
      <summary>
@@ -1232,7 +1232,7 @@ var mainGroups=[
 {id:'veg',name:'Vegetales',hint:'Al menos ½ plato',target:1,help:'Distintos colores, idealmente crudos y cocidos. Al menos medio plato: brócoli, hojas verdes, zanahoria, tomate, zapallo, morrón, etc.'},
 {id:'fat',name:'Grasas',hint:'Elegir 1 opción',target:1,help:'1 cucharada de aceite de oliva, lino o chía; o ½ palta; o 10 aceitunas más 2 cucharadas de frutos secos o semillas molidas.'}
 ];
-var meals=[{id:'breakfast',name:'Desayuno',icon:'☀️',groups:basicGroups},{id:'lunch',name:'Almuerzo',icon:'🥗',groups:mainGroups},{id:'snack',name:'Merienda',icon:'🥪',groups:basicGroups},{id:'dinner',name:'Cena',icon:'🌙',groups:mainGroups}];
+var meals=[{id:'breakfast',name:'Desayuno',icon:'☀️',groups:basicGroups},{id:'lunch',name:'Almuerzo',icon:'🥗',groups:mainGroups},{id:'snack',name:'Té',icon:'🍵',groups:basicGroups},{id:'dinner',name:'Comida',icon:'🍽️',groups:mainGroups}];
 var fruitGroup={id:'fruit',name:'Frutas',hint:'2 frutas por día · aprox. 400 g',target:2,help:'Dos frutas en total durante el día, no dos por comida. Idealmente enteras, también pueden ser en licuados, budines o pancakes.'};
 var mealViewDate=null;
 var $=function(id){return document.getElementById(id)};
