@@ -505,7 +505,7 @@ var storeKey=GUEST, state=loadCache(GUEST),draftDays=[1,3,5];
 var initDone=false, hasEdited=false;
 var authMode='login';
 var recoveryFromUrl=/(?:[?#&])type=recovery(?:[&#]|$)/.test(location.search+'#'+location.hash);
-var activeView='nutrition';try{if(localStorage.getItem('mi-ritmo-active-view')==='gym')activeView='gym'}catch(e){}
+var activeView='nutrition';try{var savedView=localStorage.getItem('mi-ritmo-active-view');if(savedView==='gym'||savedView==='progress')activeView=savedView}catch(e){}
 function k(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function fromKey(s){var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2],12)}
 function plus(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
@@ -892,7 +892,7 @@ function renderStats(){var c=countDay(picked);$('daily-pct').textContent=Math.ro
  var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
  $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
 }
-function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();
+function render(){var title=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(picked);$('day-title').textContent=title.charAt(0).toUpperCase()+title.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
 }
@@ -916,14 +916,17 @@ function showAuth(mode){
 }
 function openAccount(){showAuth(user?'logged':'login')}
 function showConfigTab(tab){
- var onRoutine=tab==='routine';
- $('config-goal-content').hidden=onRoutine;$('config-routine-content').hidden=!onRoutine;
- $('config-tab-goal').classList.toggle('active',!onRoutine);$('config-tab-routine').classList.toggle('active',onRoutine);
- $('config-tab-goal').setAttribute('aria-selected',String(!onRoutine));$('config-tab-routine').setAttribute('aria-selected',String(onRoutine));
+ var active=['goal','routine','blocks'].includes(tab)?tab:'goal';
+ ['goal','routine','blocks'].forEach(function(name){
+  var selected=active===name;
+  $('config-'+name+'-content').hidden=!selected;
+  $('config-tab-'+name).classList.toggle('active',selected);
+  $('config-tab-'+name).setAttribute('aria-selected',String(selected));
+ });
 }
 function openSettings(tab){
  $('gym-target').value=state.settings.gymTarget||3;draftDays=(state.settings.gymDays||[1,3,5]).slice();settingPrefs();
- showConfigTab(tab==='routine'?'routine':'goal');if(!$('settings-dialog').open)$('settings-dialog').showModal();
+ showConfigTab(['routine','blocks'].includes(tab)?tab:'goal');if(!$('settings-dialog').open)$('settings-dialog').showModal();
 }
 function saveSettings(){var n=Number($('gym-target').value);if(!Number.isInteger(n)||n<1||n>7){toast('Elegí entre 1 y 7 entrenamientos');return}state.settings.gymTarget=n;state.settings.gymDays=draftDays.slice().sort(function(a,b){return (a+6)%7-(b+6)%7});saveCache();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}render();toast('Objetivo actualizado')}
 function authError(error){
@@ -1045,23 +1048,41 @@ async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.c
  loading=false;render();syncDishLibrary();}
 function downloadBackup(){var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mi-ritmo-'+k(current)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1500)}
 function switchView(view,scroll){
- activeView=view==='gym'?'gym':'nutrition';var gym=activeView==='gym';
- $('nutrition-view').hidden=gym;$('gym-view').hidden=!gym;
- $('nav-nutrition').classList.toggle('active',!gym);$('nav-gym').classList.toggle('active',gym);
- $('nav-nutrition').setAttribute('aria-selected',String(!gym));$('nav-gym').setAttribute('aria-selected',String(gym));
- $('view-eyebrow').textContent=gym?'TU RUTINA, SEMANA A SEMANA':'TU CONSTANCIA, DÍA A DÍA';
- $('view-title').textContent=gym?'Cada entrenamiento suma.':'Tu alimentación, a tu ritmo.';
- $('view-subtitle').textContent=gym?'Registrá tus días de gimnasio y mirá cómo evoluciona tu constancia.':'Registrá cada grupo de alimentos y seguí tu progreso.';
+ activeView=view==='gym'?'gym':view==='progress'?'progress':'nutrition';
+ ['nutrition','gym','progress'].forEach(function(name){
+  var selected=activeView===name;
+  $(name+'-view').hidden=!selected;
+  $('nav-'+name).classList.toggle('active',selected);
+  $('nav-'+name).setAttribute('aria-selected',String(selected));
+ });
+ var labels={
+  nutrition:['TU CONSTANCIA, DÍA A DÍA','Tu alimentación, a tu ritmo.','Registrá cada grupo de alimentos y seguí tu progreso.'],
+  gym:['FUERZA Y CONSTANCIA','Cada entrenamiento suma.','Registrá tus entrenamientos y mirá cómo evoluciona tu rendimiento.'],
+  progress:['TU EVOLUCIÓN','Tu progreso, en perspectiva.','Conectá tu entrenamiento, alimentación y recuperación.']
+ };
+ $('view-eyebrow').textContent=labels[activeView][0];$('view-title').textContent=labels[activeView][1];$('view-subtitle').textContent=labels[activeView][2];
  try{localStorage.setItem('mi-ritmo-active-view',activeView)}catch(e){}
  if(scroll!==false)window.scrollTo(0,0);
 }
 async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();
+ InsightsUI.init({
+  state:function(){return state},
+  user:function(){return user},
+  date:function(){return k(picked)},
+  today:function(){return k(current)},
+  safe:safe,meals:meals,
+  trainingData:trainingData,dishList:dishList,openAccount:openAccount,toast:toast,
+  markDay:function(date){markDay(fromKey(date))},
+  saveSettings:function(){saveCache();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}},
+  renderAll:render
+ });
  if(window.supabase&&window.supabase.createClient){db=window.supabase.createClient(URL_SUPA,KEY_SUPA,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});try{var r=await db.auth.getSession();if(r.error)throw r.error;await useUser(r.data.session&&r.data.session.user||null);db.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session&&(!user||user.id!==session.user.id))setTimeout(function(){useUser(session.user)},0);if(event==='SIGNED_OUT'&&user)setTimeout(function(){useUser(null)},0);if(event==='PASSWORD_RECOVERY')setTimeout(function(){recoveryFromUrl=true;showAuth('reset')},0)})}catch(e){syncLabel('Sin conexión con Supabase');render()}}else{syncLabel('Sin conexión con Supabase');render()}
- $('nav-nutrition').addEventListener('click',function(){switchView('nutrition')});$('nav-gym').addEventListener('click',function(){switchView('gym')});
+ $('nav-nutrition').addEventListener('click',function(){switchView('nutrition')});$('nav-gym').addEventListener('click',function(){switchView('gym')});$('nav-progress').addEventListener('click',function(){switchView('progress')});
  $('gym-prev-week').addEventListener('click',function(){picked=plus(picked,-7);render()});$('gym-next-week').addEventListener('click',function(){picked=plus(picked,7);render()});
  $('gym-register-today').addEventListener('click',function(){openGymSession(new Date(current))});
  $('config-tab-goal').addEventListener('click',function(){showConfigTab('goal')});
  $('config-tab-routine').addEventListener('click',function(){showConfigTab('routine')});
+ $('config-tab-blocks').addEventListener('click',function(){showConfigTab('blocks')});
  $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});
  $('account-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);
  document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){$(b.dataset.close).close()})});
