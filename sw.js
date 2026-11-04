@@ -1,4 +1,4 @@
-const CACHE = 'mi-ritmo-shell-v24-toggle-eaten-dishes';
+const CACHE = 'mi-ritmo-shell-v25-collapsible-dish-library';
 const ASSETS = ['/', '/index.html', '/dish-model.js?v=2', '/food-catalog.js', '/training-model.js?v=7', '/insights-model.js?v=2', '/insights-ui.js?v=3', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
