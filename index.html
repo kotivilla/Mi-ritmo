@@ -416,6 +416,61 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  .dish-quantity-control input{width:32px}
  #dish-choose-caption{font-size:10px}
 }
+
+/* Biblioteca de platos: guardar opciones y registrar comidas son acciones separadas */
+.dish-library-panel .dish-library-heading{align-items:flex-start}
+.dish-library-heading>div{min-width:0}
+.dish-library-heading .sub{display:block;margin-top:5px;line-height:1.4}
+.dish-library-heading .primary{flex:none;min-height:43px}
+.dish-library-date{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:18px;padding:11px 13px;background:#eef7ef;border:1px solid #d8e9da;border-radius:12px;color:#526e5a;font-size:12px;line-height:1.45}
+.dish-library-date>span{color:var(--green);font-size:17px;line-height:1;margin-right:2px}
+.dish-library-date b{color:var(--green)}
+.dish-library-controls{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:16px 0}
+.dish-library-controls label{display:block;min-width:0;color:#63796a;font-size:11px;font-weight:750}
+.dish-library-controls label>span{display:block;margin-bottom:5px}
+.dish-library-controls .field{font-size:16px;min-height:45px;margin:0;width:100%;min-width:0}
+.dish-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dish-item{display:flex;flex-direction:column;align-items:stretch;gap:12px;min-width:0;padding:16px;border:1px solid #deeadf;border-radius:15px;background:#fff}
+.dish-item-main{flex:1;min-width:0}
+.dish-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.dish-item-tag{font-size:10px;font-weight:800;color:var(--green);background:#edf7ef;border:1px solid #d7eadd;border-radius:100px;padding:4px 8px}
+.dish-item-mark{color:var(--green);font-size:10px;font-weight:750;white-space:nowrap}
+.dish-item-main>b{font-size:15px;line-height:1.35;display:block;letter-spacing:-.2px;overflow-wrap:anywhere}
+.dish-item-description{font-size:11px;line-height:1.5;color:var(--muted);margin:6px 0 0;overflow-wrap:anywhere}
+.dish-item-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
+.dish-item-actions .pill{min-width:0;min-height:43px;border-radius:10px;padding:10px 12px;font-size:12px}
+.dish-item-actions .dish-record{background:var(--green);border-color:var(--green);color:#fff}
+.dish-item-actions .dish-record:disabled{background:#eef6ef;border-color:#d7e9da;color:#568767;cursor:default}
+.dish-item-actions .dish-edit{background:#fff;font-size:11px}
+.dish-library-empty{padding:24px 15px;text-align:center;border:1px dashed #cedfce;border-radius:14px;background:#f9fbf8;grid-column:1/-1}
+.dish-library-empty b{display:block;font-size:14px}
+.dish-library-empty p{color:var(--muted);font-size:12px;margin:7px 0 0}
+.dish-library-help{margin:14px 0 5px;line-height:1.5}
+.dish-review-actions{display:block!important}
+.dish-review-actions[hidden]{display:none!important}
+.dish-review-actions .pill{display:flex;width:100%;font-size:14px;min-height:49px}
+.meal-dish-picker{margin-top:3px;border:1px solid #d9e9de;border-radius:13px;overflow:hidden}
+.meal-dish-picker>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;color:var(--green);font-size:12px;font-weight:800;min-height:43px;background:#f6faf6}
+.meal-dish-picker>summary::-webkit-details-marker{display:none}.meal-dish-picker>summary::marker{content:""}
+.meal-dish-picker[open]>summary{border-bottom:1px solid #e3eee5}
+.meal-dish-opts{padding:6px 11px;background:#fff}
+.meal-dish-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #eef2ee}
+.meal-dish-opt:last-child{border-bottom:0}
+.meal-dish-opt span{min-width:0;flex:1;font-weight:700;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.meal-dish-opt .pill{min-height:39px;font-size:11px;flex-shrink:0}
+.meal-dish-opt .pill:disabled{color:var(--green);background:#f3f8f3}
+.meal-dish-empty{padding:12px 0;font-size:12px;color:var(--muted)}
+.meal-dish-empty .pill{display:block;margin-top:10px}
+@media(max-width:610px){
+ .dish-library-heading{gap:8px}
+ .dish-library-heading h2{font-size:19px}
+ .dish-library-heading .primary{padding:10px;font-size:12px;white-space:nowrap}
+ .dish-library-controls{grid-template-columns:1fr;gap:10px}
+ .dish-list{grid-template-columns:1fr;gap:9px}
+ .dish-item{padding:15px;gap:13px}
+ .dish-item-actions .pill{min-height:46px}
+ .dish-library-date{margin-top:13px}
+}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
@@ -454,10 +509,21 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
   </section>
  </aside>
   <section class="panel dish-library-panel" aria-labelledby="dish-library-title">
-   <div class="heading"><h2 id="dish-library-title">Mis platos</h2><button class="pill primary" id="new-dish" type="button">+ Agregar plato</button></div>
-   <label class="dish-label" for="dish-library-meal">Comida</label><select class="field" id="dish-library-meal"><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
-   <p class="mini">Guardá ideas o registrá un plato en la fecha seleccionada.</p>
-   <div id="dish-library-list" class="dish-list"></div>
+   <div class="heading dish-library-heading">
+    <div><h2 id="dish-library-title">Mis platos</h2><span class="sub">Tus opciones de comida, listas para reutilizar</span></div>
+    <button class="pill primary" id="new-dish" type="button">+ Crear plato</button>
+   </div>
+   <div class="dish-library-date"><span aria-hidden="true">◷</span> Para registrar una comida: <b id="dish-library-selected-date">fecha seleccionada</b></div>
+   <div class="dish-library-controls">
+    <label for="dish-library-meal"><span>Mostrar</span>
+     <select class="field" id="dish-library-meal"><option value="">Todas las comidas</option><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
+    </label>
+    <label for="dish-library-search"><span>Buscar plato</span>
+     <input class="field" id="dish-library-search" type="search" placeholder="Buscar mis opciones…" autocomplete="off">
+    </label>
+   </div>
+   <div id="dish-library-list" class="dish-list" aria-live="polite"></div>
+   <p class="mini dish-library-help">Crear un plato solo lo agrega a esta lista. Para anotarlo en un día, tocá <b>Comí esto</b>.</p>
    <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
   </section>
    <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
@@ -757,7 +823,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    </section>
    <section id="dish-review" class="dish-step-content" hidden aria-label="Revisar plato">
     <button type="button" id="dish-back" class="dish-back">‹ Volver a los alimentos</button>
-    <div class="dish-review-heading"><h3>Terminemos tu plato</h3><p>Revisá el nombre y cómo suma a tu plan.</p></div>
+    <div class="dish-review-heading"><h3>Guardá tu opción</h3><p>Quedará en Mis platos para elegirla cuando la comas. <b>No se registra en ningún día.</b></p></div>
     <label class="dish-mobile-label" for="dish-name">Nombre del plato</label>
     <input id="dish-name" class="field dish-mobile-field" maxlength="120" placeholder="Ej. Pollo con arroz y vegetales">
     <div class="dish-review-block">
@@ -777,7 +843,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
       </div>
      </details>
     </div>
-    <p id="dish-date" class="dish-date-note"></p>
+    <p id="dish-date" class="dish-date-note">Guardar en Mis platos no marca ninguna comida como consumida.</p>
    </section>
   </div>
   <footer class="dish-sheet-footer">
@@ -786,8 +852,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
     <button type="button" id="dish-continue" class="pill primary" disabled>Revisar plato <span aria-hidden="true">→</span></button>
    </div>
    <div id="dish-review-actions" class="dish-review-actions" hidden>
-    <button class="pill" id="dish-save-only" type="submit" value="save">Guardar plato</button>
-    <button class="pill primary" id="dish-eat" type="submit" value="eat">Guardar y registrar</button>
+    <button class="pill primary" id="dish-save-only" type="submit" value="save">Guardar en Mis platos</button>
    </div>
    <p id="dish-feedback" class="dish-feedback" role="status" aria-live="polite"></p>
   </footer>
