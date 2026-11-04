@@ -101,6 +101,14 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .session-actions{justify-content:space-between;flex-wrap:wrap}.session-actions .primary{margin-left:auto}
 .session-danger{background:#fff;color:#ae4646;border-color:#e7c6c6}.gymday button.has-details{box-shadow:inset 0 0 0 2px #79bf96}
 @media(max-width:430px){#gym-session-dialog .dialog-body{padding:16px}.session-exercise{padding:10px}.session-set,.session-set-head{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 21px;gap:5px}}
+
+.gym-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.gym-actions .pill{min-height:43px;font-size:13px}.gym-actions .primary{flex:1}
+#gym-plan-dialog{width:min(750px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow-y:auto}
+#gym-plan-dialog .dialog-body{padding:25px}#gym-plan-dialog .routine-panel{margin-top:18px}
+.gym-plan-help{background:#eef6ee;border-radius:12px;padding:12px 14px;color:#476750;font-size:12px}
+.gym-plan-goal{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.gym-plan-goal p{margin:4px 0 0;color:var(--muted);font-size:11px}
+@media(max-width:610px){.gym-actions{display:grid;grid-template-columns:minmax(0,1fr) auto}.gym-actions .pill{font-size:12px}#gym-plan-dialog{width:100vw;height:100dvh;max-height:100dvh;border-radius:0;border:0;margin:0;max-width:none}#gym-plan-dialog .dialog-body{padding:22px 16px calc(35px + env(safe-area-inset-bottom,0px))}.gym-plan-goal{flex-direction:column;align-items:flex-start}}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
@@ -152,24 +160,10 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
     <div><p class="eyebrow">SEGUIMIENTO SEMANAL</p><h2 id="gym-week-title">Tus entrenamientos</h2></div>
     <div class="daynav"><button type="button" id="gym-prev-week" class="square" aria-label="Semana anterior">‹</button><button type="button" id="gym-next-week" class="square" aria-label="Semana siguiente">›</button></div>
    </div>
-   <p class="sub">Tocá un día, elegí tu rutina y completá las repeticiones y los pesos.</p>
+   <p class="sub">Tocá un día para registrar las series reales de tu entrenamiento.</p>
    <div class="gymweek" id="gymweek"></div>
    <div class="gym-result"><div><b>Objetivo semanal</b><div class="mini" id="planned-text">Lun · Mié · Vie</div></div><strong id="gymscore">0/3</strong></div>
-  </section>
-  <section class="panel routine-panel" aria-labelledby="training-title">
-   <div class="heading"><h2 id="training-title">Mi rutina</h2><button class="pill" id="add-routine-day" type="button">+ Agregar día</button></div>
-   <div id="routine-tabs" class="routine-tabs" aria-label="Días de rutina"></div>
-   <p class="mini" id="routine-empty" hidden>No hay días en tu rutina. Agregá uno para empezar.</p>
-   <div id="routine-editor" hidden>
-    <div class="heading routine-heading"><h3 id="routine-current-name"></h3><button class="routine-remove" id="remove-routine-day" type="button">Quitar día</button></div>
-    <form id="routine-form">
-     <div id="training-exercises"></div>
-     <button class="add-exercise" id="add-routine-exercise" type="button">+ Agregar ejercicio</button>
-     <div class="routine-save"><span class="mini">Repeticiones y peso por serie.</span><button class="pill primary" type="submit">Guardar rutina</button></div>
-    </form>
-   </div>
-   <p id="training-feedback" class="mini" role="status" aria-live="polite"></p>
-   <button class="pill" id="restore-routine" type="button" hidden>Recuperar día</button>
+   <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">＋ Registrar entrenamiento de hoy</button><button class="pill" type="button" id="gym-configure">⚙ Rutina</button></div>
   </section>
   <section class="panel" aria-labelledby="strength-title">
    <h2 id="strength-title">Evolución de pesos</h2>
@@ -254,6 +248,26 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <label for="gym-target"><b>Entrenamientos por semana</b></label><input id="gym-target" type="number" min="1" max="7" class="field" value="3">
 <b>Días planificados</b><div id="dayprefs" class="dayprefs"></div>
 <div class="actions"><button class="pill" data-close="settings-dialog" type="button">Cancelar</button><button class="pill primary" id="save-settings" type="button">Guardar plan</button></div></div></dialog>
+<dialog id="gym-plan-dialog" aria-labelledby="gym-plan-dialog-title"><div class="dialog-body">
+<div class="heading"><div><p class="eyebrow">CONFIGURACIÓN DE GIMNASIO</p><h2 id="gym-plan-dialog-title">Mi rutina</h2></div><button class="square close" type="button" data-close="gym-plan-dialog" aria-label="Cerrar configuración">×</button></div>
+<p class="gym-plan-help">Armá tu rutina una vez y usala durante varias semanas (por ejemplo, dos meses). Cambiarla no modifica las series y los pesos ya registrados.</p>
+<section class="routine-panel" aria-labelledby="training-title">
+   <div class="heading"><h2 id="training-title">Días y ejercicios</h2><button class="pill" id="add-routine-day" type="button">+ Agregar día</button></div>
+   <div id="routine-tabs" class="routine-tabs" aria-label="Días de rutina"></div>
+   <p class="mini" id="routine-empty" hidden>No hay días en tu rutina. Agregá uno para empezar.</p>
+   <div id="routine-editor" hidden>
+    <div class="heading routine-heading"><h3 id="routine-current-name"></h3><button class="routine-remove" id="remove-routine-day" type="button">Quitar día</button></div>
+    <form id="routine-form">
+     <div id="training-exercises"></div>
+     <button class="add-exercise" id="add-routine-exercise" type="button">+ Agregar ejercicio</button>
+     <div class="routine-save"><span class="mini">Repeticiones y peso por serie.</span><button class="pill primary" type="submit">Guardar rutina</button></div>
+    </form>
+   </div>
+   <p id="training-feedback" class="mini" role="status" aria-live="polite"></p>
+   <button class="pill" id="restore-routine" type="button" hidden>Recuperar día</button>
+  </section>
+<div class="gym-plan-goal"><div><b>Objetivo semanal</b><p>Elegí cuántas veces entrenar y tus días habituales.</p></div><button class="pill" id="gym-edit-goal" type="button">⚙ Editar objetivo</button></div>
+</div></dialog>
 <dialog id="gym-session-dialog" aria-labelledby="gym-session-title"><form id="gym-session-form" class="dialog-body">
 <div class="heading"><h2 id="gym-session-title">Registrar entrenamiento</h2><button type="button" class="square close" data-close="gym-session-dialog" aria-label="Cerrar">×</button></div>
 <p id="gym-session-date" class="mini"></p><label for="gym-session-routine" class="dish-label">¿Qué día de la rutina hiciste?</label><select class="field" id="gym-session-routine" required></select>
@@ -564,7 +578,7 @@ function chooseGymSession(){
 }
 function renderGymSessionForm(){
  var node=$('gym-session-exercises');
- if(!gymSessionOptions().length){node.innerHTML='<div class="session-empty">Primero guardá los ejercicios de algún día en <b>Mi rutina</b>. Después podrás registrar tu entrenamiento.</div><button type="button" class="pill" id="gym-go-routine">Ir a Mi rutina</button>';$('gym-go-routine').onclick=function(){$('gym-session-dialog').close();$('add-routine-day').scrollIntoView({behavior:'smooth',block:'center'})};return}
+ if(!gymSessionOptions().length){node.innerHTML='<div class="session-empty">Primero guardá los ejercicios de algún día en <b>Mi rutina</b>. Después podrás registrar tu entrenamiento.</div><button type="button" class="pill" id="gym-go-routine">Ir a Mi rutina</button>';$('gym-go-routine').onclick=function(){$('gym-session-dialog').close();openRoutineSettings()};return}
  if(!sessionRoutine){node.innerHTML='<div class="session-empty">Seleccioná qué día de la rutina hiciste para ver sus ejercicios.</div>';return}
  node.innerHTML=sessionSets.map(function(ex,i){
   return '<div class="session-exercise"><h3>'+safe(ex.name)+'</h3><p class="mini">'+safe(TrainingModel.equipmentLabels[ex.equipment]||'')+'</p><div class="session-set-head"><span>Serie</span><span>Reps.</span><span>Kg</span><span></span></div>'+ex.sets.map(function(s,j){
@@ -632,6 +646,7 @@ function renderGym(){
  }
  $('gymscore').textContent=sum+'/'+target;$('planned-text').textContent=planned.map(function(i){return days[i]}).join(' · ')||'Sin días predeterminados';
 }
+function openRoutineSettings(dayId){if(!user){openAccount();return}if(dayId){selectedRoutine=dayId;renderTraining()}$('gym-plan-dialog').showModal()}
 function renderGymProgress(){
  var first=monday(picked),goal=state.settings.gymTarget||3;
  var fmt=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
@@ -802,6 +817,9 @@ async function start(){if(initDone)return;initDone=true;setupDishes();setupTrain
  $('nav-nutrition').addEventListener('click',function(){switchView('nutrition')});$('nav-gym').addEventListener('click',function(){switchView('gym')});
  $('gym-prev-week').addEventListener('click',function(){picked=plus(picked,-7);render()});$('gym-next-week').addEventListener('click',function(){picked=plus(picked,7);render()});
  $('gym-settings-btn').addEventListener('click',openSettings);
+ $('gym-register-today').addEventListener('click',function(){openGymSession(new Date(current))});
+ $('gym-configure').addEventListener('click',function(){openRoutineSettings()});
+ $('gym-edit-goal').addEventListener('click',function(){$('gym-plan-dialog').close();openSettings()});
  $('prev-day').addEventListener('click',function(){picked=plus(picked,-1);render()});$('next-day').addEventListener('click',function(){picked=plus(picked,1);render()});
  $('account-btn').addEventListener('click',openAccount);$('settings-btn').addEventListener('click',openSettings);$('save-settings').addEventListener('click',saveSettings);$('login-form').addEventListener('submit',login);$('signup-form').addEventListener('submit',signup);$('forgot-form').addEventListener('submit',requestReset);$('reset-form').addEventListener('submit',updatePassword);$('go-signup').addEventListener('click',function(){showAuth('signup')});$('go-forgot').addEventListener('click',function(){showAuth('forgot')});document.querySelectorAll('[data-auth-back]').forEach(function(btn){btn.addEventListener('click',function(){showAuth('login')})});$('change-password-btn').addEventListener('click',function(){showAuth('reset')});$('account-dialog').addEventListener('cancel',function(event){if(!user||authMode==='reset')event.preventDefault()});$('logout-btn').addEventListener('click',logout);
  document.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){$(b.dataset.close).close()})});
