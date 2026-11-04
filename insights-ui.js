@@ -84,16 +84,24 @@ function weightChart(entries){
  '<text x="46" y="163" font-size="11" fill="#698776">'+clean(shortDate(pts[0].date))+'</text><text x="318" text-anchor="end" y="163" font-size="11" fill="#698776">'+clean(shortDate(pts[pts.length-1].date))+'</text></svg>';
 }
 function renderWeight(){
- var s=state(),date=weightDate||today(),entry=s.days&&s.days[date]||{},x=entry.weightKg;
+ var values=state().days||{},date=weightDate||today(),entry=values[date]||{},raw=entry.weightKg;
  $('insights-weight-date').value=date;
- $('insights-weight-value').value=Number.isFinite(x)?x:'';
- var trend=InsightsModel.weightTrend(s.days||{},today());
- var heading=trend.last?'Último registro: <strong>'+fmt(trend.last.weight,2)+' kg</strong>':'Todavía no hay registros de peso.';
- var average=trend.average7!==null?'Promedio últimos 7 días: <b>'+fmt(trend.average7,2)+' kg</b>':'';
- var change=trend.change!==null?' · Diferencia entre promedios semanales: <b>'+(trend.change>=0?'+':'')+fmt(trend.change,2)+' kg</b>':'';
- $('insights-weight-summary').innerHTML=heading+'<p class="mini">'+average+change+'</p>';
- $('insights-weight-chart').innerHTML=trend.entries.length?weightChart(trend.entries):'<div class="insights-empty">Registrá tu peso para empezar a ver la tendencia. Las variaciones de un día pueden deberse a muchos factores.</div>';
+ $('insights-weight-value').value=Number.isFinite(raw)?raw:'';
+ var trend=InsightsModel.weightTrend(values,today());
+ if(trend.last){
+  var label='Último registro · '+shortDate(trend.last.date);
+  var chips=[];
+  if(trend.average7!==null)chips.push('<span class="progress-weight-chip">Promedio 7 días: <b>'+fmt(trend.average7,2)+' kg</b></span>');
+  if(trend.change!==null)chips.push('<span class="progress-weight-chip">Vs. semana anterior: <b>'+(trend.change>0?'+':'')+fmt(trend.change,2)+' kg</b></span>');
+  $('insights-weight-summary').innerHTML=
+   '<div class="progress-current-weight"><strong>'+fmt(trend.last.weight,2)+' <span>kg</span></strong><small>'+clean(label)+'</small></div>'+
+   (chips.length?'<div class="progress-weight-context">'+chips.join('')+'</div>':'');
+ }else $('insights-weight-summary').innerHTML=
+  '<div class="progress-weight-empty">Tu evolución empieza con un registro. No necesitás pesarte todos los días.</div>';
+ $('insights-weight-chart').innerHTML=trend.entries.length?weightChart(trend.entries):
+  '<div class="insights-empty">El gráfico aparecerá a medida que registres tu peso.</div>';
 }
+
 function saveWeight(e){e.preventDefault();if(!active())return;
  var date=$('insights-weight-date').value,val=$('insights-weight-value').value.trim();
  if(!date||date>today()){setStatus('insights-weight-feedback','Elegí hoy o una fecha anterior.');return}
@@ -110,8 +118,21 @@ function renderRecovery(){
  $('insights-energy').value=v.energy==null?'':v.energy;
  $('insights-soreness').value=v.soreness==null?'':v.soreness;
  var wk=InsightsModel.weekStart(today()),rec=InsightsModel.recoveryWeek(state().days||{},wk,today());
- $('insights-recovery-summary').textContent=rec.logged?'Esta semana registraste cómo te sentiste '+rec.logged+' '+(rec.logged===1?'día':'días')+'. '+(rec.sleep!==null?'Sueño promedio: '+fmt(rec.sleep,1)+' h. ':'')+(rec.energy!==null?'Energía promedio: '+fmt(rec.energy,1)+'/5. ':''):'Opcional: registrá sueño, energía y fatiga en pocos segundos.';
+ if(!rec.logged){
+  $('insights-recovery-summary').innerHTML='<div class="progress-recovery-empty">Registrá cómo te sentiste después de entrenar o al terminar el día. Con el tiempo vas a poder observar si descansás mejor.</div>';
+  return;
+ }
+ var stats=[
+  ['Días registrados',rec.logged+' <span>esta semana</span>'],
+  ['Sueño promedio',rec.sleep===null?'—':fmt(rec.sleep,1)+' <span>horas</span>'],
+  ['Energía promedio',rec.energy===null?'—':fmt(rec.energy,1)+'<span> / 5</span>'],
+  ['Fatiga muscular',rec.soreness===null?'—':fmt(rec.soreness,1)+'<span> / 5</span>']
+ ];
+ $('insights-recovery-summary').innerHTML='<div class="progress-recovery-stats">'+stats.map(function(item){
+  return '<div class="progress-recovery-stat"><small>'+item[0]+'</small><strong>'+item[1]+'</strong></div>';
+ }).join('')+'</div>';
 }
+
 function saveRecovery(e){e.preventDefault();if(!active())return;
  var date=$('insights-recovery-date').value,sleep=$('insights-sleep').value,energy=$('insights-energy').value,soreness=$('insights-soreness').value;
  if(!date||date>today()){setStatus('insights-recovery-feedback','Elegí hoy o una fecha anterior.');return}
@@ -126,13 +147,35 @@ function renderReport(){
  var report=InsightsModel.weeklyReport(state(),b.meals,TrainingModel,today());
  $('insights-report-range').textContent=displayWeek(report.start);
  var target=Number(state().settings.gymTarget)||3;
- $('insights-report-cards').innerHTML=
- '<div><small>Gimnasio</small><strong>'+report.attended+'/'+target+'</strong><span>Entrenamientos esta semana</span></div>'+
- '<div><small>Alimentación</small><strong>'+(report.nutrition.rate===null?'—':report.nutrition.rate+'%')+'</strong><span>'+report.nutrition.registeredDays+' días con registros</span></div>'+
- '<div><small>Peso corporal</small><strong>'+(report.weight.average7===null?'—':fmt(report.weight.average7,1)+' kg')+'</strong><span>Promedio de últimos 7 días</span></div>'+
- '<div><small>Recuperación</small><strong>'+report.recovery.logged+' días</strong><span>Registros esta semana</span></div>';
- $('insights-report-notes').innerHTML=report.lines.map(function(line){return '<li>'+clean(line)+'</li>'}).join('');
+ var nutrition=report.nutrition,weight=report.weight,recovery=report.recovery;
+ var rows=[
+  ['Gimnasio',report.attended,'/'+target,'sesiones esta semana'],
+  ['Alimentación',nutrition.rate===null?'—':nutrition.rate,nutrition.rate===null?'':'%','en '+nutrition.registeredMeals+' '+(nutrition.registeredMeals===1?'comida registrada':'comidas registradas')],
+  ['Peso promedio',weight.average7===null?'—':fmt(weight.average7,1),weight.average7===null?'':' kg','últimos 7 días'],
+  ['Recuperación',recovery.logged,'',recovery.logged===1?'día registrado':'días registrados']
+ ];
+ $('insights-report-cards').innerHTML=rows.map(function(row){
+  return '<article class="progress-kpi"><span class="progress-kpi-label">'+row[0]+'</span>'+
+   '<strong>'+row[1]+(row[2]?'<em>'+row[2]+'</em>':'')+'</strong><small>'+row[3]+'</small></article>';
+ }).join('');
+ var observations=[];
+ if(report.improvements.length){
+  var improvement=report.improvements[0];
+  observations.push('Mejoraste en '+improvement.name+' respecto a tu entrenamiento anterior.');
+ }
+ if(report.attended>0){
+  observations.push('Llevás '+report.attended+' '+(report.attended===1?'entrenamiento registrado':'entrenamientos registrados')+' esta semana'+(report.attended>=target?', alcanzando tu objetivo semanal.':'.'));
+ }
+ if(nutrition.rate!==null){
+  observations.push('En las '+nutrition.registeredMeals+' '+(nutrition.registeredMeals===1?'comida cargada':'comidas cargadas')+', completaste en promedio el '+nutrition.rate+'% de los grupos de tu plan.');
+ }
+ if(weight.change!==null){
+  observations.push('Tu promedio de peso cambió '+(weight.change>0?'+':'')+fmt(weight.change,2)+' kg frente a la semana anterior.');
+ }
+ if(!observations.length)observations.push('Empezá registrando tus comidas o entrenamientos. Cuando haya datos, este espacio te mostrará lo más relevante.');
+ $('insights-report-notes').innerHTML=observations.slice(0,2).map(function(line){return '<p>'+clean(line)+'</p>'}).join('');
 }
+
 function renderMuscles(){
  var wk=InsightsModel.weekStart(b.date()),end=InsightsModel.addDay(wk,6),m=InsightsModel.muscleSeries(b.trainingData().workouts,wk,end,TrainingModel.muscleOf);
  $('insights-muscle-week').textContent=displayWeek(wk);
