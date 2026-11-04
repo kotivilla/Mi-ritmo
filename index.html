@@ -801,6 +801,54 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
   #nutrition-view .tool-card-body,#gym-view .tool-card-body{padding:15px 16px 18px}
   #nutrition-view .nutrition-main,#gym-view .gym-main{gap:10px}
 }
+
+/* Flechas unificadas: iconografía vectorial, interacción suave, mobile-first */
+button.square.ui-nav-arrow{
+ appearance:none;-webkit-appearance:none;display:inline-grid;place-items:center;flex:0 0 auto;
+ width:42px;height:42px;min-width:42px;min-height:42px;padding:0;
+ border:1px solid #dce9df;background:#f5f9f6;border-radius:12px;color:#376e51;
+ box-shadow:0 1px 2px rgba(24,64,43,.025);
+ transition:background-color .16s,border-color .16s,color .16s,transform .16s,box-shadow .16s;
+ -webkit-tap-highlight-color:transparent;touch-action:manipulation
+}
+button.square.ui-nav-arrow svg{display:block;width:19px;height:19px;flex:0 0 19px;pointer-events:none}
+@media(hover:hover){
+ button.square.ui-nav-arrow:hover{background:#e7f3ea;border-color:#bcdac6;color:var(--green);box-shadow:0 2px 6px rgba(24,64,43,.05)}
+}
+button.square.ui-nav-arrow:active{transform:scale(.94);background:#dfeee3}
+button.square.ui-nav-arrow:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.ui-chevron{
+ display:inline-grid!important;place-items:center!important;
+ flex:0 0 28px!important;width:28px!important;height:28px!important;min-width:28px!important;
+ margin-left:auto;padding:0;border:1px solid transparent;border-radius:9px;
+ background:#f2f7f3;color:#638872;font-size:0!important;line-height:1!important;
+ transition:transform .2s,background-color .2s,color .2s,border-color .2s;
+ pointer-events:none
+}
+.ui-chevron svg{display:block;width:16px;height:16px;flex:0 0 16px;color:inherit}
+details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui-chevron{
+ background:#e4f2e8;color:var(--green);border-color:#d3e9d9
+}
+.meal[open]>.meal-summary .ui-chevron,
+.tool-card[open]>.tool-card-summary .ui-chevron,
+.meal-dish-picker[open]>summary .ui-chevron,
+.progress-notes[open]>summary .ui-chevron,
+.dish-adjust-details[open]>summary .ui-chevron{transform:rotate(180deg)}
+.dish-library-toggle .ui-chevron{margin-left:3px}
+#nutrition-view .meal-meta .ui-chevron{margin-left:0}
+#nutrition-view .meal-meta{align-items:center}
+.meal-dish-picker>summary .ui-chevron,
+.progress-notes>summary .ui-chevron,
+.dish-adjust-details>summary .ui-chevron{margin-left:auto}
+.dish-back{display:inline-flex;align-items:center;gap:8px}
+.dish-back svg{width:17px;height:17px;flex:0 0 17px;pointer-events:none}
+#dish-continue svg{width:17px;height:17px;flex:0 0 17px;pointer-events:none}
+@media(max-width:610px){
+ button.square.ui-nav-arrow{width:43px;height:43px;min-width:43px;min-height:43px;border-radius:12px}
+ button.square.ui-nav-arrow svg{width:20px;height:20px;flex-basis:20px}
+ .ui-chevron{width:27px!important;height:27px!important;min-width:27px!important;flex-basis:27px!important}
+}
+@media(prefers-reduced-motion:reduce){button.square.ui-nav-arrow,.ui-chevron{transition:none!important}}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -822,8 +870,8 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <div class="nutrition-day-top">
     <h2 id="day-title">Hoy</h2>
     <div class="daynav">
-     <button class="square" type="button" id="prev-day" aria-label="Día anterior">‹</button>
-     <button class="square" type="button" id="next-day" aria-label="Día siguiente">›</button>
+     <button class="square ui-nav-arrow" type="button" id="prev-day" aria-label="Día anterior"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+     <button class="square ui-nav-arrow" type="button" id="next-day" aria-label="Día siguiente"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
    </div>
    <div class="weekdays" id="weekdays" aria-label="Elegir día de la semana"></div>
@@ -845,7 +893,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
      <button class="dish-library-toggle" id="dish-library-toggle" type="button" aria-controls="dish-library-body" aria-expanded="false" aria-label="Mostrar Mis platos">
       <span class="dish-library-toggle-icon" aria-hidden="true">▤</span>
       <span class="dish-library-toggle-copy"><strong>Mis platos</strong><small id="dish-library-count">Tus opciones guardadas</small></span>
-      <span class="dish-library-toggle-chevron" aria-hidden="true">⌄</span>
+      <span class="dish-library-toggle-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
      </button>
     </h2>
     <button class="pill primary" id="new-dish" type="button">+ Crear plato</button>
@@ -868,7 +916,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
   <details class="panel tool-card" id="nutrition-stats-detail">
      <summary class="tool-card-summary">
       <span><strong>Estadísticas</strong><small>Semana y últimos 30 días</small></span>
-      <span class="tool-card-chevron" aria-hidden="true">⌄</span>
+      <span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
      </summary>
      <div class="tool-card-body">
       <div class="nutrition-weekly-section">
@@ -886,10 +934,10 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
     <details class="panel tool-card insights-planner-panel" id="nutrition-planner-detail">
      <summary class="tool-card-summary">
       <span><strong>Planificar comidas</strong><small>Organización y compras</small></span>
-      <span class="tool-card-chevron" aria-hidden="true">⌄</span>
+      <span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
      </summary>
      <div class="tool-card-body">
-      <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square" type="button" id="insights-plan-prev" aria-label="Semana anterior">‹</button><button class="square" type="button" id="insights-plan-next" aria-label="Semana siguiente">›</button></div></div>
+      <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square ui-nav-arrow" type="button" id="insights-plan-prev" aria-label="Semana anterior"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button class="square ui-nav-arrow" type="button" id="insights-plan-next" aria-label="Semana siguiente"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
       <div class="insights-plan-days" id="insights-plan-days"></div>
       <div class="insights-plan-meals" id="insights-plan-meals"></div>
       <div class="nutrition-planner-shopping">
@@ -909,8 +957,8 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <div class="gym-focus-top">
     <div><h2>Gimnasio</h2><span class="gym-range-label" id="gym-week-title"></span></div>
     <div class="daynav">
-     <button type="button" id="gym-prev-week" class="square" aria-label="Semana anterior">‹</button>
-     <button type="button" id="gym-next-week" class="square" aria-label="Semana siguiente">›</button>
+     <button type="button" id="gym-prev-week" class="square ui-nav-arrow" aria-label="Semana anterior"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+     <button type="button" id="gym-next-week" class="square ui-nav-arrow" aria-label="Semana siguiente"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
    </div>
    <div class="gym-actions"><button class="pill primary" type="button" id="gym-register-today">+ Registrar entrenamiento</button></div>
@@ -918,14 +966,14 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <p class="gym-week-count" id="gym-week-count"></p>
   </section>
   <details class="panel tool-card">
-     <summary class="tool-card-summary"><span><strong>Constancia</strong><small>Últimas 6 semanas</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <summary class="tool-card-summary"><span><strong>Constancia</strong><small>Últimas 6 semanas</small></span><span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
      <div class="gym-analysis-inner tool-card-body">
       <div id="gym-history" class="gym-history" aria-label="Gráfico de entrenamientos de las últimas seis semanas"></div>
       <p class="mini" id="gym-history-caption"></p>
      </div>
     </details>
     <details class="panel tool-card">
-     <summary class="tool-card-summary"><span><strong>Pesos y volumen</strong><small>Por ejercicio</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <summary class="tool-card-summary"><span><strong>Pesos y volumen</strong><small>Por ejercicio</small></span><span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
      <div class="gym-analysis-inner tool-card-body">
       <label class="dish-label" for="strength-exercise">Ejercicio</label>
       <select class="field" id="strength-exercise"></select>
@@ -938,11 +986,11 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
      </div>
     </details>
     <details class="panel tool-card">
-     <summary class="tool-card-summary"><span><strong>Mejoras recientes</strong><small>Últimas 4 semanas</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <summary class="tool-card-summary"><span><strong>Mejoras recientes</strong><small>Últimas 4 semanas</small></span><span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
      <div id="insights-progression-list" class="insights-activity-list gym-analysis-inner tool-card-body"></div>
     </details>
     <details class="panel tool-card">
-     <summary class="tool-card-summary"><span><strong>Grupos musculares</strong><small>Series por semana</small></span><span class="tool-card-chevron" aria-hidden="true">⌄</span></summary>
+     <summary class="tool-card-summary"><span><strong>Grupos musculares</strong><small>Series por semana</small></span><span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
      <div class="gym-analysis-inner tool-card-body">
       <span class="sub" id="insights-muscle-week"></span>
       <div id="insights-muscle-list" class="insights-muscle-list"></div>
@@ -969,7 +1017,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    </div>
    <div class="progress-kpi-grid" id="insights-report-cards"></div>
    <details class="progress-notes" id="progress-notes">
-    <summary>Ver balance semanal <span aria-hidden="true">⌄</span></summary>
+    <summary>Ver balance semanal <span class="ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
     <div id="insights-report-notes"></div>
    </details>
   </section>
@@ -991,7 +1039,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
    <div class="progress-clean-heading"><h3>Recuperación</h3></div>
    <div id="insights-recovery-summary" class="progress-recovery-status"></div>
    <details class="progress-recovery-details" id="progress-recovery-details">
-    <summary><span>Registrar recuperación</span><span class="progress-summary-chevron" aria-hidden="true">⌄</span></summary>
+    <summary><span>Registrar recuperación</span><span class="progress-summary-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
     <form id="insights-recovery-form" class="insights-recovery-form progress-recovery-form">
      <label for="insights-recovery-date"><span>Fecha</span><input class="field" type="date" id="insights-recovery-date" required></label>
      <label for="insights-sleep"><span>Horas de sueño</span><input class="field" type="number" min="0" max="18" step="0.5" inputmode="decimal" id="insights-sleep" placeholder="Ej. 7,5"></label>
@@ -1152,7 +1200,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
      <summary>
       <span class="dish-basket-icon" aria-hidden="true">✓</span>
       <span class="dish-basket-copy"><b>Tu plato <span id="dish-selected-count">0 alimentos</span></b><small id="dish-selected-preview">Todavía no agregaste alimentos</small></span>
-      <span class="dish-basket-chevron" aria-hidden="true">⌄</span>
+      <span class="dish-basket-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
      </summary>
      <div id="food-selected" class="dish-chosen-list"></div>
     </details>
@@ -1174,7 +1222,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
     <button type="button" id="food-more" class="dish-show-more" hidden>Ver más alimentos</button>
    </section>
    <section id="dish-review" class="dish-step-content" hidden aria-label="Revisar plato">
-    <button type="button" id="dish-back" class="dish-back">‹ Volver a los alimentos</button>
+    <button type="button" id="dish-back" class="dish-back"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>Volver a los alimentos</span></button>
     <div class="dish-review-heading"><h3>Guardá tu opción</h3><p>Quedará en Mis platos para elegirla cuando la comas. <b>No se registra en ningún día.</b></p></div>
     <label class="dish-mobile-label" for="dish-name">Nombre del plato</label>
     <input id="dish-name" class="field dish-mobile-field" maxlength="120" placeholder="Ej. Pollo con arroz y vegetales">
@@ -1187,7 +1235,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
      <p class="dish-review-tip">Estimación según las porciones de tu guía nutricional.</p>
      <div id="dish-contributions" class="dish-contributions"></div>
      <details id="dish-adjust-details" class="dish-adjust-details">
-      <summary>Ajustar porciones del plan <span aria-hidden="true">⌄</span></summary>
+      <summary>Ajustar porciones del plan <span class="ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>
       <div class="dish-adjust-body">
        <p class="mini" id="dish-analysis-note"></p>
        <div id="dish-portions"></div>
@@ -1201,7 +1249,7 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
   <footer class="dish-sheet-footer">
    <div id="dish-choose-actions" class="dish-choose-actions">
     <span id="dish-choose-caption">Agregá al menos un alimento</span>
-    <button type="button" id="dish-continue" class="pill primary" disabled>Revisar plato <span aria-hidden="true">→</span></button>
+    <button type="button" id="dish-continue" class="pill primary" disabled>Revisar plato <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
    </div>
    <div id="dish-review-actions" class="dish-review-actions" hidden>
     <button class="pill primary" id="dish-save-only" type="submit" value="save">Guardar en Mis platos</button>
@@ -1671,11 +1719,11 @@ function renderMeals(){
   var pct=Math.round(sum/m.groups.length*100),done=sum===m.groups.length,finished=m.groups.filter(function(g){return cap(entry[g.id],g.target)>=g.target}).length;
   return '<details class="meal'+(done?' done':'')+'" data-meal-card="'+m.id+'">'+
   '<summary class="meal-summary"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div>'+
-  '<div class="meal-meta"><span class="meal-count'+(done?' is-done':'')+'">'+(done?'✓ Listo':finished+'/'+m.groups.length)+'</span><span class="meal-chevron" aria-hidden="true">⌄</span></div></div>'+
+  '<div class="meal-meta"><span class="meal-count'+(done?' is-done':'')+'">'+(done?'✓ Listo':finished+'/'+m.groups.length)+'</span><span class="meal-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>'+
   '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,sum>0)+'"></div></div></summary>'+
   '<div class="meal-body">'+content+
   '<div class="dish-tools">'+
-   '<details class="meal-dish-picker"><summary>Elegir de Mis platos <span aria-hidden="true">⌄</span></summary>'+
+   '<details class="meal-dish-picker"><summary>Elegir de Mis platos <span class="ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>'+
     '<div class="meal-dish-opts">'+(savedOptions.length?savedOptions.map(function(d){
      var eaten=!!(entry._dishes||[]).some(function(existing){return existing.id===d.id});
      return '<div class="meal-dish-opt"><span>'+safe(d.name)+'</span><button type="button" class="pill" data-log-meal-dish="'+safe(d.id)+'" '+
