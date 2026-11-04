@@ -335,11 +335,11 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .dish-catalog-heading p{margin:0;font-size:12px;color:var(--muted)}
 .dish-search-wrap{position:relative}
 .dish-search-wrap .field{margin:0;padding:13px 13px 13px 41px;min-height:49px;border-color:#cbded1;border-radius:13px;background:#fff;font-size:16px}
-.dish-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#7d9786;font-size:28px;line-height:1;pointer-events:none}
+.dish-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#7d9786;line-height:1;pointer-events:none;display:flex;align-items:center;justify-content:center}
 .dish-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .dish-categories{display:flex;overflow-x:auto;gap:7px;margin:15px -4px 15px;padding:0 4px 5px;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .dish-categories::-webkit-scrollbar{display:none}
-.dish-category{display:inline-flex;flex:0 0 auto;align-items:center;gap:5px;white-space:nowrap;border:1px solid #dce9de;background:#f8faf7;border-radius:100px;padding:9px 12px;font-size:12px;font-weight:750;color:#5f7465;min-height:38px}
+.dish-category{display:inline-flex;flex:0 0 auto;align-items:center;gap:5px;white-space:nowrap;border:1px solid #dce9de;background:#f8faf7;border-radius:100px;padding:10px 12px;font-size:12px;font-weight:750;color:#5f7465;min-height:42px}
 .dish-category.active{background:var(--green);border-color:var(--green);color:#fff}
 .dish-results-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 9px}
 .dish-results-heading b{font-size:13px}.dish-results-heading span{font-size:11px;color:var(--muted)}
@@ -356,10 +356,10 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .dish-chosen-info b{display:block;font-size:12px;overflow-wrap:anywhere;line-height:1.35}
 .dish-chosen-info small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
 .dish-quantity-control{display:flex;gap:0;border:1px solid #d3e3d7;border-radius:10px;background:#fff;overflow:hidden;align-items:center;flex-shrink:0}
-.dish-quantity-control button{border:0;background:transparent;min-width:31px;min-height:36px;padding:0;color:var(--green);font-weight:850;font-size:19px}
-.dish-quantity-control input{width:39px;min-width:0;border:0;padding:5px 2px;text-align:center;background:#fff;color:var(--dark);font-weight:750;font-size:13px;appearance:textfield;-moz-appearance:textfield}
+.dish-quantity-control button{border:0;background:transparent;min-width:36px;min-height:42px;padding:0;color:var(--green);font-weight:850;font-size:19px}.dish-quantity-control button:disabled{opacity:.3;cursor:default}
+.dish-quantity-control input{width:42px;min-width:0;border:0;padding:5px 2px;text-align:center;background:#fff;color:var(--dark);font-weight:750;font-size:16px;appearance:textfield;-moz-appearance:textfield}
 .dish-quantity-control input::-webkit-inner-spin-button{appearance:none}
-.dish-food-remove{border:0;background:transparent;color:#a45151;font-size:20px;min-width:31px;min-height:36px;border-radius:8px}
+.dish-food-remove{border:0;background:transparent;color:#a45151;font-size:20px;min-width:36px;min-height:42px;border-radius:8px}
 .dish-review-heading{margin:4px 0 19px}
 .dish-review-heading h3{font-size:20px;letter-spacing:-.6px;margin:0 0 5px}
 .dish-review-heading p{font-size:12px;color:var(--muted);margin:0}
@@ -403,7 +403,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  .dish-basket{margin-bottom:18px}
  .dish-catalog-heading{margin-bottom:12px}
  .dish-categories{margin-top:12px;margin-bottom:13px;gap:6px}
- .dish-category{min-height:38px;padding:8px 11px}
+ .dish-category{min-height:42px;padding:9px 11px}
  #dish-dialog .food-option{min-height:55px}
  .dish-sheet-footer{padding:11px 14px calc(10px + env(safe-area-inset-bottom,0px))}
  .dish-choose-actions .pill{min-width:154px}
@@ -741,7 +741,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
     <div class="dish-catalog-heading"><h3>Agregar alimentos</h3><p>Buscá y tocá <b>+</b> para sumarlos al plato.</p></div>
     <label class="dish-mobile-label" for="food-search">Buscar en el catálogo</label>
     <div class="dish-search-wrap">
-     <span aria-hidden="true" class="dish-search-icon">⌕</span>
+     <span aria-hidden="true" class="dish-search-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.5"></circle><path d="M16 16l5 5"></path></svg></span>
      <input class="field" type="search" id="food-search" placeholder="Ej. pollo, arroz, tomate…" autocomplete="off" enterkeyhint="search">
     </div>
     <label class="dish-visually-hidden" for="food-filter">Filtrar por grupo</label>
@@ -931,8 +931,8 @@ function dishSuggestions(meal){
  return names.map(function(name){return FoodCatalog.items.find(function(f){return f.name===name})}).filter(Boolean);
 }
 function renderDishCategories(){
- var group=$('food-filter').value;
- $('food-category-chips').innerHTML=dishCategoryLabels.map(function(pair){
+ var group=$('food-filter').value,bar=$('food-category-chips'),previousScroll=bar.scrollLeft;
+ bar.innerHTML=dishCategoryLabels.map(function(pair){
   return '<button type="button" class="dish-category'+(group===pair[0]?' active':'')+'" data-category="'+pair[0]+'" aria-pressed="'+String(group===pair[0])+'">'+pair[1]+'</button>';
  }).join('');
  $('food-category-chips').querySelectorAll('[data-category]').forEach(function(btn){
@@ -941,6 +941,7 @@ function renderDishCategories(){
    foodVisibleCount=18;dishShowAll=false;renderFoodCatalog();
   });
  });
+ bar.scrollLeft=previousScroll;
 }
 function setDishStage(stage){
  dishStage=stage==='review'?'review':'choose';
@@ -1013,15 +1014,14 @@ function renderSelectedFoods(recalculate){
   var food=FoodCatalog.items.find(function(f){return f.id===row.id});
   if(!food)return '';
   return '<div class="dish-chosen-item"><div class="dish-chosen-info"><b>'+safe(food.name)+'</b><small>'+safe(FoodCatalog.serving(food,$('dish-meal').value).unit)+'</small></div>'+
-   '<div class="dish-quantity-control"><button type="button" data-qty-minus="'+safe(row.id)+'" aria-label="Restar una porción de '+safe(food.name)+'">−</button>'+
+   '<div class="dish-quantity-control"><button type="button" data-qty-minus="'+safe(row.id)+'" aria-label="Restar una porción de '+safe(food.name)+'" '+(row.quantity<=0.25?'disabled':'')+'>−</button>'+
    '<input type="number" inputmode="decimal" min="0.25" max="20" step="0.25" value="'+row.quantity+'" data-food-quantity="'+safe(row.id)+'" aria-label="Cantidad de '+safe(food.name)+'">'+
    '<button type="button" data-qty-plus="'+safe(row.id)+'" aria-label="Agregar una porción de '+safe(food.name)+'">+</button></div>'+
    '<button type="button" class="dish-food-remove" data-remove-food="'+safe(row.id)+'" aria-label="Quitar '+safe(food.name)+'">×</button></div>';
  }).join(''):'<p class="mini">Agregá alimentos con el botón + del catálogo.</p>';
  function changeQty(id,delta){
   var row=dishDraft.selected.find(function(x){return x.id===id});if(!row)return;
-  if(row.quantity+delta<=0)dishDraft.selected=dishDraft.selected.filter(function(x){return x.id!==id});
-  else row.quantity=Math.min(20,Math.round((row.quantity+delta)*4)/4);
+  row.quantity=Math.max(0.25,Math.min(20,Math.round((row.quantity+delta)*4)/4));
   renderSelectedFoods(true);renderFoodCatalog();
  }
  $('food-selected').querySelectorAll('[data-qty-minus]').forEach(function(btn){btn.addEventListener('click',function(){changeQty(btn.dataset.qtyMinus,-1)})});
