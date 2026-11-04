@@ -18,20 +18,24 @@ function muscleSeries(workouts,start,end,resolveMuscle){
  });return result;
 }
 function nutritionWeek(days,mealSpec,start,end){
- var registered=0,total=0,completed=0,groups={};
+ var registered=0,registeredMeals=0,total=0,completed=0,groups={};
  dateRange(start,end).forEach(function(date){
- var item=(days||{})[date],meals=item&&item.meals||{};
- var hasAny=mealSpec.some(function(meal){return meal.groups.some(function(g){return Number(meals[meal.id]&&meals[meal.id][g.id])>0})});
- if(!hasAny)return;
- registered++;
- mealSpec.forEach(function(meal){meal.groups.forEach(function(g){
-  var filled=Math.max(0,Math.min(g.target,Number(meals[meal.id]&&meals[meal.id][g.id])||0))/g.target;
-  if(!groups[g.id])groups[g.id]={done:0,total:0};
-  groups[g.id].done+=filled;groups[g.id].total++;total++;completed+=filled;
- })});
+  var item=(days||{})[date],meals=item&&item.meals||{},dayHadRecord=false;
+  mealSpec.forEach(function(meal){
+   var data=meals[meal.id]||{};
+   var logged=meal.groups.some(function(g){return Number(data[g.id])>0})||(Array.isArray(data._dishes)&&data._dishes.length>0);
+   if(!logged)return;
+   dayHadRecord=true;registeredMeals++;
+   meal.groups.forEach(function(g){
+    var filled=Math.max(0,Math.min(g.target,Number(data[g.id])||0))/g.target;
+    if(!groups[g.id])groups[g.id]={done:0,total:0};
+    groups[g.id].done+=filled;groups[g.id].total++;total++;completed+=filled;
+   });
+  });
+  if(dayHadRecord)registered++;
  });
  Object.keys(groups).forEach(function(g){groups[g].pct=groups[g].total?Math.round(100*groups[g].done/groups[g].total):null});
- return {registeredDays:registered,rate:total?Math.round(100*completed/total):null,groups:groups};
+ return {registeredDays:registered,registeredMeals:registeredMeals,rate:total?Math.round(100*completed/total):null,groups:groups};
 }
 function weightEntries(days,until){
  return Object.keys(days||{}).filter(function(date){return date<=until&&finite(days[date].weightKg)&&days[date].weightKg>=20&&days[date].weightKg<=350}).sort().map(function(date){return {date:date,weight:days[date].weightKg}});
