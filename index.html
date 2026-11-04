@@ -238,7 +238,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <label class="dish-label" for="dish-library-meal">Comida</label><select class="field" id="dish-library-meal"><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Merienda</option><option value="dinner">Cena</option></select>
    <p class="mini">Guardá ideas o registrá un plato en la fecha seleccionada.</p>
    <div id="dish-library-list" class="dish-list"></div>
-   <p class="mini" id="dish-storage-note">Tus platos se guardan en este dispositivo, asociados a tu cuenta.</p>
+   <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
   </section>
    <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
     <div class="heading"><h2 id="insights-nutrition-title">Cómo viene tu alimentación</h2><span class="sub" id="insights-nutrition-date"></span></div>
@@ -497,7 +497,7 @@ var meals=[{id:'breakfast',name:'Desayuno',icon:'☀️',groups:basicGroups},{id
 var fruitGroup={id:'fruit',name:'Frutas',hint:'2 frutas por día · aprox. 400 g',target:2,help:'Dos frutas en total durante el día, no dos por comida. Idealmente enteras, también pueden ser en licuados, budines o pancakes.'};
 var mealViewDate=null;
 var $=function(id){return document.getElementById(id)};
-var defaultState=function(){return {days:{},settings:{gymTarget:3,gymDays:[1,3,5]}}};
+var defaultState=function(){return {days:{},settings:{gymTarget:3,gymDays:[1,3,5],mealPlan:{},trainingBlocks:[],goalFocus:'muscle'}}};
 var db=null,user=null,loading=false,offlinePending=new Set(),queueTimers={},settingsTimer;
 var current=new Date();current.setHours(12,0,0,0);
 var picked=new Date(current);
@@ -539,21 +539,21 @@ function markDay(d){if(!user||!db){syncLabel('Iniciá sesión para guardar en Su
 function pendingKey(){return 'mi-ritmo-pending-'+(user&&user.id)}
 function savePending(){if(user)try{localStorage.setItem(pendingKey(),JSON.stringify(Array.from(offlinePending)))}catch(e){}}
 async function pushDay(key){if(!user||!db)return;var row=state.days[key];if(!row)return;
- var payload={user_id:user.id,day:key,meals:row.meals||{},gym:!!row.gym,gym_session:(state.training&&state.training.workouts&&state.training.workouts[key])||null,note:(row.note||'').slice(0,1500),updated_at:new Date().toISOString()};
+ var payload={user_id:user.id,day:key,meals:row.meals||{},gym:!!row.gym,gym_session:(state.training&&state.training.workouts&&state.training.workouts[key])||null,body_weight_kg:Number.isFinite(row.weightKg)?row.weightKg:null,recovery:row.recovery||{},note:(row.note||'').slice(0,1500),updated_at:new Date().toISOString()};
  try{var result=await db.from('daily_logs').upsert(payload,{onConflict:'user_id,day'});
  if(result.error)throw result.error;offlinePending.delete(key);savePending();syncLabel(offlinePending.size?'Cambios pendientes de sincronizar':'Guardado en Supabase');}
  catch(e){syncLabel('Sin conexión · pendiente de guardar');}}
 function routineDirtyKey(){return 'mi-ritmo-routines-dirty-'+(user&&user.id)}
 async function pushSettings(){if(!db||!user)return;
  try{
- var row={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,routine_days:trainingData().routineDays,updated_at:new Date().toISOString()};
+ var row={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,routine_days:trainingData().routineDays,meal_plan:state.settings.mealPlan||{},training_blocks:state.settings.trainingBlocks||[],goal_focus:state.settings.goalFocus||'muscle',updated_at:new Date().toISOString()};
  var res=await db.from('profile_settings').upsert(row,{onConflict:'user_id'});if(res.error)throw res.error;
  localStorage.removeItem(routineDirtyKey());syncLabel('Guardado en Supabase');
  }catch(e){localStorage.setItem(routineDirtyKey(),'1');syncLabel('Configuración pendiente de sincronizar')}
 }
 function groupButtons(meal,group,value){var buttons='';for(var i=1;i<=group.target;i++){buttons+='<button type="button" class="tick'+(value>=i?' selected':'')+'" data-meal="'+meal.id+'" data-group="'+group.id+'" data-step="'+i+'" aria-pressed="'+(value>=i)+'" aria-label="'+safe(group.name)+' '+i+' de '+group.target+'">'+(value>=i?'✓':(group.target>1?i:'○'))+'</button>'}return buttons}
 // Activate only after the reviewed dish_library schema has been approved and applied.
-var DISH_CLOUD_ENABLED=false,dishSyncRunning=false;
+var DISH_CLOUD_ENABLED=true,dishSyncRunning=false;
 async function syncDishLibrary(){
  if(!DISH_CLOUD_ENABLED||!db||!user||dishSyncRunning)return;
  dishSyncRunning=true;var owner=user.id,cacheKey=storeKey;
@@ -925,7 +925,7 @@ function openSettings(tab){
  $('gym-target').value=state.settings.gymTarget||3;draftDays=(state.settings.gymDays||[1,3,5]).slice();settingPrefs();
  showConfigTab(tab==='routine'?'routine':'goal');if(!$('settings-dialog').open)$('settings-dialog').showModal();
 }
-function saveSettings(){var n=Number($('gym-target').value);if(!Number.isInteger(n)||n<1||n>7){toast('Elegí entre 1 y 7 entrenamientos');return}state.settings.gymTarget=n;state.settings.gymDays=draftDays.slice().sort(function(a,b){return (a+6)%7-(b+6)%7});saveCache();if(user)pushSettings();render();toast('Objetivo actualizado')}
+function saveSettings(){var n=Number($('gym-target').value);if(!Number.isInteger(n)||n<1||n>7){toast('Elegí entre 1 y 7 entrenamientos');return}state.settings.gymTarget=n;state.settings.gymDays=draftDays.slice().sort(function(a,b){return (a+6)%7-(b+6)%7});saveCache();if(user){localStorage.setItem(routineDirtyKey(),'1');pushSettings()}render();toast('Objetivo actualizado')}
 function authError(error){
  var message=error&&error.message?error.message:'Revisá tus datos e intentá nuevamente.';
  if(/invalid login credentials/i.test(message))return 'Email o contraseña incorrectos. Si todavía no tenés contraseña, tocá “Olvidé mi contraseña”.';
@@ -998,14 +998,14 @@ async function logout(){
 async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.clear();if(u){storeKey='mi-ritmo-data-v2-'+u.id;state=loadCache(storeKey);try{var pending=JSON.parse(localStorage.getItem(pendingKey())||'[]');offlinePending=new Set(Array.isArray(pending)?pending:[])}catch(e){}syncLabel('Sincronizando con Supabase...');
  try{
  var results=await Promise.all([
-  db.from('daily_logs').select('day,meals,gym,note,gym_session').order('day',{ascending:false}).limit(1200),
-  db.from('profile_settings').select('gym_target,gym_days,routine_days').maybeSingle()
+  db.from('daily_logs').select('day,meals,gym,note,gym_session,body_weight_kg,recovery').order('day',{ascending:false}).limit(1200),
+  db.from('profile_settings').select('gym_target,gym_days,routine_days,meal_plan,training_blocks,goal_focus').maybeSingle()
  ]);
  if(results[0].error)throw results[0].error;
  var cached=state.days,localTraining=trainingData(),remote={},workouts=Object.assign({},localTraining.workouts),remoteSessions=new Set();
  var importedKey='mi-ritmo-gym-import-v1-'+u.id,firstImport=localStorage.getItem(importedKey)!=='1';
  (results[0].data||[]).forEach(function(row){
-   remote[row.day]={meals:row.meals||{},gym:!!row.gym,note:row.note||''};
+   remote[row.day]={meals:row.meals||{},gym:!!row.gym,note:row.note||'',weightKg:row.body_weight_kg==null?null:Number(row.body_weight_kg),recovery:row.recovery||{}};
    if(offlinePending.has(row.day))return;
    if(row.gym_session&&Array.isArray(row.gym_session.exercises)){workouts[row.day]=row.gym_session;remoteSessions.add(row.day)}
    else if(!firstImport)delete workouts[row.day];
@@ -1025,9 +1025,16 @@ async function useUser(u){if(loading)return;loading=true;user=u;offlinePending.c
  state.training={routineDays:localTraining.routineDays,workouts:workouts};
  var profile=results[1].data;
  if(profile&&!results[1].error){
-  state.settings={gymTarget:profile.gym_target,gymDays:profile.gym_days||[1,3,5]};
-  var remoteRoutine=Array.isArray(profile.routine_days)?profile.routine_days:[];
+  var localConfig=state.settings||{};
   var dirty=localStorage.getItem(routineDirtyKey())==='1';
+  state.settings={
+   gymTarget:dirty?localConfig.gymTarget||profile.gym_target:profile.gym_target,
+   gymDays:dirty?localConfig.gymDays||profile.gym_days||[1,3,5]:profile.gym_days||[1,3,5],
+   mealPlan:dirty?localConfig.mealPlan||{}:profile.meal_plan||{},
+   trainingBlocks:dirty?localConfig.trainingBlocks||[]:profile.training_blocks||[],
+   goalFocus:dirty?localConfig.goalFocus||'muscle':profile.goal_focus||'muscle'
+  };
+  var remoteRoutine=Array.isArray(profile.routine_days)?profile.routine_days:[];
   if(remoteRoutine.length&&!dirty)state.training.routineDays=remoteRoutine;
   else if(!remoteRoutine.length&&state.training.routineDays.length)dirty=true;
   if(dirty)pushSettings();
