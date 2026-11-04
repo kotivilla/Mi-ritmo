@@ -544,12 +544,26 @@ async function pushDay(key){if(!user||!db)return;var row=state.days[key];if(!row
  if(result.error)throw result.error;offlinePending.delete(key);savePending();syncLabel(offlinePending.size?'Cambios pendientes de sincronizar':'Guardado en Supabase');}
  catch(e){syncLabel('Sin conexión · pendiente de guardar');}}
 function routineDirtyKey(){return 'mi-ritmo-routines-dirty-'+(user&&user.id)}
-async function pushSettings(){if(!db||!user)return;
+var settingsSending=false,settingsPending=false;
+async function pushSettings(){
+ if(!db||!user)return;
+ if(settingsSending){settingsPending=true;return}
+ settingsSending=true;var owner=user.id;
  try{
- var row={user_id:user.id,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,routine_days:trainingData().routineDays,meal_plan:state.settings.mealPlan||{},training_blocks:state.settings.trainingBlocks||[],goal_focus:state.settings.goalFocus||'muscle',updated_at:new Date().toISOString()};
- var res=await db.from('profile_settings').upsert(row,{onConflict:'user_id'});if(res.error)throw res.error;
- localStorage.removeItem(routineDirtyKey());syncLabel('Guardado en Supabase');
- }catch(e){localStorage.setItem(routineDirtyKey(),'1');syncLabel('Configuración pendiente de sincronizar')}
+  do{
+   settingsPending=false;
+   var row={user_id:owner,gym_target:state.settings.gymTarget,gym_days:state.settings.gymDays,routine_days:trainingData().routineDays,meal_plan:state.settings.mealPlan||{},training_blocks:state.settings.trainingBlocks||[],goal_focus:state.settings.goalFocus||'muscle',updated_at:new Date().toISOString()};
+   var res=await db.from('profile_settings').upsert(row,{onConflict:'user_id'});
+   if(res.error)throw res.error;
+   if(!user||user.id!==owner)return;
+  }while(settingsPending);
+  localStorage.removeItem(routineDirtyKey());syncLabel('Guardado en Supabase');
+ }catch(e){
+  if(user&&user.id===owner){localStorage.setItem(routineDirtyKey(),'1');syncLabel('Configuración pendiente de sincronizar')}
+ }finally{
+  settingsSending=false;
+  if(settingsPending){settingsPending=false;pushSettings()}
+ }
 }
 function groupButtons(meal,group,value){var buttons='';for(var i=1;i<=group.target;i++){buttons+='<button type="button" class="tick'+(value>=i?' selected':'')+'" data-meal="'+meal.id+'" data-group="'+group.id+'" data-step="'+i+'" aria-pressed="'+(value>=i)+'" aria-label="'+safe(group.name)+' '+i+' de '+group.target+'">'+(value>=i?'✓':(group.target>1?i:'○'))+'</button>'}return buttons}
 // Activate only after the reviewed dish_library schema has been approved and applied.
@@ -570,7 +584,7 @@ async function syncDishLibrary(){
   if(response.error)throw response.error;if(!stillCurrent())return;
   var merged=new Map();(response.data||[]).forEach(function(d){merged.set(d.id,d)});
   dishList().forEach(function(d){if(d._pending||!merged.has(d.id))merged.set(d.id,d)});
-  state.dishes=Array.from(merged.values());saveCache();renderDishLibrary();
+  state.dishes=Array.from(merged.values());saveCache();renderDishLibrary();InsightsUI.render();
   $('dish-storage-note').textContent=dishList().some(function(d){return d._pending})?'Hay platos pendientes de sincronizar.':'Platos guardados en tu cuenta.';
  }catch(e){if(stillCurrent())$('dish-storage-note').textContent='Platos guardados en este dispositivo. Sincronización pendiente.'}
  finally{dishSyncRunning=false}
