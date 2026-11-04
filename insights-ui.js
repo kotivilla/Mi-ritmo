@@ -174,6 +174,14 @@ function renderReport(){
  }
  if(!observations.length)observations.push('Empezá registrando tus comidas o entrenamientos. Cuando haya datos, este espacio te mostrará lo más relevante.');
  $('insights-report-notes').innerHTML=observations.slice(0,2).map(function(line){return '<p>'+clean(line)+'</p>'}).join('');
+ var smart=SmartAnalysis.analyze(state(),b.meals,TrainingModel,today());
+ var insight=smart.insights[0],others=smart.insights.slice(1);
+ $('smart-analysis-content').innerHTML=insight?
+  '<div class="smart-analysis-main"><strong>'+clean(insight.title)+'</strong><p>'+clean(insight.body)+'</p></div>'+
+  (others.length?'<details class="smart-analysis-extra"><summary>Ver '+others.length+' '+(others.length===1?'observación más':'observaciones más')+'</summary>'+
+   others.map(function(item){return '<div class="smart-analysis-item"><strong>'+clean(item.title)+'</strong><p>'+clean(item.body)+'</p></div>'}).join('')+'</details>':''):
+  '<p class="mini">Tus observaciones aparecerán a medida que sumes registros.</p>';
+
 }
 
 function renderMuscles(){
