@@ -1018,18 +1018,29 @@ function renderDishLibrary(){
     '<div class="dish-item-actions"><button type="button" class="pill dish-record" data-log-dish="'+safe(d.id)+'" '+(registered||future?'disabled':'')+' aria-label="Registrar '+safe(d.name)+' como comido el '+safe(formatted)+'">'+(registered?'✓ Ya lo comí':future?'Elegí un día anterior':'Comí esto')+'</button>'+
     '<button type="button" class="pill dish-edit" data-edit-dish="'+safe(d.id)+'" aria-label="Editar '+safe(d.name)+'">Editar</button></div></article>';
  }).join(''):'<div class="dish-library-empty"><b>'+(dishList().length?'No encontramos platos':'Tu lista de platos está vacía')+'</b><p>'+(dishList().length?'Probá otra búsqueda o elegí otra comida.':'Creá un plato para tener opciones listas cuando las necesites.')+'</p></div>';
- $('dish-library-list').querySelectorAll('[data-log-dish]').forEach(function(button){
-  button.addEventListener('click',function(){
-   var dish=dishList().find(function(d){return d.id===button.dataset.logDish});
-   if(dish)registerSavedDish(dish,k(picked));
-  });
- });
- $('dish-library-list').querySelectorAll('[data-edit-dish]').forEach(function(button){
-  button.addEventListener('click',function(){
-   var dish=dishList().find(function(d){return d.id===button.dataset.editDish});
-   if(dish)openDish(dish.meal,dish);
-  });
- });
+}
+function handleDishLibraryAction(event){
+ var button=event.target&&event.target.closest&&event.target.closest('button[data-log-dish],button[data-edit-dish]');
+ if(!button||!$('dish-library-list').contains(button)||button.disabled)return;
+ event.preventDefault();
+ var id=button.dataset.logDish||button.dataset.editDish;
+ var dish=dishList().find(function(item){return String(item.id)===String(id)});
+ if(!dish){toast('No encontramos el plato. Actualizá la lista e intentá de nuevo.');return}
+ if(button.hasAttribute('data-edit-dish')){
+  openDish(dish.meal,dish);
+  return;
+ }
+ registerSavedDish(dish,k(picked));
+}
+function handleSavedDishInMeal(event){
+ var button=event.target&&event.target.closest&&event.target.closest('button[data-log-meal-dish],button[data-add-dish]');
+ if(!button||!$('mealgrid').contains(button)||button.disabled)return;
+ event.preventDefault();
+ if(button.hasAttribute('data-add-dish')){openDish(button.dataset.addDish);return}
+ var id=button.dataset.logMealDish;
+ var dish=dishList().find(function(item){return String(item.id)===String(id)});
+ if(!dish){toast('No encontramos ese plato. Probá desde Mis platos.');return}
+ registerSavedDish(dish,k(picked));
 }
 function dishSummary(d){
  var meal=meals.find(function(m){return m.id===d.meal});
@@ -1230,6 +1241,8 @@ function setupDishes(){
  $('new-dish').addEventListener('click',function(){openDish($('dish-library-meal').value||'lunch')});
  $('dish-library-meal').addEventListener('change',renderDishLibrary);
  $('dish-library-search').addEventListener('input',renderDishLibrary);
+ $('dish-library-list').addEventListener('click',handleDishLibraryAction);
+ $('mealgrid').addEventListener('click',handleSavedDishInMeal);
  $('food-search').addEventListener('input',function(){foodVisibleCount=18;dishShowAll=false;renderFoodCatalog()});
  $('food-search').addEventListener('keydown',function(event){if(event.key==='Enter'){event.preventDefault();this.blur()}});
  $('food-filter').addEventListener('change',function(){foodVisibleCount=18;dishShowAll=false;renderFoodCatalog()});
@@ -1275,13 +1288,8 @@ function renderMeals(){
   '</details></div></details>'
  }).join('');
  $('mealgrid').querySelectorAll('details.meal').forEach(function(el){if(expanded.includes(el.dataset.mealCard))el.open=true});
- $('mealgrid').querySelectorAll('[data-add-dish]').forEach(function(b){b.addEventListener('click',function(){openDish(b.dataset.addDish)})});
- $('mealgrid').querySelectorAll('[data-log-meal-dish]').forEach(function(b){
-  b.addEventListener('click',function(){
-   var dish=dishList().find(function(d){return d.id===b.dataset.logMealDish});
-   if(dish)registerSavedDish(dish,k(picked));
-  });
- });
+ /* Los botones de platos se gestionan desde setupDishes con delegación:
+    siguen funcionando aunque renderMeals vuelva a crear el HTML. */
  $('mealgrid').querySelectorAll('[data-group]').forEach(function(btn){
   btn.addEventListener('click',function(){
    if(!user){openAccount();return}
