@@ -200,6 +200,107 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 .insights-block-compare{border-top:1px solid var(--border);margin-top:18px;padding-top:16px}
 .insights-block-compare>b{display:block;font-size:13px;margin-bottom:8px}
 .insights-block-compare .insights-muscle-row{margin:8px 0}
+
+/* Progreso v2 — identidad visual, jerarquía y responsive consistente */
+.insights-progress-view{width:100%;max-width:none;margin:0;display:block}
+.progress-main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.progress-main .panel{min-width:0}
+.progress-overview-card{padding:27px 29px 22px}
+.progress-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.progress-section-heading>div{min-width:0}
+.progress-kicker{color:var(--green);font-size:10px;font-weight:850;letter-spacing:1.45px;margin:0 0 7px}
+.progress-section-heading h2{font-size:23px;line-height:1.2;letter-spacing:-.75px;margin:0}
+.progress-section-description{color:var(--muted);font-size:13px;margin:8px 0 0;line-height:1.5}
+.progress-week-range{border:1px solid #d5e7d9;border-radius:100px;background:#f5faf5;padding:7px 11px;color:var(--green);white-space:nowrap;font-size:11px;font-weight:750;margin-top:2px}
+.progress-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:25px}
+.progress-kpi{min-width:0;padding:17px 15px 15px;border-radius:15px;border:1px solid #e4eee5;background:#f8faf7;display:flex;flex-direction:column;gap:3px}
+.progress-kpi .progress-kpi-label{font-size:12px;font-weight:750;color:#5a7665;line-height:1.25}
+.progress-kpi strong{font-size:clamp(22px,3vw,30px);font-weight:850;letter-spacing:-1.15px;color:var(--dark);line-height:1.25;margin-top:6px;white-space:nowrap}
+.progress-kpi strong em{font-style:normal;font-size:.55em;letter-spacing:0;color:#718778;font-weight:700}
+.progress-kpi small{font-size:11px;line-height:1.4;color:var(--muted)}
+.progress-insight-box{display:flex;gap:13px;padding:16px 18px;margin-top:19px;background:#f1f7f1;border-radius:14px;align-items:flex-start}
+.progress-insight-icon{width:31px;height:31px;display:grid;place-items:center;flex-shrink:0;border-radius:10px;background:#dceee1;color:var(--green);font-size:22px;font-weight:850;line-height:1}
+.progress-insight-content{min-width:0}
+.progress-insight-content h3{font-size:13px;margin:1px 0 8px;letter-spacing:-.1px}
+.progress-insight-content p{margin:5px 0 0;color:#4f6859;font-size:12px;line-height:1.55}
+.progress-disclaimer{margin:14px 2px 0;font-size:11px;color:#85958b;line-height:1.5}
+.progress-detail-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px;align-items:start}
+.progress-weight-card,.progress-recovery-card{padding:25px;min-width:0}
+.progress-header-symbol{width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;border:1px solid #e0eee1;border-radius:12px;color:var(--green);background:#f4faf4;font-size:27px;line-height:1}
+.progress-weight-data{display:flex;flex-direction:column;gap:8px;margin-top:23px;min-height:74px}
+.progress-current-weight{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.progress-current-weight strong{font-size:36px;line-height:1;letter-spacing:-1.4px;color:var(--dark);font-weight:850}
+.progress-current-weight strong span{font-size:15px;font-weight:700;letter-spacing:0;color:#6d8875}
+.progress-current-weight small{color:var(--muted);font-size:11px}
+.progress-weight-context{display:flex;flex-wrap:wrap;gap:8px}
+.progress-weight-chip{display:inline-flex;flex-wrap:wrap;gap:4px;padding:6px 9px;border:1px solid #e2eee4;background:#f8faf8;border-radius:9px;color:#526c5c;font-size:11px}
+.progress-weight-chip b{font-weight:800;color:var(--green)}
+.progress-weight-empty{padding:8px 0;color:var(--muted);font-size:13px;line-height:1.5}
+.progress-chart-wrap{margin-top:16px;background:#fbfdfb;border:1px solid #e9f0e9;border-radius:15px;min-height:185px;display:grid;place-items:center;padding:16px 10px 6px}
+.progress-chart-wrap .insights-line-chart{margin:0;width:100%;max-height:245px}
+.progress-chart-wrap .insights-empty{background:transparent;margin:0;text-align:center;max-width:315px;line-height:1.6}
+.progress-entry-area{margin-top:22px;padding-top:17px;border-top:1px solid var(--border)}
+.progress-entry-heading{display:flex;gap:10px;justify-content:space-between;align-items:baseline}
+.progress-entry-heading h3{font-size:14px;margin:0;letter-spacing:-.15px}
+.progress-entry-heading span{font-size:11px;color:var(--muted)}
+.progress-weight-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end;margin-top:12px}
+.progress-weight-form label,.progress-recovery-form label{display:block;min-width:0;color:#56705e;font-size:11px;font-weight:750}
+.progress-weight-form label>span,.progress-recovery-form label>span{display:block;margin-bottom:6px}
+.progress-weight-form .field,.progress-recovery-form .field{margin:0;width:100%;padding:11px 10px;min-width:0;font-size:16px;color:var(--dark);background:#fff}
+.progress-weight-form button{min-height:43px;padding:10px 16px;white-space:nowrap}
+.progress-feedback{color:var(--green);font-size:12px;min-height:0;margin:9px 0 0}
+.progress-feedback:empty{display:none}
+.progress-recovery-status{margin-top:23px}
+.progress-recovery-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.progress-recovery-stat{border:1px solid #e7eee7;background:#f8faf7;border-radius:13px;padding:15px 12px;min-width:0}
+.progress-recovery-stat small{font-size:11px;color:#637c68;display:block}
+.progress-recovery-stat strong{font-size:22px;color:var(--dark);font-weight:850;letter-spacing:-.5px;display:block;margin:8px 0 0}
+.progress-recovery-stat strong span{font-size:12px;color:#789080;letter-spacing:0}
+.progress-recovery-stat.extra{grid-column:1/-1}
+.progress-recovery-empty{color:var(--muted);font-size:13px;line-height:1.6;padding:16px;background:#f8faf8;border-radius:13px;border:1px dashed #d8e6d9}
+.progress-recovery-details{margin-top:18px;border:1px solid #cfdfd2;border-radius:12px;overflow:hidden}
+.progress-recovery-details>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;list-style:none;font-size:13px;font-weight:800;color:var(--green);background:#f4f9f4}
+.progress-recovery-details>summary::-webkit-details-marker{display:none}
+.progress-recovery-details>summary::marker{content:""}
+.progress-summary-chevron{font-size:22px;font-weight:600;line-height:1;transition:transform .2s}
+.progress-recovery-details[open] .progress-summary-chevron{transform:rotate(180deg)}
+.progress-recovery-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px 14px 4px;margin:0}
+.progress-recovery-form button{grid-column:1/-1;min-height:44px}
+.progress-recovery-details .progress-feedback{margin:3px 14px 12px}
+.progress-recovery-footnote{color:var(--muted);font-size:11px;line-height:1.5;margin:12px 1px 0}
+@media(max-width:970px){
+ .progress-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .progress-detail-grid{grid-template-columns:minmax(0,1fr)}
+ .progress-weight-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
+}
+@media(max-width:610px){
+ .progress-main{gap:13px}
+ .progress-overview-card,.progress-weight-card,.progress-recovery-card{padding:18px 16px;border-radius:18px}
+ .progress-section-heading{gap:9px;flex-wrap:wrap}
+ .progress-section-heading h2{font-size:21px}
+ .progress-kicker{font-size:9px}
+ .progress-week-range{margin-top:2px;padding:5px 9px;font-size:10px}
+ .progress-section-description{font-size:12px}
+ .progress-kpi-grid{gap:8px;margin-top:17px}
+ .progress-kpi{padding:13px 11px;min-height:108px}
+ .progress-kpi .progress-kpi-label{font-size:11px}
+ .progress-kpi strong{font-size:25px;margin-top:3px}
+ .progress-kpi small{font-size:10px}
+ .progress-insight-box{margin-top:13px;padding:13px;gap:10px}
+ .progress-insight-icon{width:29px;height:29px;flex-basis:29px}
+ .progress-weight-data{margin-top:19px}
+ .progress-current-weight strong{font-size:34px}
+ .progress-chart-wrap{min-height:160px;padding:12px 5px}
+ .progress-weight-form{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .progress-weight-form button{grid-column:1/-1;width:100%}
+ .progress-recovery-form{grid-template-columns:repeat(2,minmax(0,1fr));padding:13px}
+ .progress-header-symbol{width:35px;height:35px;flex-basis:35px}
+}
+@media(max-width:365px){
+ .progress-recovery-form{grid-template-columns:1fr}
+ .progress-recovery-stats{grid-template-columns:1fr}
+ .progress-recovery-stat.extra{grid-column:auto}
+}
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
@@ -302,39 +403,75 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 </div>
 </div>
 
-<div id="progress-view" class="view layout insights-progress-view" hidden>
- <main class="maincol">
-  <section class="panel insights-summary-panel">
-   <div class="heading"><div><p class="eyebrow">TU BALANCE</p><h2>Resumen semanal</h2></div><span class="sub" id="insights-report-range"></span></div>
-   <div class="insights-report-cards" id="insights-report-cards"></div>
-   <ul class="insights-report-notes" id="insights-report-notes"></ul>
-   <p class="mini">Los días sin registros no se consideran incumplimientos.</p>
+<div id="progress-view" class="view insights-progress-view" hidden>
+ <main class="progress-main">
+  <section class="panel progress-overview-card" aria-labelledby="progress-overview-title">
+   <div class="progress-section-heading">
+    <div>
+     <p class="progress-kicker">BALANCE SEMANAL</p>
+     <h2 id="progress-overview-title">Tu semana de un vistazo</h2>
+     <p class="progress-section-description">Lo importante de tus hábitos, sin perderte en números.</p>
+    </div>
+    <span class="progress-week-range" id="insights-report-range"></span>
+   </div>
+   <div class="progress-kpi-grid" id="insights-report-cards"></div>
+   <div class="progress-insight-box">
+    <span class="progress-insight-icon" aria-hidden="true">↗</span>
+    <div class="progress-insight-content">
+     <h3>Balance de la semana</h3>
+     <div id="insights-report-notes"></div>
+    </div>
+   </div>
+   <p class="progress-disclaimer">Solo analizamos lo que registraste. Un día sin datos no significa que no cumpliste tu plan.</p>
   </section>
-  <section class="panel">
-   <div class="heading"><h2>Peso corporal</h2><span class="sub">Seguí la tendencia, no un solo día</span></div>
-   <form id="insights-weight-form" class="insights-quick-form">
-    <label>Fecha <input class="field" type="date" id="insights-weight-date" required></label>
-    <label>Peso (kg) <input class="field" type="number" inputmode="decimal" step="0.01" min="20" max="350" placeholder="Ej. 75.5" id="insights-weight-value"></label>
-    <button class="pill primary" type="submit">Guardar peso</button>
-   </form>
-   <p class="mini" id="insights-weight-feedback" role="status" aria-live="polite"></p>
-   <div class="insights-weight-summary" id="insights-weight-summary"></div>
-   <div id="insights-weight-chart"></div>
-  </section>
-  <section class="panel">
-   <div class="heading"><h2>Recuperación</h2><span class="sub">Opcional y rápido</span></div>
-   <p class="mini">Registrá sueño, energía y cansancio muscular cuando te resulte útil.</p>
-   <form id="insights-recovery-form" class="insights-recovery-form">
-    <label>Fecha <input class="field" type="date" id="insights-recovery-date" required></label>
-    <label>Horas de sueño <input class="field" type="number" min="0" max="18" step="0.5" inputmode="decimal" id="insights-sleep" placeholder="Opcional"></label>
-    <label>Energía <select class="field" id="insights-energy"><option value="">Sin registrar</option><option value="1">1 · Muy baja</option><option value="2">2 · Baja</option><option value="3">3 · Normal</option><option value="4">4 · Buena</option><option value="5">5 · Muy buena</option></select></label>
-    <label>Fatiga muscular <select class="field" id="insights-soreness"><option value="">Sin registrar</option><option value="1">1 · Nada</option><option value="2">2 · Leve</option><option value="3">3 · Moderada</option><option value="4">4 · Alta</option><option value="5">5 · Muy alta</option></select></label>
-    <button class="pill primary" type="submit">Guardar recuperación</button>
-   </form>
-   <p class="mini" id="insights-recovery-feedback" role="status" aria-live="polite"></p>
-   <p class="mini" id="insights-recovery-summary"></p>
-  </section>
+  <div class="progress-detail-grid">
+   <section class="panel progress-weight-card" aria-labelledby="progress-weight-title">
+    <div class="progress-section-heading">
+     <div>
+      <p class="progress-kicker">SEGUIMIENTO CORPORAL</p>
+      <h2 id="progress-weight-title">Peso corporal</h2>
+      <p class="progress-section-description">Mirá la tendencia, no una variación aislada.</p>
+     </div>
+     <span class="progress-header-symbol" aria-hidden="true">⌁</span>
+    </div>
+    <div class="progress-weight-data" id="insights-weight-summary"></div>
+    <div class="progress-chart-wrap" id="insights-weight-chart"></div>
+    <div class="progress-entry-area">
+     <div class="progress-entry-heading"><h3>Registrar peso</h3><span>En pocos segundos</span></div>
+     <form id="insights-weight-form" class="insights-quick-form progress-weight-form">
+      <label for="insights-weight-date"><span>Fecha</span><input class="field" type="date" id="insights-weight-date" required></label>
+      <label for="insights-weight-value"><span>Peso (kg)</span><input class="field" type="number" inputmode="decimal" step="0.01" min="20" max="350" placeholder="Ej. 75,5" id="insights-weight-value"></label>
+      <button class="pill primary" type="submit">Guardar</button>
+     </form>
+     <p class="progress-feedback" id="insights-weight-feedback" role="status" aria-live="polite"></p>
+    </div>
+   </section>
+   <section class="panel progress-recovery-card" aria-labelledby="progress-recovery-title">
+    <div class="progress-section-heading">
+     <div>
+      <p class="progress-kicker">BIENESTAR</p>
+      <h2 id="progress-recovery-title">Recuperación</h2>
+      <p class="progress-section-description">Cómo descansaste y cómo te sentís para entrenar.</p>
+     </div>
+     <span class="progress-header-symbol" aria-hidden="true">☾</span>
+    </div>
+    <div id="insights-recovery-summary" class="progress-recovery-status"></div>
+    <details class="progress-recovery-details" id="progress-recovery-details">
+     <summary><span>Registrar cómo me sentí</span><span class="progress-summary-chevron" aria-hidden="true">⌄</span></summary>
+     <form id="insights-recovery-form" class="insights-recovery-form progress-recovery-form">
+      <label for="insights-recovery-date"><span>Fecha</span><input class="field" type="date" id="insights-recovery-date" required></label>
+      <label for="insights-sleep"><span>Horas de sueño</span><input class="field" type="number" min="0" max="18" step="0.5" inputmode="decimal" id="insights-sleep" placeholder="Ej. 7,5"></label>
+      <label for="insights-energy"><span>Energía</span><select class="field" id="insights-energy"><option value="">Sin registrar</option><option value="1">1 · Muy baja</option><option value="2">2 · Baja</option><option value="3">3 · Normal</option><option value="4">4 · Buena</option><option value="5">5 · Muy buena</option></select></label>
+      <label for="insights-soreness"><span>Fatiga muscular</span><select class="field" id="insights-soreness"><option value="">Sin registrar</option><option value="1">1 · Nada</option><option value="2">2 · Leve</option><option value="3">3 · Moderada</option><option value="4">4 · Alta</option><option value="5">5 · Muy alta</option></select></label>
+      <button class="pill primary" type="submit">Guardar recuperación</button>
+     </form>
+     <p class="progress-feedback" id="insights-recovery-feedback" role="status" aria-live="polite"></p>
+    </details>
+    <p class="progress-recovery-footnote">Es opcional. No hace falta completar este registro todos los días.</p>
+   </section>
+  </div>
  </main>
+</div>
 </div>
 
 <nav class="bottom-nav" aria-label="Secciones principales">
