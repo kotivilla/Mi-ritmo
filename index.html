@@ -153,7 +153,9 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 </style>
 <script src="/dish-model.js"></script>
 <script src="/food-catalog.js"></script>
-<script src="/training-model.js?v=6"></script>
+<script src="/training-model.js?v=7"></script>
+<script src="/insights-model.js?v=1"></script>
+<script src="/insights-ui.js?v=1"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -192,6 +194,21 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    <div id="dish-library-list" class="dish-list"></div>
    <p class="mini" id="dish-storage-note">Tus platos se guardan en este dispositivo, asociados a tu cuenta.</p>
   </section>
+   <section class="panel dish-library-panel" aria-labelledby="insights-nutrition-title">
+    <div class="heading"><h2 id="insights-nutrition-title">Cómo viene tu alimentación</h2><span class="sub" id="insights-nutrition-date"></span></div>
+    <div id="insights-nutrition-body"></div>
+   </section>
+   <details class="panel dish-library-panel insights-planner-panel">
+    <summary class="insights-details-title">Planificar comidas y compras <span>Ver planificador</span></summary>
+    <p class="mini">Elegí platos guardados para organizar la semana. Podés generar una lista de compras con los ingredientes.</p>
+    <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square" type="button" id="insights-plan-prev" aria-label="Semana anterior">‹</button><button class="square" type="button" id="insights-plan-next" aria-label="Semana siguiente">›</button></div></div>
+    <div class="insights-plan-days" id="insights-plan-days"></div>
+    <div class="insights-plan-meals" id="insights-plan-meals"></div>
+    <hr class="sep">
+    <div class="heading"><div><h3>Lista de compras</h3><span class="sub" id="insights-shopping-count"></span></div><button class="pill" type="button" id="insights-plan-copy">Copiar lista</button></div>
+    <ul class="insights-shopping-list" id="insights-shopping-items"></ul>
+    <p class="mini" id="insights-shopping-note"></p>
+   </details>
 </div>
 
 <div id="gym-view" class="view gym-layout" hidden>
@@ -220,6 +237,15 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
    </div>
    <p class="mini" id="strength-metric-help">Mayor peso registrado en una serie de cada entrenamiento.</p>
    <div id="strength-history"></div>
+  </section>
+  <section class="panel" aria-labelledby="insights-progression-title">
+   <div class="heading"><div><h2 id="insights-progression-title">Mejoras recientes</h2><span class="sub">Pesos y volumen · últimas 4 semanas</span></div></div>
+   <div id="insights-progression-list" class="insights-activity-list"></div>
+  </section>
+  <section class="panel" aria-labelledby="insights-muscles-title">
+   <div class="heading"><h2 id="insights-muscles-title">Series por grupo muscular</h2><span class="sub" id="insights-muscle-week"></span></div>
+   <p class="mini">Series que registraste esta semana para cada músculo. Es una referencia para observar tu distribución de entrenamiento.</p>
+   <div id="insights-muscle-list" class="insights-muscle-list"></div>
   </section>
  </main>
  
