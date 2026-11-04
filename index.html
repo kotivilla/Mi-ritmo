@@ -306,7 +306,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
 <dialog id="gym-session-dialog" aria-labelledby="gym-session-title"><form id="gym-session-form" class="dialog-body">
 <div class="heading"><h2 id="gym-session-title">Registrar entrenamiento</h2><button type="button" class="square close" data-close="gym-session-dialog" aria-label="Cerrar">×</button></div>
 <p id="gym-session-date" class="mini"></p><label for="gym-session-routine" class="dish-label">¿Qué día de la rutina hiciste?</label><select class="field" id="gym-session-routine" required></select>
-<p class="mini">Completá las repeticiones y pesos <b>reales</b> por serie; 0 kg está permitido para ejercicios sin lastre.</p>
+<p class="mini">Completá las repeticiones y pesos <b>reales</b>. El peso en gris es el de la última vez (solo referencia); 0 kg está permitido para ejercicios sin lastre.</p>
 <div id="gym-session-exercises"></div><p id="gym-session-error" role="alert" aria-live="polite"></p>
 <div class="actions session-actions"><button class="pill session-danger" type="button" id="gym-session-delete" hidden>Eliminar registro</button><button class="pill primary" type="submit" id="gym-session-save">Guardar entrenamiento</button></div>
 </form></dialog>
@@ -611,14 +611,25 @@ function chooseGymSession(){
  sessionSets=day?day.rows.map(function(ex){return {id:ex.id,name:ex.name,equipment:ex.equipment||'unspecified',sets:ex.sets.map(function(){return {reps:null,weight:null}}),planned:ex.sets}}):[];
  $('gym-session-error').textContent='';renderGymSessionForm();
 }
+function lastGymExercise(exercise,day){
+ var logs=trainingData().workouts,dates=Object.keys(logs||{}).filter(function(d){return d<day}).sort().reverse();
+ var targetId=TrainingModel.variantId(exercise);
+ for(var i=0;i<dates.length;i++){
+  var previous=(logs[dates[i]].exercises||[]).find(function(e){return TrainingModel.variantId(e)===targetId});
+  if(previous&&Array.isArray(previous.sets)&&previous.sets.length)return {date:dates[i],sets:previous.sets};
+ }
+ return null;
+}
 function renderGymSessionForm(){
  var node=$('gym-session-exercises');
  if(!gymSessionOptions().length){node.innerHTML='<div class="session-empty">Primero guardá los ejercicios de algún día en <b>Mi rutina</b>. Después podrás registrar tu entrenamiento.</div><button type="button" class="pill" id="gym-go-routine">Ir a Mi rutina</button>';$('gym-go-routine').onclick=function(){$('gym-session-dialog').close();openRoutineSettings()};return}
  if(!sessionRoutine){node.innerHTML='<div class="session-empty">Seleccioná qué día de la rutina hiciste para ver sus ejercicios.</div>';return}
  node.innerHTML=sessionSets.map(function(ex,i){
-  return '<div class="session-exercise"><h3>'+safe(ex.name)+'</h3><p class="mini">'+safe(TrainingModel.equipmentLabels[ex.equipment]||'')+'</p><div class="session-set-head"><span>Serie</span><span>Reps.</span><span>Kg</span><span></span></div>'+ex.sets.map(function(s,j){
-   var planned=(ex.planned||[])[j]||{};
-   return '<div class="session-set"><span>'+(j+1)+'</span>'+['reps','weight'].map(function(field){return '<input type="number" required inputmode="'+(field==='reps'?'numeric':'decimal')+'" step="'+(field==='reps'?'1':'any')+'" min="'+(field==='reps'?1:0)+'" max="'+(field==='reps'?1000:2000)+'" data-log-ex="'+i+'" data-log-set="'+j+'" data-log-field="'+field+'" aria-label="'+(field==='reps'?'Repeticiones':'Peso en kg')+' '+safe(ex.name)+' serie '+(j+1)+'" placeholder="'+safe(planned[field]??(field==='reps'?'Reps':'kg'))+'" value="'+safe(s[field]??'')+'">'}).join('')+'<button type="button" class="row-remove" data-log-remove="'+i+':'+j+'" aria-label="Quitar serie '+(j+1)+'" '+(ex.sets.length===1?'disabled':'')+'>×</button></div>'
+  var prior=lastGymExercise(ex,sessionDate),when=prior?new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(fromKey(prior.date)):null;
+  var hint=prior?'Última vez: '+when+' · Los pesos en gris son los anteriores':'Sin registros anteriores · Se muestra el peso de referencia';
+  return '<div class="session-exercise"><h3>'+safe(ex.name)+'</h3><p class="mini">'+safe(TrainingModel.equipmentLabels[ex.equipment]||'')+'</p><p class="session-prior-hint">'+safe(hint)+'</p><div class="session-set-head"><span>Serie</span><span>Reps.</span><span>Kg</span><span></span></div>'+ex.sets.map(function(s,j){
+   var planned=(ex.planned||[])[j]||{},priorSet=prior&&prior.sets[j]||null;
+   return '<div class="session-set"><span>'+(j+1)+'</span>'+['reps','weight'].map(function(field){return '<input type="number" required inputmode="'+(field==='reps'?'numeric':'decimal')+'" step="'+(field==='reps'?'1':'any')+'" min="'+(field==='reps'?1:0)+'" max="'+(field==='reps'?1000:2000)+'" data-log-ex="'+i+'" data-log-set="'+j+'" data-log-field="'+field+'" aria-label="'+(field==='reps'?'Repeticiones':'Peso en kg')+' '+safe(ex.name)+' serie '+(j+1)+'" placeholder="'+safe(field==='weight'?(priorSet&&priorSet.weight!=null?priorSet.weight:(planned.weight??'kg')):(planned.reps??'Reps'))+'" value="'+safe(s[field]??'')+'">'}).join('')+'<button type="button" class="row-remove" data-log-remove="'+i+':'+j+'" aria-label="Quitar serie '+(j+1)+'" '+(ex.sets.length===1?'disabled':'')+'>×</button></div>'
   }).join('')+'<button class="add-series" type="button" data-log-add="'+i+'">+ Agregar serie</button></div>'
  }).join('');
  node.querySelectorAll('[data-log-field]').forEach(function(input){input.oninput=function(){sessionSets[+input.dataset.logEx].sets[+input.dataset.logSet][input.dataset.logField]=input.value===''?null:Number(input.value);$('gym-session-error').textContent=''}});
