@@ -108,7 +108,7 @@ dialog{border:1px solid var(--border);border-radius:20px;box-shadow:0 20px 80px 
  <aside class="sidecol">
   <section class="panel">
    <div class="heading"><h2>Resumen de hoy</h2><button class="pill" id="today-btn" type="button">Ir a hoy</button></div>
-   <div class="scoregrid" style="margin-top:17px"><div class="score"><small>Grupos cumplidos</small><strong id="daily-pct">0%</strong><span id="daily-groups">0 de 15 grupos</span></div><div class="score"><small>Comidas completas</small><strong id="complete-meals">0/4</strong><span>Todos sus grupos</span></div></div>
+   <div class="scoregrid" style="margin-top:17px"><div class="score"><small>Grupos cumplidos</small><strong id="daily-pct">0%</strong><span id="daily-groups">0 de 14 grupos</span></div><div class="score"><small>Comidas completas</small><strong id="complete-meals">0/4</strong><span>Todos sus grupos</span></div></div>
    <div class="notice">La idea es registrar avances reales, no buscar días perfectos. Cada grupo cuenta.</div>
   </section>
   <section class="panel">
@@ -273,7 +273,7 @@ function dailyFruit(item){
 }
 function countDay(d){var item=keyDay(d),points=0,total=0,complete=0,any=false;
  meals.forEach(function(m){var all=true;m.groups.forEach(function(g){var val=cap((item.meals||{})[m.id]&&item.meals[m.id][g.id],g.target);points+=val/g.target;total++;if(val!==g.target)all=false;if(val>0)any=true});if(all)complete++});
- var fruits=dailyFruit(item);points+=fruits/2;total+=1;if(fruits>0)any=true;
+ // Las frutas se registran como objetivo independiente: no afectan los porcentajes de comidas.
  return {points:points,total:total,complete:complete,any:any}
 }
 function weeklyGym(d){var start=monday(d),sum=0;for(var i=0;i<7;i++)if(keyDay(plus(start,i)).gym)sum++;return sum}
@@ -328,7 +328,7 @@ function renderFruit(){
  var fruits=dailyFruit(keyDay(picked));
  $('daily-fruit').innerHTML='<article class="daily-fruit'+(fruits===2?' done':'')+'">'+
  '<div class="mealhead"><div class="mealname"><span>🍎</span>Frutas del día</div><span class="fruit-count">'+fruits+'/2 frutas</span></div>'+
- '<p class="fruit-hint">Objetivo: 2 frutas (aprox. 400 g) en total. Podés comerlas en cualquier momento del día.</p>'+
+ '<p class="fruit-hint">Objetivo independiente: 2 frutas (aprox. 400 g) por día. No cuentan para el porcentaje de las comidas.</p>'+
  '<div class="fruit-controls"><b>Frutas consumidas</b><div class="ticks">'+groupButtons({id:'daily'},fruitGroup,fruits)+'</div></div>'+
  '</article>';
  $('daily-fruit').querySelectorAll('[data-group]').forEach(function(btn){
