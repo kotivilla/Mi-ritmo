@@ -32,7 +32,7 @@ function workoutReport(workouts,start,end,TrainingModel){
 function analyze(state,mealSpec,TrainingModel,end){
  var days=state.days||{},workouts=state.training&&state.training.workouts||{},weight=weightReport(days,end);
  var gym=workoutReport(workouts,add(end,-27),end,TrainingModel);
- var nutrition=InsightsModel.nutritionWeek(days,mealSpec,add(end,-13),end),goal=state.settings&&state.settings.goalFocus||'muscle',insights=[],change=weight.change;
+ var nutrition=InsightsModel.nutritionWeek(days,mealSpec,add(end,-13),end,end),goal=state.settings&&state.settings.goalFocus||'muscle',insights=[],change=weight.change;
  function note(kind,title,body){insights.push({kind:kind,title:title,body:body})}
  if(change!==null&&gym.improvements.length){
   if(Math.abs(change)<.2)note('combined','Más fuerza con peso estable','Tu peso promedio se mantuvo bastante estable y registraste mejoras en al menos un ejercicio. Son tendencias simultáneas, no una relación causal.');
@@ -46,7 +46,7 @@ function analyze(state,mealSpec,TrainingModel,end){
   if(Math.abs(change)<.2)note('weight','Peso bastante estable','El peso promedio de los últimos 7 días varió menos de 0,2 kg frente a la semana anterior.');
   else note('weight','Cambio de peso promedio','El peso promedio de los últimos 7 días cambió '+delta(change)+' kg respecto de la semana anterior. Un cambio semanal aislado no define una tendencia.');
  }
- if(nutrition.registeredMeals>=6)note('nutrition','Alimentación registrada','En las últimas 2 semanas anotaste '+nutrition.registeredMeals+' comidas, con '+nutrition.rate+'% de los grupos completados en promedio. Las comidas sin registrar no cuentan como incumplidas.');
+ if(nutrition.registeredMeals>=6)note('nutrition','Alimentación registrada','En las últimas 2 semanas anotaste '+nutrition.registeredMeals+' comidas. El promedio de '+nutrition.evaluatedMeals+' comidas evaluadas fue '+nutrition.rate+'%.'+(nutrition.skippedMeals?' Las '+nutrition.skippedMeals+' comidas sin cargar, anteriores a otra registrada o de días ya terminados, cuentan como 0%.':' Los días totalmente vacíos no se incluyen.'));
  if(!insights.length){
   var needed=[];
   if(weight.recent.count<2||weight.previous.count<2)needed.push('pesarte varias veces durante dos semanas');
