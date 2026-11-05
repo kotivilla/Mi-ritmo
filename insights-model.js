@@ -85,7 +85,7 @@ function progressChanges(workouts,start,end,TrainingModel){
  return improvements.sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,5);
 }
 function weeklyReport(state,mealSpec,TrainingModel,until){
- var start=weekStart(until),days=state.days||{},workouts=state.training&&state.training.workouts||{},nut=nutritionWeek(days,mealSpec,start,until);
+ var start=weekStart(until),days=state.days||{},workouts=state.training&&state.training.workouts||{},nut=nutritionWeek(days,mealSpec,start,until,until);
  var attended=dateRange(start,until).filter(function(d){return !!(days[d]&&days[d].gym)}).length;
  var weight=weightTrend(days,until),recovery=recoveryWeek(days,start,until);
  var changes=progressChanges(workouts,start,until,TrainingModel);
