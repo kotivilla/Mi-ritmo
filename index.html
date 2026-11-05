@@ -1009,10 +1009,10 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
-<script src="/insights-model.js?v=2"></script>
-<script src="/smart-analysis.js?v=1"></script>
+<script src="/insights-model.js?v=3"></script>
+<script src="/smart-analysis.js?v=2"></script>
 <script src="/active-workout.js?v=1"></script>
-<script src="/insights-ui.js?v=4"></script>
+<script src="/insights-ui.js?v=5"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -2228,11 +2228,14 @@ function renderGymProgress(){
 }
 function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
- $('week-range').textContent=range(first)+' – '+range(plus(first,6));var entries=0,pts=0;$('barweek').innerHTML='';
- for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+progressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col);if(cc.any){entries++;pts+=cc.points/cc.total}}
- $('weekdetail').textContent=entries?('Promedio de '+entries+' día(s) con registros: '+Math.round(pts/entries*100)+'%.'):'Marcá al menos un grupo para comenzar a ver tu evolución.';
- var total=0,recorded=0;for(var j=0;j<30;j++){var date=plus(current,-j),item=countDay(date);if(item.any){recorded++;total+=item.points/item.total}}
- $('month-pct').textContent=recorded?Math.round(total/recorded*100)+'%':'—';
+ $('week-range').textContent=range(first)+' – '+range(plus(first,6));$('barweek').innerHTML='';
+ for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+progressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col)}
+ var todayKey=k(new Date()),weekly=InsightsModel.nutritionWeek(state.days,meals,k(first),k(plus(first,6)),todayKey);
+ $('weekdetail').textContent=weekly.rate===null?'Sin comidas registradas para analizar.':
+  'Promedio: '+weekly.rate+'% · '+weekly.evaluatedMeals+' '+(weekly.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+
+  (weekly.skippedMeals?' ('+weekly.skippedMeals+' sin cargar = 0%)':'')+'.';
+ var monthly=InsightsModel.nutritionWeek(state.days,meals,k(plus(new Date(),-29)),todayKey,todayKey);
+ $('month-pct').textContent=monthly.rate===null?'—':monthly.rate+'%';
 }
 function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();if($('nutrition-calendar-dialog').open)renderNutritionCalendar();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();ActiveWorkoutUI.updateEntryButton();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
