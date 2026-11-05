@@ -17,11 +17,11 @@ function longDate(s){return new Intl.DateTimeFormat('es-AR',{weekday:'long',day:
 function displayWeek(s){return shortDate(s)+' – '+shortDate(InsightsModel.addDay(s,6))}
 function weekEnd(start){return InsightsModel.addDay(start,6)}
 function renderNutrition(){
- var end=b.date()<today()?b.date():today(),start=InsightsModel.weekStart(end),nut=InsightsModel.nutritionWeek(state().days,b.meals,start,end);
+ var end=b.date()<today()?b.date():today(),start=InsightsModel.weekStart(end),nut=InsightsModel.nutritionWeek(state().days,b.meals,start,end,today());
  $('insights-nutrition-date').textContent=displayWeek(start);
  if(nut.rate===null){$('insights-nutrition-body').innerHTML='<div class="insights-empty">Todavía no hay comidas registradas en esta semana. Cuando las cargues, vas a ver qué grupos pudiste cubrir.</div>';return}
  var order=[['protein','Proteínas'],['veg','Vegetales'],['carb','Hidratos'],['fat','Grasas']];
- $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de los <b>'+nut.registeredMeals+' '+(nut.registeredMeals===1?'comida registrada':'comidas registradas')+'</b>: '+nut.rate+'% de grupos completos. Los días sin cargar no cuentan como incumplidos.</p><div class="insights-metrics">'+order.map(function(group){
+ $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de <b>'+nut.evaluatedMeals+' '+(nut.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+'</b>: '+nut.rate+'% de grupos completos.'+(nut.skippedMeals?' '+nut.skippedMeals+' sin cargar contadas como 0%.':'')+' Los días totalmente vacíos se excluyen.</p><div class="insights-metrics">'+order.map(function(group){
   var item=nut.groups[group[0]];if(!item)return '';
   return '<div class="insights-bar-row"><div class="insights-bar-head"><b>'+group[1]+'</b><strong>'+item.pct+'%</strong></div><div class="insights-bar"><span style="width:'+item.pct+'%"></span></div></div>'
  }).join('')+'</div>';
@@ -150,7 +150,7 @@ function renderReport(){
  var nutrition=report.nutrition,weight=report.weight,recovery=report.recovery;
  var rows=[
   ['Gimnasio',report.attended,'/'+target,'sesiones esta semana'],
-  ['Alimentación',nutrition.rate===null?'—':nutrition.rate,nutrition.rate===null?'':'%','en '+nutrition.registeredMeals+' '+(nutrition.registeredMeals===1?'comida registrada':'comidas registradas')],
+  ['Alimentación',nutrition.rate===null?'—':nutrition.rate,nutrition.rate===null?'':'%','en '+nutrition.evaluatedMeals+' '+(nutrition.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')],
   ['Peso promedio',weight.average7===null?'—':fmt(weight.average7,1),weight.average7===null?'':' kg','últimos 7 días'],
   ['Recuperación',recovery.logged,'',recovery.logged===1?'día registrado':'días registrados']
  ];
@@ -167,7 +167,7 @@ function renderReport(){
   observations.push('Llevás '+report.attended+' '+(report.attended===1?'entrenamiento registrado':'entrenamientos registrados')+' esta semana'+(report.attended>=target?', alcanzando tu objetivo semanal.':'.'));
  }
  if(nutrition.rate!==null){
-  observations.push('En las '+nutrition.registeredMeals+' '+(nutrition.registeredMeals===1?'comida cargada':'comidas cargadas')+', completaste en promedio el '+nutrition.rate+'% de los grupos de tu plan.');
+  observations.push('En '+nutrition.evaluatedMeals+' '+(nutrition.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+', completaste en promedio el '+nutrition.rate+'% de los grupos de tu plan'+(nutrition.skippedMeals?'; '+nutrition.skippedMeals+' sin cargar '+(nutrition.skippedMeals===1?'cuenta':'cuentan')+' como 0%.':'.'));
  }
  if(weight.change!==null){
   observations.push('Tu promedio de peso cambió '+(weight.change>0?'+':'')+fmt(weight.change,2)+' kg frente a la semana anterior.');
