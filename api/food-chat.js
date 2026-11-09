@@ -37,24 +37,6 @@ function pending(plan,saved,estimate){
  });
 }
 export default async function handler(req,res){
- if(req.method==='GET'&&req.query&&req.query.status==='probe'&&req.query.pin==='mr-489c5f2026'&&Date.now()<1794232500000){
-  const credential=process.env.AI_GATEWAY_API_KEY||req.headers['x-vercel-oidc-token']||process.env.VERCEL_OIDC_TOKEN;
-  if(!credential)return reply(res,503,{step:'credentials',available:false});
-  try{
-   const response=await fetch('https://ai-gateway.vercel.sh/v1/chat/completions',{
-    method:'POST',headers:{Authorization:'Bearer '+credential,'Content-Type':'application/json'},
-    body:JSON.stringify({model:MODEL,messages:[{role:'user',content:'Respondé solamente OK.'}],max_tokens:70}),
-    signal:AbortSignal.timeout(15000)
-   });
-   const body=await response.json().catch(()=>({}));
-   return reply(res,200,{step:'gateway',status:response.status,ok:response.ok,errorCode:String(body?.error?.code||body?.error?.type||'').slice(0,90),
-    errorMessage:String(body?.error?.message||'').slice(0,260),hasModelOutput:!!body?.choices?.[0]?.message?.content});
-  }catch(e){return reply(res,502,{step:'network',error:String(e?.name||'unknown').slice(0,90)})}
- }
- if(req.method==='GET'&&req.query&&req.query.status==='1'){
-  const source=process.env.AI_GATEWAY_API_KEY?'configured-key':req.headers['x-vercel-oidc-token']?'vercel-oidc':process.env.VERCEL_OIDC_TOKEN?'env-oidc':'not-provided';
-  return reply(res,200,{service:'food-chat',gatewayCredentialSource:source,model:MODEL});
- }
  if(req.method!=='POST')return reply(res,405,{error:'Método no permitido.'});
  const token=short((req.headers.authorization||'').replace(/^Bearer\s+/i,''),2000);
  if(!token)return reply(res,401,{error:'Iniciá sesión para usar el asistente.'});
@@ -79,7 +61,18 @@ export default async function handler(req,res){
   const context=JSON.stringify({fecha:date,comida:meal.name,grupos:meal.groups,gruposRegistrados:saved,frutasRegistradas:fruit,consulta:message});
   const payload={model:MODEL,messages:[{role:'system',content:SYSTEM},...history,{role:'user',content:context}],response_format:{type:'json_object'},max_tokens:1100};
   const upstream=await fetch('https://ai-gateway.vercel.sh/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+gatewayToken,'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(24000)});
-  if(!upstream.ok)return reply(res,502,{error:upstream.status===401||upstream.status===403?'AI Gateway todavía no está habilitado para esta app.':'No pude consultar la IA en este momento.'});
+  if(!upstream.ok){
+   const failure=await upstream.json().catch(function(){return {}});
+   const code=String(failure?.error?.code||failure?.error?.type||'');
+   if(code==='customer_verification_required')return reply(res,403,{
+    code:'gateway_card_required',error:'Para habilitar el chat con IA, Vercel requiere agregar una tarjeta válida a tu cuenta, incluso para utilizar sus créditos gratuitos.'
+   });
+   if(code==='insufficient_funds'||code==='quota_for_entity_exceeded')return reply(res,402,{
+    code:'gateway_credits',error:'AI Gateway no tiene créditos disponibles o alcanzó un límite de presupuesto. Revisá el saldo en Vercel.'
+   });
+   if(upstream.status===401)return reply(res,502,{error:'AI Gateway rechazó la autenticación del servidor. Revisá la conexión en Vercel.'});
+   return reply(res,502,{error:upstream.status===403?'AI Gateway rechazó el acceso. Revisá la configuración de AI Gateway en Vercel.':'No pude consultar la IA en este momento.'});
+  }
   const data=await upstream.json(),raw=data?.choices?.[0]?.message?.content;
   if(typeof raw!=='string')return reply(res,502,{error:'La IA no devolvió una respuesta válida.'});
   const parsed=JSON.parse(raw),estimate={};
