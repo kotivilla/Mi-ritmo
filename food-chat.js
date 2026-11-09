@@ -12,7 +12,7 @@ function line(text,type){
 }
 function welcome(){
  $('food-chat-messages').innerHTML='';
- line('Contame qué comiste y vemos qué grupos te faltarían. Si mencionás un restaurante, decime qué plato pediste. La primera vez Puter te pedirá iniciar sesión; tenés créditos gratuitos para empezar.','assistant');
+ line('Decime qué comiste. Si mencionás una marca o un local, voy a buscarlo en internet para identificar mejor los ingredientes. Después lo comparo con tu plan.','assistant');
 }
 function dateLabel(key){
  var date=new Date(key+'T12:00:00');
@@ -54,6 +54,25 @@ function buildResult(result){
  if(typeof result.fruitRemaining==='number'){
   var fruit=document.createElement('small');fruit.className='food-chat-footnote';fruit.textContent='Frutas: '+result.fruitRemaining+'/2 todavía por cubrir (estimado).';bubble.append(fruit);
  }
+ if(result.webLookup&&result.webLookup.searched){
+  var references=document.createElement('div');references.className='food-chat-sources';
+  var heading=document.createElement('strong');heading.className='food-chat-sources-label';
+  heading.textContent='Búsqueda en internet';references.append(heading);
+  var sourceItems=result.webLookup.sources||[];
+  if(sourceItems.length){
+   sourceItems.slice(0,3).forEach(function(item){
+    try{
+     var url=new URL(String(item.url));
+     if(url.protocol!=='https:'&&url.protocol!=='http:')return;
+     var anchor=document.createElement('a');anchor.href=url.href;anchor.target='_blank';anchor.rel='noopener noreferrer';
+     anchor.textContent=String(item.title||url.hostname).slice(0,85);references.append(anchor);
+    }catch(e){}
+   });
+  }else{
+   var warning=document.createElement('small');warning.textContent='No pude recuperar enlaces para confirmar el producto. Si podés, revisá la etiqueta.';references.append(warning);
+  }
+  bubble.append(references);
+ }
  var go=document.createElement('button');go.type='button';go.className='food-chat-goto';go.textContent='Ver y marcar mi comida';
  go.addEventListener('click',function(){$('food-chat-dialog').close();bridge.openMeal($('food-chat-meal').value)});
  bubble.append(go);
@@ -84,7 +103,9 @@ async function send(message){
  try{
   var data=await root.FoodPuterAI.ask({
    message:text,meal:meal,date:date,saved:savedGroups(meal,date),
-   fruit:bridge.fruit(date),history:oldHistory,meals:bridge.meals()
+   fruit:bridge.fruit(date),history:oldHistory,meals:bridge.meals(),
+   webEnabled:$('food-chat-web-enabled').checked,
+   onStage:function(stage){$('food-chat-send').textContent=stage==='search'?'Buscando…':'Analizando…'}
   });
   buildResult(data);
   history.push({role:'user',content:text},{role:'assistant',content:data.answer});
