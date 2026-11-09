@@ -1065,6 +1065,17 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 }
 .food-chat-goto{display:block;width:100%;margin-top:13px;min-height:40px;padding:9px 11px;border:1px solid #cde4d2;background:#eff8f1;border-radius:10px;color:var(--green);font-size:12px;font-weight:850;text-align:center}
 .food-chat-goto:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+
+/* Búsqueda de productos en internet: control discreto y enlaces claros */
+.food-chat-web-switch{display:flex;align-items:center;gap:8px;min-height:34px;margin:0 0 8px;padding:2px 2px;cursor:pointer;color:#557661;font-size:11px;font-weight:760}
+.food-chat-web-switch input{width:15px;height:15px;flex:0 0 15px;accent-color:var(--green);margin:0}
+.food-chat-web-switch span{flex:1}
+.food-chat-web-switch svg{width:15px;height:15px;flex:0 0 15px;color:#759784}
+.food-chat-sources{display:flex;flex-direction:column;gap:6px;background:#f4f8f5;border:1px solid #e1ece3;border-radius:10px;margin-top:13px;padding:11px 12px}
+.food-chat-sources-label{font-size:11px;font-weight:800;color:#3e7152;margin:0 0 2px}
+.food-chat-sources a{display:block;font-size:11px;font-weight:750;color:var(--green);line-height:1.4;overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:#b0c9b7;text-underline-offset:2px}
+.food-chat-sources a:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.food-chat-sources small{font-size:10px;line-height:1.45;color:#6e8978}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -1073,8 +1084,8 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/smart-analysis.js?v=2"></script>
 <script src="/active-workout.js?v=1"></script>
 <script src="https://js.puter.com/v2/"></script>
-<script src="/puter-food-ai.js?v=1"></script>
-<script src="/food-chat.js?v=3"></script>
+<script src="/puter-food-ai.js?v=2"></script>
+<script src="/food-chat.js?v=4"></script>
 <script src="/insights-ui.js?v=5"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
@@ -1444,14 +1455,19 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
   <div class="food-chat-bottom">
    <div class="food-chat-examples" id="food-chat-examples">
     <button type="button" data-example="Comí una milanesa con puré en un restaurante">Milanesa con puré</button>
-    <button type="button" data-example="Comí un sándwich de pollo de un bar">Sándwich de un bar</button>
+    <button type="button" data-example="Hoy comí pizza Sibarita de mozzarella">Pizza Sibarita</button>
    </div>
+   <label class="food-chat-web-switch" for="food-chat-web-enabled">
+    <input type="checkbox" id="food-chat-web-enabled" checked>
+    <span>Buscar productos y locales en internet</span>
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+   </label>
    <form id="food-chat-form" class="food-chat-form">
     <label for="food-chat-input" class="dish-visually-hidden">Describí qué comiste</label>
     <textarea id="food-chat-input" rows="2" maxlength="550" placeholder="Hoy comí… ¿Qué me falta de mi plan?"></textarea>
     <button id="food-chat-send" type="submit">Enviar</button>
    </form>
-   <p class="food-chat-bottom-note">IA de Puter · Requiere una cuenta Puter con créditos gratuitos · No registra comidas sin tu confirmación</p>
+   <p class="food-chat-bottom-note">IA de Puter · La búsqueda web usa créditos de Puter · No se registran comidas automáticamente</p>
   </div>
  </div>
 </dialog>
