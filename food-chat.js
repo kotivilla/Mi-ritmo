@@ -12,7 +12,7 @@ function line(text,type){
 }
 function welcome(){
  $('food-chat-messages').innerHTML='';
- line('Contame qué comiste y te ayudo a identificar los grupos de tu plan que podrías haber cubierto y cuáles te faltarían. Podés mencionar un restaurante, pero decime qué plato pediste.','assistant');
+ line('Contame qué comiste y vemos qué grupos te faltarían. Si mencionás un restaurante, decime qué plato pediste. La primera vez Puter te pedirá iniciar sesión; tenés créditos gratuitos para empezar.','assistant');
 }
 function dateLabel(key){
  var date=new Date(key+'T12:00:00');
@@ -82,17 +82,19 @@ async function send(message){
  var meal=$('food-chat-meal').value,oldHistory=history.slice(-4);
  line(text,'user');$('food-chat-input').value='';setBusy(true);
  try{
-  var token=await bridge.accessToken();
-  if(!token)throw Error('Tu sesión venció. Iniciá sesión nuevamente.');
-  var response=await fetch('/api/food-chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-   body:JSON.stringify({message:text,meal,date,saved:savedGroups(meal,date),fruit:bridge.fruit(date),history:oldHistory})});
-  var data=await response.json().catch(function(){return {}});
-  if(!response.ok)throw Error(data.error||('No pude responder (error '+response.status+').'));
+  var data=await root.FoodPuterAI.ask({
+   message:text,meal:meal,date:date,saved:savedGroups(meal,date),
+   fruit:bridge.fruit(date),history:oldHistory,meals:bridge.meals()
+  });
   buildResult(data);
   history.push({role:'user',content:text},{role:'assistant',content:data.answer});
   history=history.slice(-6);
  }catch(error){
-  var message=error instanceof TypeError?'No pude conectarme. Revisá Internet e intentá nuevamente.':String(error.message||'No pude completar la consulta.');
+  var details=String(error&&((error.msg||error.message||error.error))||'');
+  var message=/auth_window_closed|popup_blocked/.test(details)?'Para usar el asistente, permití la ventana de inicio de sesión de Puter.':
+   /credit|quota|balance|insufficient|limit/i.test(details)?'Se agotaron los créditos gratuitos de Puter o hay un límite de uso. Revisá tu cuenta de Puter.':
+   /network|failed to fetch/i.test(details)?'No pude conectarme. Revisá Internet e intentá nuevamente.':
+   details.slice(0,240)||'No pude completar la consulta. Probá nuevamente.';
   line(message,'assistant');
  }finally{setBusy(false);$('food-chat-input').focus()}
 }
