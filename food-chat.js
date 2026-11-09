@@ -24,6 +24,14 @@ function initContext(){
  currentDate=date;history=[];welcome();
  $('food-chat-selected-date').textContent=dateLabel(date);
 }
+function inferMeal(text){
+ var t=String(text||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ if(t.includes('desayun'))return 'breakfast';
+ if(t.includes('almorc')||t.includes('almuerz'))return 'lunch';
+ if(t.includes('merend')||/\btome (un |el )?te\b/.test(t))return 'snack';
+ if(/\b(cene|cena|cenar|cenamos)\b/.test(t))return 'dinner';
+ return null;
+}
 function buildResult(result){
  var bubble=line(result.answer,'assistant'),small=document.createElement('small');
  small.className='food-chat-status';
@@ -46,6 +54,9 @@ function buildResult(result){
  if(typeof result.fruitRemaining==='number'){
   var fruit=document.createElement('small');fruit.className='food-chat-footnote';fruit.textContent='Frutas: '+result.fruitRemaining+'/2 todavía por cubrir (estimado).';bubble.append(fruit);
  }
+ var go=document.createElement('button');go.type='button';go.className='food-chat-goto';go.textContent='Ver y marcar mi comida';
+ go.addEventListener('click',function(){$('food-chat-dialog').close();bridge.openMeal($('food-chat-meal').value)});
+ bubble.append(go);
  var footer=document.createElement('small');footer.className='food-chat-disclaimer';
  footer.textContent='No se guardó ninguna comida. Confirmá porciones y marcá los grupos en tu registro.';
  bubble.append(footer);scrollToEnd();
@@ -64,6 +75,10 @@ async function send(message){
  if(!text||sending)return;
  if(!bridge.user()){bridge.openAccount();return}
  var date=bridge.date();if(date!==currentDate)initContext();
+ var predicted=inferMeal(text);
+ if(predicted&&$('food-chat-meal').value!==predicted){
+  $('food-chat-meal').value=predicted;history=[];welcome();
+ }
  var meal=$('food-chat-meal').value,oldHistory=history.slice(-4);
  line(text,'user');$('food-chat-input').value='';setBusy(true);
  try{
