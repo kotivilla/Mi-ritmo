@@ -138,8 +138,10 @@ async function ask(args){
  if(!meal)throw Error('Elegí qué comida querés analizar.');
  var lookup=null;
  if(wantsWebLookup(args.message,args.webEnabled)){
+  if(typeof args.onStage==='function')args.onStage('search');
   lookup=await findProductOnline(args.message);
  }
+ if(typeof args.onStage==='function')args.onStage('analysis');
  var response=await root.puter.ai.chat(prompt(args,meal,lookup),{
   model:MODEL,normalize:true,
   outputFormat:{type:'json_schema',name:'meal_groups',strict:true,schema:SCHEMA}
