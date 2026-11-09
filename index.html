@@ -1072,7 +1072,9 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/insights-model.js?v=3"></script>
 <script src="/smart-analysis.js?v=2"></script>
 <script src="/active-workout.js?v=1"></script>
-<script src="/food-chat.js?v=2"></script>
+<script src="https://js.puter.com/v2/"></script>
+<script src="/puter-food-ai.js?v=1"></script>
+<script src="/food-chat.js?v=3"></script>
 <script src="/insights-ui.js?v=5"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
@@ -1449,7 +1451,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
     <textarea id="food-chat-input" rows="2" maxlength="550" placeholder="Hoy comí… ¿Qué me falta de mi plan?"></textarea>
     <button id="food-chat-send" type="submit">Enviar</button>
    </form>
-   <p class="food-chat-bottom-note">Orientación estimativa · No verifica menús ni registra comidas sin tu confirmación</p>
+   <p class="food-chat-bottom-note">IA de Puter · Requiere una cuenta Puter con créditos gratuitos · No registra comidas sin tu confirmación</p>
   </div>
  </div>
 </dialog>
@@ -2545,7 +2547,7 @@ async function start(){if(initDone)return;initDone=true;setupDishes();setupTrain
    var card=$('mealgrid').querySelector('[data-meal-card="'+mealId+'"]');
    if(card){card.open=true;card.scrollIntoView({behavior:'smooth',block:'center'})}
   },
-  async accessToken(){if(!db)return null;var session=await db.auth.getSession();return session.data&&session.data.session&&session.data.session.access_token||null}
+  // Puter.js pide autorización propia en el navegador; no usamos claves ni tokens de Supabase.
  });
  ActiveWorkoutUI.init({
   userId:function(){return user&&user.id||''},
