@@ -44,8 +44,8 @@ function wantsWebLookup(text,enabled){
  if(/\b(busca|buscar|buscame|google|internet|web|marca|envasad[oa]|restaurant[e]?|local|comercio|supermercado|etiqueta|informacion nutricional|ingredientes de)\b/.test(words))return true;
  if(/\b(sibarita|mccain|mcdonald|burger king|mostaza|kfc|wendy|starbucks|havanna|arcor|terrabusi|bagley|bimbo|la serenisima|danone|nestle|bonafide|grido|freddo|sushi club|rapanui|guaymallen)\b/.test(words))return true;
  // Distingue nombres propios (marca/local) de ingredientes habituales escritos al principio.
- var original=String(text||'').replace(/^\s*(hoy\s+)?(com[ií]|almorc[eé]|desayun[eé]|merend[eé]|cen[eé])\b/i,'');
- if(/\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]{2,}\b/.test(original)&&!/(?:^|\s)(?:Hoy|Ayer|Desayuno|Almuerzo|Comida|Té|Te)\b/.test(original))return true;
+ var original=String(text||'').trim().split(/\s+/).slice(1).join(' ');
+ if(/(?:^|\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñ]{2,}(?=\s|$|[,.!?])/.test(original))return true;
  // Productos cuya variante o marca suele aparecer después del nombre: "pizza sibarita".
  if(/\b(pizza|alfajor|galletitas|hamburguesa|yogur|cereal|helado|barra|turron|empanada)\s+(?!casera\b|casero\b|de\b|con\b|a\b|frita\b|al\b|simple\b|una\b|un\b)[a-z]{5,}\b/.test(words))return true;
  return false;
@@ -72,6 +72,8 @@ function webSources(response,content){
   seen.add(item.url);sources.push(item);
  }
  var annotations=(response&&response.message&&response.message.annotations)||(response&&response.annotations)||[];
+ var contentBlocks=response&&response.message&&response.message.content;
+ if(Array.isArray(contentBlocks))contentBlocks.forEach(function(block){if(block&&Array.isArray(block.annotations))annotations=annotations.concat(block.annotations)});
  if(Array.isArray(annotations))annotations.forEach(function(a){if(a){
   var c=a.url_citation||a;
   add(c.url,c.title);
