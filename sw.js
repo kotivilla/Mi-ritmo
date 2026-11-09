@@ -1,5 +1,5 @@
-const CACHE = 'mi-ritmo-shell-v36-puter-chat';
-const ASSETS = ['/', '/index.html', '/dish-model.js?v=2', '/food-catalog.js', '/training-model.js?v=7', '/insights-model.js?v=3', '/smart-analysis.js?v=2', '/active-workout.js?v=1', '/puter-food-ai.js?v=1', '/food-chat.js?v=3', '/insights-ui.js?v=5', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
+const CACHE = 'mi-ritmo-shell-v37-web-food-search';
+const ASSETS = ['/', '/index.html', '/dish-model.js?v=2', '/food-catalog.js', '/training-model.js?v=7', '/insights-model.js?v=3', '/smart-analysis.js?v=2', '/active-workout.js?v=1', '/puter-food-ai.js?v=2', '/food-chat.js?v=4', '/insights-ui.js?v=5', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
