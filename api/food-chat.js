@@ -37,6 +37,10 @@ function pending(plan,saved,estimate){
  });
 }
 export default async function handler(req,res){
+ if(req.method==='GET'&&req.query&&req.query.status==='1'){
+  const source=process.env.AI_GATEWAY_API_KEY?'configured-key':req.headers['x-vercel-oidc-token']?'vercel-oidc':process.env.VERCEL_OIDC_TOKEN?'env-oidc':'not-provided';
+  return reply(res,200,{service:'food-chat',gatewayCredentialSource:source,model:MODEL});
+ }
  if(req.method!=='POST')return reply(res,405,{error:'Método no permitido.'});
  const token=short((req.headers.authorization||'').replace(/^Bearer\s+/i,''),2000);
  if(!token)return reply(res,401,{error:'Iniciá sesión para usar el asistente.'});
