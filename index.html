@@ -1063,6 +1063,8 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  .food-chat-bottom{padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}
  .food-chat-bubble{font-size:12px}
 }
+.food-chat-goto{display:block;width:100%;margin-top:13px;min-height:40px;padding:9px 11px;border:1px solid #cde4d2;background:#eff8f1;border-radius:10px;color:var(--green);font-size:12px;font-weight:850;text-align:center}
+.food-chat-goto:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
@@ -1070,7 +1072,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/insights-model.js?v=3"></script>
 <script src="/smart-analysis.js?v=2"></script>
 <script src="/active-workout.js?v=1"></script>
-<script src="/food-chat.js?v=1"></script>
+<script src="/food-chat.js?v=2"></script>
 <script src="/insights-ui.js?v=5"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
@@ -1110,7 +1112,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
   <section class="panel food-chat-entry" aria-label="Asistente de comidas">
    <button type="button" id="food-chat-open" class="food-chat-entry-button">
     <span class="food-chat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z"/><path d="M19 17l.7 1.7L21.5 19.5l-1.8.8L19 22l-.7-1.7-1.8-.8 1.8-.8L19 17Z"/></svg></span>
-    <span class="food-chat-entry-copy"><strong>Asistente de comidas</strong><small>Contame qué comiste y vemos qué grupos te faltan</small></span>
+    <span class="food-chat-entry-copy"><strong>Chat con IA</strong><small>Contame qué comiste y vemos qué grupos te faltan</small></span>
     <span class="food-chat-entry-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></span>
    </button>
   </section>
@@ -2538,6 +2540,11 @@ async function start(){if(initDone)return;initDone=true;setupDishes();setupTrain
   date:function(){return k(picked)},day:function(key){return state.days[key]||{meals:{}}},
   meals:function(){return meals},fruit:function(key){return dailyFruit(keyDay(fromKey(key)))},
   user:function(){return user},openAccount:openAccount,
+  openMeal:function(mealId){
+   switchView('nutrition',false);
+   var card=$('mealgrid').querySelector('[data-meal-card="'+mealId+'"]');
+   if(card){card.open=true;card.scrollIntoView({behavior:'smooth',block:'center'})}
+  },
   async accessToken(){if(!db)return null;var session=await db.auth.getSession();return session.data&&session.data.session&&session.data.session.access_token||null}
  });
  ActiveWorkoutUI.init({
