@@ -56,7 +56,7 @@ export default async function handler(req,res){
   const saved={};for(const [id,g]of Object.entries(meal.groups))saved[id]=bound(b.saved&&b.saved[id],g.target);
   const fruit=bound(b.fruit,2);
   const history=Array.isArray(b.history)?b.history.slice(-4).map(x=>({role:x.role==='assistant'?'assistant':'user',content:short(x.content,350)})).filter(x=>x.content):[];
-  const gatewayToken=process.env.AI_GATEWAY_API_KEY||process.env.VERCEL_OIDC_TOKEN;
+  const gatewayToken=process.env.AI_GATEWAY_API_KEY||req.headers['x-vercel-oidc-token']||process.env.VERCEL_OIDC_TOKEN;
   if(!gatewayToken)return reply(res,503,{error:'La IA todavía no está habilitada en el servidor. Falta activar AI Gateway.'});
   const context=JSON.stringify({fecha:date,comida:meal.name,grupos:meal.groups,gruposRegistrados:saved,frutasRegistradas:fruit,consulta:message});
   const payload={model:MODEL,messages:[{role:'system',content:SYSTEM},...history,{role:'user',content:context}],response_format:{type:'json_object'},max_tokens:1100};
