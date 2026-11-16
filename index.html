@@ -693,6 +693,17 @@ body.gym-mode .intro,body.progress-mode .intro{display:none}
 #progress-view .progress-recovery-status{margin-top:4px}
 #progress-view .progress-recovery-details{margin-top:18px}
 #progress-view .progress-recovery-empty{font-size:12px;line-height:1.5;border:0}
+.progress-weight-frequency{color:var(--green);background:#ecf6ee;border:1px solid #d7eadd;border-radius:99px;font-size:10px;font-weight:800;padding:7px 9px;white-space:nowrap}
+.progress-weight-weekly-hint{margin:0 0 8px;color:var(--dark);font-size:13px;line-height:1.5;font-weight:750}
+.progress-weight-conditions{color:#708475;font-size:11px;line-height:1.55;margin:0 0 12px}
+.progress-weight-chart-caption{font-size:10px;color:#769380;margin:0 0 3px}
+.progress-weight-history{margin-top:20px}
+.progress-weight-history-heading{font-size:12px;font-weight:800;color:var(--dark);margin-bottom:9px}
+.progress-weight-history-list{display:grid;gap:7px}
+.progress-weight-history-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;min-height:44px;width:100%;border:1px solid #e1eee4;border-radius:11px;background:#f8fbf8;color:#54705d;padding:9px 12px;text-align:left;font-size:12px;cursor:pointer}
+.progress-weight-history-row strong{font-size:13px;color:var(--dark);font-weight:800}
+.progress-weight-history-row small{font-size:10px;color:var(--green);font-weight:800}
+.progress-weight-history-row:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 @media(max-width:610px){
  #gym-view.gym-layout,#progress-view.insights-progress-view{margin-top:10px}
  #gym-view .gym-main{gap:10px}
@@ -1080,13 +1091,13 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
-<script src="/insights-model.js?v=3"></script>
-<script src="/smart-analysis.js?v=2"></script>
+<script src="/insights-model.js?v=4"></script>
+<script src="/smart-analysis.js?v=3"></script>
 <script src="/active-workout.js?v=1"></script>
 <script src="https://js.puter.com/v2/"></script>
 <script src="/puter-food-ai.js?v=2"></script>
 <script src="/food-chat.js?v=4"></script>
-<script src="/insights-ui.js?v=5"></script>
+<script src="/insights-ui.js?v=6"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1268,7 +1279,9 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
    </details>
   </section>
   <section class="panel progress-clean-panel progress-tabs-panel" id="progress-panel-weight" role="tabpanel" aria-labelledby="progress-tab-weight" hidden>
-   <div class="progress-clean-heading"><h3>Peso corporal</h3></div>
+   <div class="progress-clean-heading"><h3>Peso corporal</h3><span class="progress-weight-frequency">1 vez por semana</span></div>
+   <p class="progress-weight-weekly-hint" id="insights-weight-weekly-hint"></p>
+   <p class="progress-weight-conditions">Ideal: lunes al levantarte, después de ir al baño y antes de desayunar o tomar agua. Si no podés, elegí otro día. No hay penalizaciones por semanas sin registro.</p>
    <div class="progress-weight-data" id="insights-weight-summary"></div>
    <div class="progress-chart-wrap" id="insights-weight-chart"></div>
    <div class="progress-entry-area">
@@ -1280,6 +1293,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
     </form>
     <p class="progress-feedback" id="insights-weight-feedback" role="status" aria-live="polite"></p>
    </div>
+   <div id="insights-weight-history" class="progress-weight-history" aria-label="Historial de peso semanal"></div>
   </section>
   <section class="panel progress-clean-panel progress-tabs-panel" id="progress-panel-recovery" role="tabpanel" aria-labelledby="progress-tab-recovery" hidden>
    <div class="progress-clean-heading"><h3>Recuperación</h3></div>

@@ -75,41 +75,72 @@ function exportShopping(){
 }
 function fallbackCopy(s){var el=document.createElement('textarea');el.value=s;document.body.appendChild(el);el.select();document.execCommand('copy');el.remove();b.toast('Lista de compras copiada')}
 function weightChart(entries){
- var pts=entries.slice(-14),low=Math.min.apply(null,pts.map(function(p){return p.weight})),high=Math.max.apply(null,pts.map(function(p){return p.weight})),span=Math.max(1,high-low),min=low-span*.2,max=high+span*.2;
- var points=pts.map(function(p,i){return [pts.length===1?176:46+i*(270/(pts.length-1)),141-((p.weight-min)/(max-min))*100]});
- return '<svg class="insights-line-chart" role="img" viewBox="0 0 355 180" aria-label="Peso corporal de los últimos registros"><line x1="46" y1="141" x2="318" y2="141" stroke="#bbcfc0"/>'+
- '<text x="39" y="36" font-size="11" fill="#698776" text-anchor="end">'+fmt(high,1)+'</text><text x="39" y="145" font-size="11" fill="#698776" text-anchor="end">'+fmt(low,1)+'</text>'+
- '<polyline fill="none" stroke="#17664b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="'+points.map(function(p){return p.join(',')}).join(' ')+'"/>'+
- points.map(function(p,i){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#17664b"><title>'+clean(pts[i].date)+' — '+fmt(pts[i].weight,2)+' kg</title></circle>'}).join('')+
- '<text x="46" y="163" font-size="11" fill="#698776">'+clean(shortDate(pts[0].date))+'</text><text x="318" text-anchor="end" y="163" font-size="11" fill="#698776">'+clean(shortDate(pts[pts.length-1].date))+'</text></svg>';
+ var pts=entries.slice(-14),weights=pts.map(function(p){return p.weight});
+ var low=Math.min.apply(null,weights),high=Math.max.apply(null,weights),span=Math.max(.6,high-low);
+ var min=low-span*.3,max=high+span*.3;
+ var first=Date.parse(pts[0].date+'T12:00:00'),last=Date.parse(pts[pts.length-1].date+'T12:00:00'),duration=Math.max(1,last-first);
+ function y(kg){return 141-(kg-min)/(max-min)*100}
+ var points=pts.map(function(p){return [pts.length===1?176:46+272*(Date.parse(p.date+'T12:00:00')-first)/duration,y(p.weight)]});
+ var trendLine='';
+ if(pts.length>=3){
+  var xs=pts.map(function(p){return (Date.parse(p.date+'T12:00:00')-first)/86400000});
+  var meanX=xs.reduce(function(s,x){return s+x},0)/xs.length;
+  var meanY=weights.reduce(function(s,x){return s+x},0)/weights.length;
+  var den=xs.reduce(function(s,x){return s+(x-meanX)*(x-meanX)},0);
+  var slope=den?xs.reduce(function(s,x,i){return s+(x-meanX)*(weights[i]-meanY)},0)/den:0;
+  var begin=meanY-slope*meanX,end=begin+slope*xs[xs.length-1];
+  trendLine='<line x1="46" y1="'+y(begin)+'" x2="318" y2="'+y(end)+'" stroke="#7eac8d" stroke-width="2" stroke-dasharray="6 5" aria-hidden="true"/>';
+ }
+ return '<svg class="insights-line-chart" role="img" viewBox="0 0 355 180" aria-label="Evolución del peso semanal por fecha, con línea de tendencia cuando hay tres o más pesajes">'+
+  '<line x1="46" y1="141" x2="318" y2="141" stroke="#bbcfc0"/>'+
+  '<text x="39" y="46" font-size="11" fill="#698776" text-anchor="end">'+fmt(max,1)+'</text>'+
+  '<text x="39" y="145" font-size="11" fill="#698776" text-anchor="end">'+fmt(min,1)+'</text>'+
+  trendLine+
+  '<polyline fill="none" stroke="#17664b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="'+points.map(function(p){return p.join(',')}).join(' ')+'"/>'+
+  points.map(function(p,i){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.5" fill="#17664b"><title>'+clean(shortDate(pts[i].date))+' — '+fmt(pts[i].weight,2)+' kg</title></circle>'}).join('')+
+  '<text x="46" y="163" font-size="11" fill="#698776">'+clean(shortDate(pts[0].date))+'</text>'+
+  '<text x="318" text-anchor="end" y="163" font-size="11" fill="#698776">'+clean(shortDate(pts[pts.length-1].date))+'</text></svg>'+
+  (pts.length>=3?'<p class="progress-weight-chart-caption">Línea punteada: tendencia de tus últimos registros semanales.</p>':'');
 }
 function renderWeight(){
  var values=state().days||{},date=weightDate||today(),entry=values[date]||{},raw=entry.weightKg;
  $('insights-weight-date').value=date;
  $('insights-weight-value').value=Number.isFinite(raw)?raw:'';
- var trend=InsightsModel.weightTrend(values,today());
+ var trend=InsightsModel.weightTrend(values,today()),start=InsightsModel.weekStart(today());
+ var thisWeek=trend.entries.some(function(item){return item.date>=start});
+ $('insights-weight-weekly-hint').textContent=thisWeek?
+  'Ya te pesaste esta semana. Próximo registro: preferentemente el lunes por la mañana.':
+  (today()===start?'Hoy es un buen día para pesarte. Si no podés, elegí otro día de la semana.':
+   'Una vez por semana alcanza. Si no pudiste el lunes, registrá tu peso cualquier otro día que puedas.');
  if(trend.last){
-  var label='Último registro · '+shortDate(trend.last.date);
-  var chips=[];
-  if(trend.average7!==null)chips.push('<span class="progress-weight-chip">Promedio 7 días: <b>'+fmt(trend.average7,2)+' kg</b></span>');
-  if(trend.change!==null)chips.push('<span class="progress-weight-chip">Vs. semana anterior: <b>'+(trend.change>0?'+':'')+fmt(trend.change,2)+' kg</b></span>');
+  var label='Último registro · '+shortDate(trend.last.date),chips=[];
+  if(trend.previous)chips.push('<span class="progress-weight-chip">Vs. registro anterior: <b>'+(trend.change>0?'+':'')+fmt(trend.change,2)+' kg</b></span>');
   $('insights-weight-summary').innerHTML=
    '<div class="progress-current-weight"><strong>'+fmt(trend.last.weight,2)+' <span>kg</span></strong><small>'+clean(label)+'</small></div>'+
    (chips.length?'<div class="progress-weight-context">'+chips.join('')+'</div>':'');
  }else $('insights-weight-summary').innerHTML=
-  '<div class="progress-weight-empty">Tu evolución empieza con un registro. No necesitás pesarte todos los días.</div>';
+  '<div class="progress-weight-empty">Empezá con un pesaje semanal. No necesitás pesarte todos los días.</div>';
  $('insights-weight-chart').innerHTML=trend.entries.length?weightChart(trend.entries):
   '<div class="insights-empty">El gráfico aparecerá a medida que registres tu peso.</div>';
+ var recent=trend.entries.slice(-6).reverse();
+ $('insights-weight-history').innerHTML=recent.length?
+  '<div class="progress-weight-history-heading">Últimos registros</div><div class="progress-weight-history-list">'+
+  recent.map(function(item){return '<button type="button" class="progress-weight-history-row" data-weight-date="'+clean(item.date)+'"><span>'+clean(shortDate(item.date))+'</span><strong>'+fmt(item.weight,2)+' kg</strong><small>Editar</small></button>'}).join('')+
+  '</div>':'';
 }
-
-function saveWeight(e){e.preventDefault();if(!active())return;
+function saveWeight(e){
+ e.preventDefault();if(!active())return;
  var date=$('insights-weight-date').value,val=$('insights-weight-value').value.trim();
  if(!date||date>today()){setStatus('insights-weight-feedback','Elegí hoy o una fecha anterior.');return}
  var row=writtenDay(date);
- if(val){var n=Number(val);if(!Number.isFinite(n)||n<20||n>350){setStatus('insights-weight-feedback','Ingresá un peso entre 20 y 350 kg.');return}row.weightKg=n}
- else if(Number.isFinite(row.weightKg))delete row.weightKg;
+ if(val){
+  var n=Number(val);
+  if(!Number.isFinite(n)||n<20||n>350){setStatus('insights-weight-feedback','Ingresá un peso entre 20 y 350 kg.');return}
+  row.weightKg=n;
+ }else if(Number.isFinite(row.weightKg))delete row.weightKg;
  else{setStatus('insights-weight-feedback','Ingresá un peso para registrar.');return}
- weightDate=date;writeDay(date);setStatus('insights-weight-feedback',val?'Peso guardado.':'Peso de esa fecha eliminado.');
+ weightDate=date;writeDay(date);
+ setStatus('insights-weight-feedback',val?'Peso semanal guardado.':'Registro de esa fecha eliminado.');
 }
 function renderRecovery(){
  var date=recoveryDate||today(),row=state().days&&state().days[date]||{},v=row.recovery||{};
@@ -151,7 +182,7 @@ function renderReport(){
  var rows=[
   ['Gimnasio',report.attended,'/'+target,'sesiones esta semana'],
   ['Alimentación',nutrition.rate===null?'—':nutrition.rate,nutrition.rate===null?'':'%','en '+nutrition.evaluatedMeals+' '+(nutrition.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')],
-  ['Peso promedio',weight.average7===null?'—':fmt(weight.average7,1),weight.average7===null?'':' kg','últimos 7 días'],
+  ['Último peso',weight.last?fmt(weight.last.weight,1):'—',weight.last?' kg':'',weight.last?'registro del '+shortDate(weight.last.date):'sin registros'],
   ['Recuperación',recovery.logged,'',recovery.logged===1?'día registrado':'días registrados']
  ];
  $('insights-report-cards').innerHTML=rows.map(function(row){
@@ -170,7 +201,7 @@ function renderReport(){
   observations.push('En '+nutrition.evaluatedMeals+' '+(nutrition.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+', completaste en promedio el '+nutrition.rate+'% de los grupos de tu plan'+(nutrition.skippedMeals?'; '+nutrition.skippedMeals+' sin cargar '+(nutrition.skippedMeals===1?'cuenta':'cuentan')+' como 0%.':'.'));
  }
  if(weight.change!==null){
-  observations.push('Tu promedio de peso cambió '+(weight.change>0?'+':'')+fmt(weight.change,2)+' kg frente a la semana anterior.');
+  observations.push('Tu peso cambió '+(weight.change>0?'+':'')+fmt(weight.change,2)+' kg entre los últimos dos registros semanales.');
  }
  if(!observations.length)observations.push('Empezá registrando tus comidas o entrenamientos. Cuando haya datos, este espacio te mostrará lo más relevante.');
  $('insights-report-notes').innerHTML=observations.slice(0,2).map(function(line){return '<p>'+clean(line)+'</p>'}).join('');
@@ -260,6 +291,7 @@ function init(bridge){
  b=bridge;initDone=true;plannerWeek=InsightsModel.weekStart(today());plannerDate=today();weightDate=today();recoveryDate=today();
  $('insights-weight-form').addEventListener('submit',saveWeight);
  $('insights-weight-date').addEventListener('change',function(){weightDate=this.value;renderWeight();setStatus('insights-weight-feedback','')});
+ $('insights-weight-history').addEventListener('click',function(event){var btn=event.target.closest('[data-weight-date]');if(!btn)return;weightDate=btn.getAttribute('data-weight-date');renderWeight();setStatus('insights-weight-feedback','Editá el valor y guardá. Para borrar este registro, dejá el peso vacío y guardá.');$('insights-weight-value').focus()});
  $('insights-recovery-form').addEventListener('submit',saveRecovery);
  $('insights-recovery-date').addEventListener('change',function(){recoveryDate=this.value;renderRecovery();setStatus('insights-recovery-feedback','')});
  $('insights-plan-prev').addEventListener('click',function(){plannerWeek=InsightsModel.addDay(plannerWeek,-7);plannerDate=plannerWeek;renderPlanner()});

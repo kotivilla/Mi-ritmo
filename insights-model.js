@@ -56,12 +56,13 @@ function weightEntries(days,until){
 }
 function avg(values){return values.length?values.reduce(function(a,b){return a+b},0)/values.length:null}
 function weightTrend(days,until){
- var entries=weightEntries(days,until);
- if(!entries.length)return {entries:[],last:null,average7:null,change:null};
- var latest=entries[entries.length-1],recent=entries.filter(function(v){return v.date>=addDay(until,-6)});
- var prev=entries.filter(function(v){return v.date>=addDay(until,-13)&&v.date<addDay(until,-6)});
- var currentAvg=avg(recent.map(function(x){return x.weight})),previousAvg=avg(prev.map(function(x){return x.weight}));
- return {entries:entries,last:latest,average7:currentAvg,change:currentAvg!==null&&previousAvg!==null?currentAvg-previousAvg:null};
+ // El último pesaje de cada semana (lunes a domingo), sin exigir registros diarios.
+ var entries=weightEntries(days,until),byWeek={};
+ entries.forEach(function(item){byWeek[weekStart(item.date)]=item});
+ var weekly=Object.keys(byWeek).sort().map(function(week){return byWeek[week]});
+ if(!weekly.length)return {entries:[],last:null,previous:null,change:null};
+ var last=weekly[weekly.length-1],previous=weekly.length>1?weekly[weekly.length-2]:null;
+ return {entries:weekly,last:last,previous:previous,change:previous?last.weight-previous.weight:null};
 }
 function recoveryWeek(days,start,end){
  var logs=dateRange(start,end).map(function(day){return (days||{})[day]&&(days||{})[day].recovery}).filter(function(v){return v&&typeof v==='object'&&Object.keys(v).length>0});
@@ -93,7 +94,7 @@ function weeklyReport(state,mealSpec,TrainingModel,until){
  if(attended)lines.push('Registraste '+attended+' '+(attended===1?'entrenamiento':'entrenamientos')+' esta semana.');else lines.push('Todavía no registraste entrenamientos esta semana.');
  if(nut.rate!==null)lines.push('En los '+nut.registeredDays+' días con comidas registradas completaste, en promedio, el '+nut.rate+'% de los grupos de tu plan.');else lines.push('Todavía no hay comidas registradas para analizar esta semana.');
  if(changes.length)lines.push('Mejoraste en '+changes[0].name.toLowerCase()+' respecto al entrenamiento previo.');
- if(weight.change!==null)lines.push('Tu promedio de peso de 7 días cambió '+(weight.change>=0?'+':'')+fmt(weight.change,2)+' kg respecto a la semana anterior.');
+ if(weight.change!==null)lines.push('Tu peso cambió '+(weight.change>=0?'+':'')+fmt(weight.change,2)+' kg respecto de tu registro semanal anterior.');
  return {start:start,end:until,attended:attended,nutrition:nut,weight:weight,recovery:recovery,improvements:changes,lines:lines};
 }
 function blockStats(block,workouts){

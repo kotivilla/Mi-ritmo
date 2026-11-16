@@ -2,13 +2,20 @@
 'use strict';
 function add(s,n){return InsightsModel.addDay(s,n)}
 function avg(xs){return xs.length?xs.reduce(function(a,b){return a+b},0)/xs.length:null}
-function period(days,from,to){var xs=InsightsModel.weightEntries(days,to).filter(function(x){return x.date>=from});return {count:xs.length,mean:avg(xs.map(function(x){return x.weight}))}}
+function period(days,from,to){
+ var xs=InsightsModel.weightEntries(days,to).filter(function(x){return x.date>=from});
+ return {count:xs.length?1:0,mean:xs.length?xs[xs.length-1].weight:null};
+}
 function delta(w){return (w>0?'+':'')+w.toLocaleString('es-AR',{maximumFractionDigits:2})}
 function weightReport(days,end){
- var a=period(days,add(end,-6),end),b=period(days,add(end,-13),add(end,-7));
- var weeks=[0,1,2].map(function(i){return period(days,add(end,-(7*i+6)),add(end,-7*i))});
- return {recent:a,previous:b,change:a.count>=2&&b.count>=2?a.mean-b.mean:null,
-  stableThree:weeks.every(function(w){return w.count>=2})&&Math.max.apply(null,weeks.map(function(w){return w.mean}))-Math.min.apply(null,weeks.map(function(w){return w.mean}))<=0.3};
+ var monday=InsightsModel.weekStart(end);
+ var weeks=[0,1,2].map(function(i){
+  var from=add(monday,-7*i),to=add(from,6);
+  return period(days,from,to>end?end:to);
+ });
+ var a=weeks[0],b=weeks[1];
+ return {recent:a,previous:b,change:a.count&&b.count?a.mean-b.mean:null,
+  stableThree:weeks.every(function(w){return w.count>=1})&&Math.max.apply(null,weeks.map(function(w){return w.mean}))-Math.min.apply(null,weeks.map(function(w){return w.mean}))<=.3};
 }
 function workoutReport(workouts,start,end,TrainingModel){
  var normalized=TrainingModel.historyView({routineDays:[],workouts:workouts||{}}).workouts,ids={};
@@ -35,21 +42,21 @@ function analyze(state,mealSpec,TrainingModel,end){
  var nutrition=InsightsModel.nutritionWeek(days,mealSpec,add(end,-13),end,end),goal=state.settings&&state.settings.goalFocus||'muscle',insights=[],change=weight.change;
  function note(kind,title,body){insights.push({kind:kind,title:title,body:body})}
  if(change!==null&&gym.improvements.length){
-  if(Math.abs(change)<.2)note('combined','Más fuerza con peso estable','Tu peso promedio se mantuvo bastante estable y registraste mejoras en al menos un ejercicio. Son tendencias simultáneas, no una relación causal.');
-  else if(change>.2)note('combined','Peso y rendimiento en aumento','Tu promedio de peso subió '+delta(change)+' kg frente a la semana anterior, y registraste mejoras en el gimnasio. Esto no indica por sí solo cuánto músculo ganaste.');
-  else note('combined','Peso y rendimiento','El promedio de peso cambió '+delta(change)+' kg mientras registraste mejoras en el gimnasio. Conviene observar más semanas antes de ajustar el plan.');
+  if(Math.abs(change)<.2)note('combined','Más fuerza con peso estable','Tus registros semanales de peso se mantuvieron bastante estables y registraste mejoras en al menos un ejercicio. Son tendencias simultáneas, no una relación causal.');
+  else if(change>.2)note('combined','Peso y rendimiento en aumento','Tu peso registrado subió '+delta(change)+' kg frente a la semana anterior, y registraste mejoras en el gimnasio. Esto no indica por sí solo cuánto músculo ganaste.');
+  else note('combined','Peso y rendimiento','El peso registrado cambió '+delta(change)+' kg mientras registraste mejoras en el gimnasio. Conviene observar más semanas antes de ajustar el plan.');
  }else if(gym.improvements.length){
   var ex=gym.improvements[0];note('training','Mejoras en el gimnasio','En las últimas 4 semanas mejoraste '+gym.improvements.length+' '+(gym.improvements.length===1?'ejercicio':'ejercicios')+'. Ejemplo: '+ex.name+' ('+(ex.kind==='peso'?'peso máximo':'volumen')+').');
  }
- if(weight.stableThree&&goal==='muscle')note('weight','Peso estable durante 3 semanas','Los promedios semanales variaron como máximo 0,3 kg. Si tu objetivo es ganar masa muscular, podés conversar sobre la tendencia con tu nutricionista antes de ajustar porciones.');
+ if(weight.stableThree&&goal==='muscle')note('weight','Peso estable durante 3 semanas','Los registros semanales variaron como máximo 0,3 kg. Si tu objetivo es ganar masa muscular, podés conversar sobre la tendencia con tu nutricionista antes de ajustar porciones.');
  else if(change!==null&&!gym.improvements.length){
-  if(Math.abs(change)<.2)note('weight','Peso bastante estable','El peso promedio de los últimos 7 días varió menos de 0,2 kg frente a la semana anterior.');
-  else note('weight','Cambio de peso promedio','El peso promedio de los últimos 7 días cambió '+delta(change)+' kg respecto de la semana anterior. Un cambio semanal aislado no define una tendencia.');
+  if(Math.abs(change)<.2)note('weight','Peso bastante estable','Tu registro semanal de peso varió menos de 0,2 kg frente al de la semana anterior.');
+  else note('weight','Cambio de peso semanal','Tu peso semanal cambió '+delta(change)+' kg respecto de la semana anterior. Un cambio semanal aislado no define una tendencia.');
  }
  if(nutrition.registeredMeals>=6)note('nutrition','Alimentación registrada','En las últimas 2 semanas anotaste '+nutrition.registeredMeals+' comidas. El promedio de '+nutrition.evaluatedMeals+' comidas evaluadas fue '+nutrition.rate+'%.'+(nutrition.skippedMeals?' Las '+nutrition.skippedMeals+' comidas sin cargar, anteriores a otra registrada o de días ya terminados, cuentan como 0%.':' Los días totalmente vacíos no se incluyen.'));
  if(!insights.length){
   var needed=[];
-  if(weight.recent.count<2||weight.previous.count<2)needed.push('pesarte varias veces durante dos semanas');
+  if(weight.recent.count<1||weight.previous.count<1)needed.push('registrar tu peso una vez por semana durante dos semanas');
   if(gym.sessions<2)needed.push('registrar dos o más entrenamientos');
   if(nutrition.registeredMeals<6)needed.push('registrar varias comidas');
   note('collect','Construyendo tu evolución','Para relacionar alimentación, peso y rendimiento, ayuda '+(needed.length?needed.join(', '):'seguir registrando tus hábitos')+'.');
