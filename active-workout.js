@@ -47,11 +47,11 @@ function exerciseMarkup(){
  '<div class="active-sets">'+ex.sets.map(function(set,i){
   var old=prior&&prior.sets&&prior.sets[i]||null,plannedSet=ex.planned&&ex.planned[i]||{};
   var repsPlaceholder=old&&old.reps!=null?old.reps:plannedSet.reps==null?'Reps':plannedSet.reps;
-  var weightPlaceholder=old&&old.weight!=null?old.weight:'Kg';
+  var weightPlaceholder=old&&old.weight!=null?DecimalInput.format(old.weight):'Kg';
   return '<div class="active-set-row'+(set.done?' done':'')+'">'+
    '<span class="active-set-number">'+(i+1)+'</span>'+
    '<input type="number" data-active-field="reps" data-active-set="'+i+'" inputmode="numeric" min="1" max="1000" step="1" placeholder="'+escape(repsPlaceholder)+'" value="'+escape(set.reps==null?'':set.reps)+'" aria-label="Repeticiones serie '+(i+1)+'">'+
-   '<input type="number" data-active-field="weight" data-active-set="'+i+'" inputmode="decimal" min="0" max="2000" step="any" placeholder="'+escape(weightPlaceholder)+'" value="'+escape(set.weight==null?'':set.weight)+'" aria-label="Peso serie '+(i+1)+'">'+
+   '<input type="text" data-active-field="weight" data-active-set="'+i+'" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="'+escape(weightPlaceholder)+'" value="'+escape(DecimalInput.format(set.weight))+'" aria-label="Peso serie '+(i+1)+'">'+
    '<button type="button" class="active-set-done" data-active-set-done="'+i+'" aria-pressed="'+String(!!set.done)+'" aria-label="'+(set.done?'Desmarcar':'Completar')+' serie '+(i+1)+'">'+(set.done?'✓':'○')+'</button>'+
    '</div>';
  }).join('')+'</div>'+
@@ -127,7 +127,7 @@ function applyField(input){
  if(!draft||!draft.exercises.length)return;
  var ex=draft.exercises[draft.index],i=Number(input.dataset.activeSet),set=ex.sets[i];
  if(!set)return;
- var value=input.value.trim();set[input.dataset.activeField]=value===''?null:Number(value);
+ var value=input.value.trim();set[input.dataset.activeField]=input.dataset.activeField==='weight'?DecimalInput.parse(value):(value===''?null:Number(value));
  if(set.done){set.done=false;var row=input.closest('.active-set-row');if(row){row.classList.remove('done');var done=row.querySelector('.active-set-done');if(done){done.textContent='○';done.setAttribute('aria-pressed','false')}}}
  persist();
 }

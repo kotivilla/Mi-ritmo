@@ -105,7 +105,7 @@ function weightChart(entries){
 function renderWeight(){
  var values=state().days||{},date=weightDate||today(),entry=values[date]||{},raw=entry.weightKg;
  $('insights-weight-date').value=date;
- $('insights-weight-value').value=Number.isFinite(raw)?raw:'';
+ $('insights-weight-value').value=DecimalInput.format(raw);
  var trend=InsightsModel.weightTrend(values,today()),start=InsightsModel.weekStart(today());
  var thisWeek=trend.entries.some(function(item){return item.date>=start});
  $('insights-weight-weekly-hint').textContent=thisWeek?
@@ -134,8 +134,8 @@ function saveWeight(e){
  if(!date||date>today()){setStatus('insights-weight-feedback','Elegí hoy o una fecha anterior.');return}
  var row=writtenDay(date);
  if(val){
-  var n=Number(val);
-  if(!Number.isFinite(n)||n<20||n>350){setStatus('insights-weight-feedback','Ingresá un peso entre 20 y 350 kg.');return}
+  var n=DecimalInput.parse(val);
+  if(!Number.isFinite(n)||n<20||n>350){setStatus('insights-weight-feedback','Ingresá un peso válido entre 20 y 350 kg (ej.: 68,7).');return}
   row.weightKg=n;
  }else if(Number.isFinite(row.weightKg))delete row.weightKg;
  else{setStatus('insights-weight-feedback','Ingresá un peso para registrar.');return}
