@@ -21,7 +21,7 @@ function renderNutrition(){
  $('insights-nutrition-date').textContent=displayWeek(start);
  if(nut.rate===null){$('insights-nutrition-body').innerHTML='<div class="insights-empty">Todavía no hay comidas registradas en esta semana. Cuando las cargues, vas a ver qué grupos pudiste cubrir.</div>';return}
  var order=[['protein','Proteínas'],['veg','Vegetales'],['carb','Hidratos'],['fat','Grasas']];
- $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de <b>'+nut.evaluatedMeals+' '+(nut.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+'</b>: '+nut.rate+'% de grupos completos.'+(nut.skippedMeals?' '+nut.skippedMeals+' sin cargar contadas como 0%.':'')+' Los días totalmente vacíos se excluyen.</p><div class="insights-metrics">'+order.map(function(group){
+ $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de <b>'+nut.evaluatedMeals+' '+(nut.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+'</b>: '+nut.rate+'% de porciones cumplidas por comida.'+(nut.skippedMeals?' '+nut.skippedMeals+' sin cargar contadas como 0%.':'')+' Los días totalmente vacíos se excluyen.</p><div class="insights-metrics">'+order.map(function(group){
   var item=nut.groups[group[0]];if(!item)return '';
   return '<div class="insights-bar-row"><div class="insights-bar-head"><b>'+group[1]+'</b><strong>'+item.pct+'%</strong></div><div class="insights-bar"><span style="width:'+item.pct+'%"></span></div></div>'
  }).join('')+'</div>';
@@ -198,7 +198,7 @@ function renderReport(){
   observations.push('Llevás '+report.attended+' '+(report.attended===1?'entrenamiento registrado':'entrenamientos registrados')+' esta semana'+(report.attended>=target?', alcanzando tu objetivo semanal.':'.'));
  }
  if(nutrition.rate!==null){
-  observations.push('En '+nutrition.evaluatedMeals+' '+(nutrition.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+', completaste en promedio el '+nutrition.rate+'% de los grupos de tu plan'+(nutrition.skippedMeals?'; '+nutrition.skippedMeals+' sin cargar '+(nutrition.skippedMeals===1?'cuenta':'cuentan')+' como 0%.':'.'));
+  observations.push('En '+nutrition.evaluatedMeals+' '+(nutrition.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+', completaste en promedio el '+nutrition.rate+'% de las porciones de tu plan por comida'+(nutrition.skippedMeals?'; '+nutrition.skippedMeals+' sin cargar '+(nutrition.skippedMeals===1?'cuenta':'cuentan')+' como 0%.':'.'));
  }
  if(weight.change!==null){
   observations.push('Tu peso cambió '+(weight.change>0?'+':'')+fmt(weight.change,2)+' kg entre los últimos dos registros semanales.');

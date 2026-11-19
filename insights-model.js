@@ -1,5 +1,6 @@
 (function(root){
 'use strict';
+var NutritionScoring=typeof module==='object'&&module.exports?require('./nutrition-scoring.js'):root.NutritionScoring;
 function finite(n){return typeof n==='number'&&Number.isFinite(n)}
 function dateParts(s){return String(s||'').split('-').map(Number)}
 function dateObj(s){var p=dateParts(s);return new Date(p[0],p[1]-1,p[2],12)}
@@ -38,10 +39,12 @@ function nutritionWeek(days,mealSpec,start,end,asOf){
    var data=meals[meal.id]||{},logged=mealWasLogged(data,meal);
    evaluatedMeals++;
    if(logged)registeredMeals++;else skippedMeals++;
+   var score=NutritionScoring.mealPortions(data,meal);
+   completed+=score.fraction;total++; // Cada comida evaluada tiene el mismo peso.
    meal.groups.forEach(function(g){
     var filled=Math.max(0,Math.min(g.target,Number(data[g.id])||0))/g.target;
     if(!groups[g.id])groups[g.id]={done:0,total:0};
-    groups[g.id].done+=filled;groups[g.id].total++;total++;completed+=filled;
+    groups[g.id].done+=filled;groups[g.id].total++;
    });
   });
  });
@@ -92,7 +95,7 @@ function weeklyReport(state,mealSpec,TrainingModel,until){
  var changes=progressChanges(workouts,start,until,TrainingModel);
  var lines=[];
  if(attended)lines.push('Registraste '+attended+' '+(attended===1?'entrenamiento':'entrenamientos')+' esta semana.');else lines.push('Todavía no registraste entrenamientos esta semana.');
- if(nut.rate!==null)lines.push('En los '+nut.registeredDays+' días con comidas registradas completaste, en promedio, el '+nut.rate+'% de los grupos de tu plan.');else lines.push('Todavía no hay comidas registradas para analizar esta semana.');
+ if(nut.rate!==null)lines.push('En los '+nut.registeredDays+' días con comidas registradas completaste, en promedio, el '+nut.rate+'% de las porciones de tu plan por comida.');else lines.push('Todavía no hay comidas registradas para analizar esta semana.');
  if(changes.length)lines.push('Mejoraste en '+changes[0].name.toLowerCase()+' respecto al entrenamiento previo.');
  if(weight.change!==null)lines.push('Tu peso cambió '+(weight.change>=0?'+':'')+fmt(weight.change,2)+' kg respecto de tu registro semanal anterior.');
  return {start:start,end:until,attended:attended,nutrition:nut,weight:weight,recovery:recovery,improvements:changes,lines:lines};

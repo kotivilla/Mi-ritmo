@@ -1091,14 +1091,15 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
-<script src="/insights-model.js?v=4"></script>
+<script src="/nutrition-scoring.js?v=1"></script>
+<script src="/insights-model.js?v=5"></script>
 <script src="/smart-analysis.js?v=3"></script>
 <script src="/decimal-input.js?v=1"></script>
 <script src="/active-workout.js?v=2"></script>
 <script src="https://js.puter.com/v2/"></script>
 <script src="/puter-food-ai.js?v=2"></script>
 <script src="/food-chat.js?v=4"></script>
-<script src="/insights-ui.js?v=7"></script>
+<script src="/insights-ui.js?v=8"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1126,7 +1127,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
     <div class="nutrition-daily-summary-top"><span>Avance del día</span><strong id="daily-pct">0%</strong></div>
     <div class="nutrition-daily-track" aria-hidden="true"><span id="nutrition-progress-fill"></span></div>
     <div class="nutrition-daily-meta">
-     <span id="daily-groups">0 de 14 grupos</span>
+     <span id="daily-groups">0 de 18 porciones</span>
      <span><strong id="complete-meals">0/4</strong> comidas completas</span>
     </div>
    </div>
@@ -1650,10 +1651,10 @@ function dailyFruit(item){
  if(data.daily&&data.daily.fruit!==undefined)return cap(data.daily.fruit,2);
  return Math.min(2,cap(data.breakfast&&data.breakfast.fruit,2)+cap(data.snack&&data.snack.fruit,2));
 }
-function countDay(d){var item=keyDay(d),points=0,total=0,complete=0,any=false;
- meals.forEach(function(m){var all=true;m.groups.forEach(function(g){var val=cap((item.meals||{})[m.id]&&item.meals[m.id][g.id],g.target);points+=val/g.target;total++;if(val!==g.target)all=false;if(val>0)any=true});if(all)complete++});
- // Las frutas se registran como objetivo independiente: no afectan los porcentajes de comidas.
- return {points:points,total:total,complete:complete,any:any}
+function countDay(d){
+ // Cada comida pesa 1/4 del día; dentro se cuentan las porciones indicadas en el plan.
+ // Las frutas no forman parte del porcentaje de cumplimiento.
+ return NutritionScoring.dayScore(keyDay(d).meals||{},meals);
 }
 function weeklyGym(d){var start=monday(d),sum=0;for(var i=0;i<7;i++)if(keyDay(plus(start,i)).gym)sum++;return sum}
 function loadCache(key){try{var obj=JSON.parse(localStorage.getItem(key)||'null');if(obj&&obj.days&&obj.settings)return obj}catch(e){}return defaultState()}
@@ -2049,17 +2050,18 @@ function renderMeals(){
  if(mealViewDate===todayKey)$('mealgrid').querySelectorAll('details.meal[open]').forEach(function(el){expanded.push(el.dataset.mealCard)});
  mealViewDate=todayKey;
  $('mealgrid').innerHTML=meals.map(function(m){
-  var entry=(keyDay(picked).meals||{})[m.id]||{},sum=0;
+  var entry=(keyDay(picked).meals||{})[m.id]||{};
   var savedOptions=dishList().filter(function(d){return d.meal===m.id}).sort(function(a,b){return a.name.localeCompare(b.name,'es')});
   var content=m.groups.map(function(g){
-   var value=cap(entry[g.id],g.target);sum+=value/g.target;
+   var value=cap(entry[g.id],g.target);
    return '<div class="group"><div class="group-title"><b>'+safe(g.name)+'</b></div><div class="ticks">'+groupButtons(m,g,value)+'</div></div>'
   }).join('');
-  var pct=Math.round(sum/m.groups.length*100),done=sum===m.groups.length,finished=m.groups.filter(function(g){return cap(entry[g.id],g.target)>=g.target}).length;
+  var scored=NutritionScoring.mealPortions(entry,m),pct=Math.round(scored.fraction*100),done=scored.complete;
+   var finished=Number(scored.completed.toFixed(2)).toLocaleString('es-AR');
   return '<details class="meal'+(done?' done':'')+'" data-meal-card="'+m.id+'">'+
   '<summary class="meal-summary"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div>'+
-  '<div class="meal-meta"><span class="meal-count'+(done?' is-done':'')+'">'+(done?'✓ Listo':finished+'/'+m.groups.length)+'</span><span class="meal-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>'+
-  '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,sum>0)+'"></div></div></summary>'+
+  '<div class="meal-meta"><span class="meal-count'+(done?' is-done':'')+'">'+(done?'✓ Listo':finished+'/'+scored.total+' porciones')+'</span><span class="meal-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>'+
+  '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,scored.completed>0)+'"></div></div></summary>'+
   '<div class="meal-body">'+content+
   '<div class="dish-tools">'+
    '<details class="meal-dish-picker"><summary>Elegir de Mis platos <span class="ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>'+
@@ -2353,7 +2355,7 @@ function renderGymProgress(){
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
  $('gym-history-caption').textContent=sumSix+' entrenamientos · 6 semanas';
 }
-function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('daily-groups').textContent=c.points.toFixed(1).replace('.0','')+' de '+c.total+' grupos';$('complete-meals').textContent=c.complete+'/4';
+function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('daily-groups').textContent=Number(c.portionsCompleted.toFixed(2)).toLocaleString('es-AR')+' de '+c.portionsTotal+' porciones';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('week-range').textContent=range(first)+' – '+range(plus(first,6));$('barweek').innerHTML='';
  for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+progressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col)}
