@@ -1,4 +1,4 @@
-const CACHE = 'mi-ritmo-shell-v39-nutrition-colors';
+const CACHE = 'mi-ritmo-shell-v40-nutrition-brighter-greens';
 const ASSETS = ['/', '/index.html', '/dish-model.js?v=2', '/food-catalog.js', '/training-model.js?v=7', '/nutrition-scoring.js?v=1', '/insights-model.js?v=5', '/smart-analysis.js?v=3', '/active-workout.js?v=2', '/puter-food-ai.js?v=2', '/food-chat.js?v=4', '/decimal-input.js?v=1', '/insights-ui.js?v=8', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
