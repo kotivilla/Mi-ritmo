@@ -899,7 +899,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 .nutrition-calendar-day.is-selected{outline:2px solid var(--green);outline-offset:1px}
 .nutrition-calendar-day.is-selected.is-recorded{outline-color:#1f4531}
 .nutrition-calendar-day:focus-visible{outline:3px solid var(--green);outline-offset:1px}
-.nutrition-calendar-legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:20px 0 8px}
+.nutrition-calendar-legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:20px 0 8px}
 .nutrition-calendar-legend span{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;font-weight:750;color:#607768;white-space:nowrap}
 .nutrition-calendar-swatch{width:23px;height:6px;border-radius:20px;display:block}
 .nutrition-calendar-help{font-size:11px;line-height:1.45;color:#849689;text-align:center;margin:10px 3px 18px}
@@ -1393,12 +1393,13 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
   <div class="nutrition-calendar-weekdays" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
   <div class="nutrition-calendar-grid" id="nutrition-calendar-grid" role="group" aria-label="Días del mes"></div>
   <div class="nutrition-calendar-legend" aria-label="Colores según porcentaje registrado">
-   <span><i class="nutrition-calendar-swatch" style="background:#dc4545"></i>0–39%</span>
-   <span><i class="nutrition-calendar-swatch" style="background:#ed8b23"></i>40–59%</span>
-   <span><i class="nutrition-calendar-swatch" style="background:#e4bd28"></i>60–79%</span>
-   <span><i class="nutrition-calendar-swatch" style="background:#24966b"></i>80–100%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#D94B4B"></i>0–49%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#E99A3E"></i>50–74%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#E5C14D"></i>75–89%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#6DBF73"></i>90–99%</span>
+   <span><i class="nutrition-calendar-swatch" style="background:#25884D"></i>100%</span>
   </div>
-  <p class="nutrition-calendar-help">Sin color: sin registro. El porcentaje corresponde a los grupos alimentarios.</p>
+  <p class="nutrition-calendar-help">Sin color: sin registro. El porcentaje corresponde a las porciones pautadas.</p>
   <button id="nutrition-calendar-today" type="button" class="nutrition-calendar-today">Ir a hoy</button>
  </div>
 </dialog>
@@ -1639,11 +1640,17 @@ function plus(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
 function monday(d){return plus(d,-((d.getDay()+6)%7))}
 function keyDay(d){return state.days[k(d)]||{meals:{},gym:false,note:''}}
 function ensure(d){var key=k(d);if(!state.days[key])state.days[key]={meals:{},gym:false,note:''};if(!state.days[key].meals)state.days[key].meals={};return state.days[key]}
-// Umbrales compartidos por todas las barras, según el porcentaje mostrado.
+// Colores históricos de las barras del gimnasio (independientes de alimentación).
 function progressColor(percent,hasData){
  if(!hasData)return '#dce2df';
  var pct=Math.round(percent);
  return pct<40?'#dc4545':pct<60?'#ed8b23':pct<80?'#e4bd28':'#24966b';
+}
+// Cumplimiento alimentario por porciones: rojo, naranja, amarillo, verde, verde intenso.
+function nutritionProgressColor(percent,hasData){
+ if(!hasData)return '#dce2df';
+ var pct=Math.max(0,Math.min(100,Math.round(Number(percent)||0)));
+ return pct<50?'#D94B4B':pct<75?'#E99A3E':pct<90?'#E5C14D':pct<100?'#6DBF73':'#25884D';
 }
 function cap(v,max){var n=Number(v)||0;return Math.max(0,Math.min(max,n))}
 function dailyFruit(item){
@@ -2061,7 +2068,7 @@ function renderMeals(){
   return '<details class="meal'+(done?' done':'')+'" data-meal-card="'+m.id+'">'+
   '<summary class="meal-summary"><div class="mealhead"><div class="mealname"><span>'+m.icon+'</span>'+m.name+'</div>'+
   '<div class="meal-meta"><span class="meal-count'+(done?' is-done':'')+'">'+(done?'✓ Listo':finished+'/'+scored.total+' porciones')+'</span><span class="meal-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></div></div>'+
-  '<div class="track"><div style="width:'+pct+'%;background:'+progressColor(pct,scored.completed>0)+'"></div></div></summary>'+
+  '<div class="track"><div style="width:'+pct+'%;background:'+nutritionProgressColor(pct,scored.completed>0)+'"></div></div></summary>'+
   '<div class="meal-body">'+content+
   '<div class="dish-tools">'+
    '<details class="meal-dish-picker"><summary>Elegir de Mis platos <span class="ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></summary>'+
@@ -2136,9 +2143,9 @@ function renderNutritionCalendar(){
   var cell=document.createElement('button');
   cell.type='button';
   cell.className='nutrition-calendar-day'+(logged?' is-recorded':'')+
-   (logged&&pct>=40&&pct<80?' is-amber':'')+
+   (logged&&pct>=50&&pct<90?' is-amber':'')+
    (outside?' is-other-month':'')+(key===today?' is-today':'')+(key===selected?' is-selected':'');
-  if(logged)cell.style.setProperty('--calendar-day-color',progressColor(pct,true));
+  if(logged)cell.style.setProperty('--calendar-day-color',nutritionProgressColor(pct,true));
   cell.innerHTML='<span class="nutrition-calendar-number">'+d.getDate()+'</span>'+
    (logged?'<span class="nutrition-calendar-percent">'+pct+'%</span>':'');
   var fullDate=new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);
@@ -2355,10 +2362,10 @@ function renderGymProgress(){
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
  $('gym-history-caption').textContent=sumSix+' entrenamientos · 6 semanas';
 }
-function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('daily-groups').textContent=Number(c.portionsCompleted.toFixed(2)).toLocaleString('es-AR')+' de '+c.portionsTotal+' porciones';$('complete-meals').textContent=c.complete+'/4';
+function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('nutrition-progress-fill').style.background=nutritionProgressColor(pct,c.any);$('daily-groups').textContent=Number(c.portionsCompleted.toFixed(2)).toLocaleString('es-AR')+' de '+c.portionsTotal+' porciones';$('complete-meals').textContent=c.complete+'/4';
  var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
  $('week-range').textContent=range(first)+' – '+range(plus(first,6));$('barweek').innerHTML='';
- for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+progressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col)}
+ for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+nutritionProgressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col)}
  var todayKey=k(new Date()),weekly=InsightsModel.nutritionWeek(state.days,meals,k(first),k(plus(first,6)),todayKey);
  $('weekdetail').textContent=weekly.rate===null?'Sin comidas registradas para analizar.':
   'Promedio: '+weekly.rate+'% · '+weekly.evaluatedMeals+' '+(weekly.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+
