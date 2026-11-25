@@ -27,6 +27,12 @@ function renderNutrition(){
  $('nutrition-stats-to').max=max;
  $('nutrition-stats-from').value=nutritionFrom;
  $('nutrition-stats-to').value=nutritionTo;
+ function shortDateLabel(value){
+  var parts=String(value||'').split('-');
+  return parts.length===3&&/^\d{4}$/.test(parts[0])?parts[2]+'/'+parts[1]+'/'+parts[0].slice(2):'--/--/--';
+ }
+ $('nutrition-stats-from-text').textContent=shortDateLabel(nutritionFrom);
+ $('nutrition-stats-to-text').textContent=shortDateLabel(nutritionTo);
  document.querySelectorAll('[data-nutrition-range]').forEach(function(btn){
   var selected=btn.dataset.nutritionRange===nutritionPreset;
   btn.classList.toggle('active',selected);

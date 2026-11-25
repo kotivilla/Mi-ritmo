@@ -1,5 +1,5 @@
-const CACHE = 'mi-ritmo-shell-v45-mobile-custom-date-range';
-const ASSETS = ['/', '/index.html', '/dish-model.js?v=2', '/food-catalog.js', '/training-model.js?v=7', '/nutrition-scoring.js?v=2', '/insights-model.js?v=7', '/smart-analysis.js?v=3', '/active-workout.js?v=2', '/decimal-input.js?v=1', '/insights-ui.js?v=11', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
+const CACHE = 'mi-ritmo-shell-v46-compact-side-by-side-dates';
+const ASSETS = ['/', '/index.html', '/dish-model.js?v=2', '/food-catalog.js', '/training-model.js?v=7', '/nutrition-scoring.js?v=2', '/insights-model.js?v=7', '/smart-analysis.js?v=3', '/active-workout.js?v=2', '/decimal-input.js?v=1', '/insights-ui.js?v=12', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-180.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

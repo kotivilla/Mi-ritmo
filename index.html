@@ -1026,7 +1026,11 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 .nutrition-stats-preset.active{color:#fff;background:var(--green);border-color:var(--green)}
 .nutrition-stats-dates{display:grid;width:100%;min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .nutrition-stats-dates label{display:block;width:100%;min-width:0;max-width:100%;color:#56735f;font-size:11px;font-weight:800}
-.nutrition-stats-dates input[type=date]{display:block;box-sizing:border-box;min-width:0;max-width:100%;width:100%;height:44px;margin:5px 0 0;padding:9px 12px;border:1px solid var(--border);border-radius:10px;color:var(--dark);background:white;font-size:16px;font-weight:500}
+.nutrition-stats-date-control{display:flex;align-items:center;justify-content:space-between;position:relative;box-sizing:border-box;gap:6px;margin-top:6px;min-width:0;width:100%;height:44px;overflow:hidden;padding:0 12px;border:1px solid var(--border);border-radius:10px;color:var(--dark);background:#fff}
+.nutrition-stats-date-control:focus-within{outline:2px solid #96cdb3;outline-offset:2px}
+.nutrition-stats-date-text{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:clip;font-size:14px;font-weight:750;letter-spacing:-.2px;font-variant-numeric:tabular-nums;color:var(--dark)}
+.nutrition-stats-date-control svg{display:block;width:17px;height:17px;flex:0 0 17px;color:#638772;pointer-events:none}
+.nutrition-stats-date-control input[type=date]{position:absolute;inset:0;display:block;box-sizing:border-box;width:100%;height:100%;min-width:0;max-width:100%;margin:0;padding:0;opacity:0;cursor:pointer;font-size:16px;z-index:1}
 .nutrition-stats-error{font-size:12px;color:#b54343;margin:0}
 .nutrition-stats-error[hidden]{display:none}
 .nutrition-stats-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -1055,9 +1059,11 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  .nutrition-stats-content{gap:15px}
  .nutrition-stats-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
  .nutrition-stats-preset{padding:8px 3px;font-size:11px}
- .nutrition-stats-dates{grid-template-columns:minmax(0,1fr);gap:12px}
+ .nutrition-stats-dates{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
  .nutrition-stats-dates label{width:100%;min-width:0}
- .nutrition-stats-dates input[type=date]{font-size:16px;width:100%;min-width:0;max-width:100%;padding:10px 12px}
+ .nutrition-stats-date-control{height:42px;min-width:0;padding:0 8px;gap:3px;border-radius:9px}
+ .nutrition-stats-date-text{font-size:13px;letter-spacing:-.3px}
+ .nutrition-stats-date-control svg{width:14px;height:14px;flex-basis:14px}
  .nutrition-stats-overview>div{padding:12px}
  .nutrition-stats-overview strong{font-size:23px}
  .nutrition-stats-section-head label{width:100%}
@@ -1106,7 +1112,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/smart-analysis.js?v=3"></script>
 <script src="/decimal-input.js?v=1"></script>
 <script src="/active-workout.js?v=2"></script>
-<script src="/insights-ui.js?v=11"></script>
+<script src="/insights-ui.js?v=12"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1157,8 +1163,20 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
           <button type="button" data-nutrition-range="all" class="nutrition-stats-preset">Todo</button>
         </div>
         <div class="nutrition-stats-dates">
-          <label for="nutrition-stats-from">Desde <input class="field" type="date" id="nutrition-stats-from"></label>
-          <label for="nutrition-stats-to">Hasta <input class="field" type="date" id="nutrition-stats-to"></label>
+          <label for="nutrition-stats-from">Desde
+            <span class="nutrition-stats-date-control">
+              <span class="nutrition-stats-date-text" id="nutrition-stats-from-text" aria-hidden="true">--/--/--</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 9.5h17"/></svg>
+              <input type="date" id="nutrition-stats-from" aria-label="Fecha de inicio">
+            </span>
+          </label>
+          <label for="nutrition-stats-to">Hasta
+            <span class="nutrition-stats-date-control">
+              <span class="nutrition-stats-date-text" id="nutrition-stats-to-text" aria-hidden="true">--/--/--</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 9.5h17"/></svg>
+              <input type="date" id="nutrition-stats-to" aria-label="Fecha de fin">
+            </span>
+          </label>
         </div>
         <p class="nutrition-stats-error" role="alert" id="nutrition-stats-error" hidden></p>
       </div>
