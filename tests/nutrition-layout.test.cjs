@@ -1,0 +1,14 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const html = fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const ui = fs.readFileSync(path.join(__dirname,'../insights-ui.js'),'utf8');
+assert.ok(html.indexOf('id="nutrition-stats-detail"') < html.indexOf('id="dish-library-title"'));
+assert.ok(!html.includes('id="food-chat-open"'), 'No chat entry');
+assert.ok(!html.includes('id="nutrition-planner-detail"'), 'No meal planner');
+assert.ok(!html.includes('FoodChatUI'), 'No chat runtime call');
+assert.ok(!ui.includes('renderPlanner()'), 'No planner rendering');
+assert.ok(html.includes('id="dish-library-list"'), 'Saved dishes preserved');
+assert.ok(html.includes('id="nutrition-stats-daily-list"'), 'Stats preserved');
+console.log('Nutrition layout: stats, saved dishes, no AI chat or meal planner: OK');

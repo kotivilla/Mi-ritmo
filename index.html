@@ -1017,77 +1017,6 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 @media(max-width:610px){.smart-analysis-panel{margin-top:13px;padding:13px}.smart-analysis-heading h4{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.active-progress>span{transition:none}}
 
-/* Asistente de comidas — tarjeta simple y chat móvil */
-#nutrition-view .food-chat-entry{padding:0;overflow:hidden;border-radius:16px}
-.food-chat-entry-button{display:flex;align-items:center;gap:12px;width:100%;background:#fff;color:var(--dark);border:0;padding:15px 17px;text-align:left;min-height:76px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.food-chat-icon{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:12px;background:#e9f5ed;color:var(--green)}
-.food-chat-icon svg{width:22px;height:22px}
-.food-chat-entry-copy{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
-.food-chat-entry-copy strong{font-size:14px;font-weight:850;line-height:1.3}
-.food-chat-entry-copy small{font-size:11px;color:var(--muted);line-height:1.35}
-.food-chat-entry-arrow{display:grid;place-items:center;width:28px;height:28px;color:#628a72}
-.food-chat-entry-arrow svg{width:17px;height:17px}
-@media(hover:hover){.food-chat-entry-button:hover{background:#f8fbf8}}
-.food-chat-dialog{width:min(530px,calc(100vw - 24px));height:min(750px,92dvh);max-width:none;max-height:92dvh;overflow:hidden;padding:0;border:1px solid #dbe9df;border-radius:22px;background:#fff;box-shadow:0 14px 60px #173e2729}
-.food-chat-dialog[open]{display:flex;flex-direction:column}
-.food-chat-shell{display:flex;flex-direction:column;width:100%;height:100%;min-height:0}
-.food-chat-head{flex:0 0 auto;padding:19px 20px 14px;border-bottom:1px solid #e8eee8}
-.food-chat-head-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.food-chat-eyebrow{color:var(--green);font-size:9px;font-weight:850;letter-spacing:1.2px}
-.food-chat-head h2{font-size:20px;letter-spacing:-.5px;line-height:1.25;margin:5px 0 4px}
-#food-chat-selected-date{display:block;font-size:11px;color:#829585;text-transform:capitalize}
-.food-chat-close{display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;border:1px solid #e2ebe3;border-radius:11px;background:#f6faf7;color:#658473;padding:0}
-.food-chat-close svg{width:18px;height:18px}
-.food-chat-meal-label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:15px 0 0;font-size:11px;font-weight:750;color:#6b816e}
-.food-chat-meal-label select{min-width:0;width:48%;min-height:42px;border:1px solid #d4e5d8;border-radius:11px;background:#f8fbf8;color:var(--green);font-size:13px;font-weight:800;padding:8px 9px}
-.food-chat-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px 16px 24px;background:#f8faf7;display:flex;flex-direction:column;gap:13px}
-.food-chat-msg{display:flex;width:100%}
-.food-chat-msg.is-user{justify-content:flex-end}
-.food-chat-bubble{max-width:93%;border:1px solid #e2eae2;border-radius:15px 15px 15px 5px;background:white;padding:13px 14px;font-size:13px;line-height:1.55;color:#35523e;overflow-wrap:anywhere}
-.food-chat-bubble>p{margin:0;white-space:pre-wrap}
-.is-user .food-chat-bubble{background:var(--green);color:#fff;border-color:var(--green);border-radius:15px 15px 5px 15px}
-.food-chat-status{display:block;color:#74927f;font-size:10px;font-weight:800;margin-top:9px}
-.food-chat-question{margin-top:9px!important;color:#2b6849;font-weight:700}
-.food-chat-result-heading{display:block;font-size:11px;margin-top:14px;margin-bottom:8px}
-.food-chat-groups{display:flex;flex-wrap:wrap;gap:6px}
-.food-chat-group{display:inline-flex;border-radius:99px;padding:7px 9px;font-size:10px;font-weight:800;line-height:1.25}
-.food-chat-group.is-pending{color:#7d5a1a;background:#fff4d9}
-.food-chat-group.is-complete{color:#26734a;background:#e8f6ec}
-.food-chat-footnote,.food-chat-disclaimer{display:block;margin-top:9px;font-size:10px;line-height:1.4;color:#819684}
-.food-chat-disclaimer{border-top:1px solid #ebf0eb;padding-top:9px}
-.food-chat-bottom{flex:0 0 auto;padding:11px 15px calc(11px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #e5eee6}
-.food-chat-examples{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:1px 0 10px;scrollbar-width:none}
-.food-chat-examples::-webkit-scrollbar{display:none}
-.food-chat-examples button{flex:0 0 auto;border:1px solid #e1eae2;color:#607967;background:#f8faf8;border-radius:20px;padding:8px 10px;min-height:35px;font-size:11px;font-weight:750}
-.food-chat-form{display:flex;align-items:flex-end;gap:8px}
-.food-chat-form textarea{flex:1;min-width:0;resize:none;max-height:115px;min-height:47px;padding:11px 12px;border:1px solid #dbe6dd;border-radius:12px;background:#fff;font-size:15px;line-height:1.4;color:var(--dark)}
-.food-chat-form textarea:focus{outline:2px solid #9dc9ab;outline-offset:0}
-.food-chat-form button{flex:0 0 auto;border:1px solid var(--green);border-radius:11px;background:var(--green);color:#fff;font-weight:850;min-height:46px;padding:0 13px;font-size:12px}
-.food-chat-form button:disabled{opacity:.65}
-.food-chat-bottom-note{text-align:center;font-size:10px;line-height:1.35;color:#91a096;margin:9px 2px 0}
-@media(max-width:610px){
- #nutrition-view .food-chat-entry-button{padding:13px 15px;min-height:68px}
- .food-chat-dialog{position:fixed;inset:0;margin:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:100dvh!important;border:0!important;border-radius:0!important}
- .food-chat-head{padding:calc(12px + env(safe-area-inset-top,0px)) 16px 11px}
- .food-chat-head h2{font-size:19px}
- .food-chat-scroll{padding:16px 13px 24px}
- .food-chat-bottom{padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}
- .food-chat-bubble{font-size:12px}
-}
-.food-chat-goto{display:block;width:100%;margin-top:13px;min-height:40px;padding:9px 11px;border:1px solid #cde4d2;background:#eff8f1;border-radius:10px;color:var(--green);font-size:12px;font-weight:850;text-align:center}
-.food-chat-goto:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-
-/* Búsqueda de productos en internet: control discreto y enlaces claros */
-.food-chat-web-switch{display:flex;align-items:center;gap:8px;min-height:34px;margin:0 0 8px;padding:2px 2px;cursor:pointer;color:#557661;font-size:11px;font-weight:760}
-.food-chat-web-switch input{width:15px;height:15px;flex:0 0 15px;accent-color:var(--green);margin:0}
-.food-chat-web-switch span{flex:1}
-.food-chat-web-switch svg{width:15px;height:15px;flex:0 0 15px;color:#759784}
-.food-chat-sources{display:flex;flex-direction:column;gap:6px;background:#f4f8f5;border:1px solid #e1ece3;border-radius:10px;margin-top:13px;padding:11px 12px}
-.food-chat-sources-label{font-size:11px;font-weight:800;color:#3e7152;margin:0 0 2px}
-.food-chat-sources a{display:block;font-size:11px;font-weight:750;color:var(--green);line-height:1.4;overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:#b0c9b7;text-underline-offset:2px}
-.food-chat-sources a:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-.food-chat-sources small{font-size:10px;line-height:1.45;color:#6e8978}
-
 /* Estadísticas alimentarias: un rango compartido, filtros y desglose diario */
 .nutrition-stats-content{display:flex!important;flex-direction:column;gap:19px}
 .nutrition-stats-toolbar{display:flex;flex-direction:column;gap:10px}
@@ -1143,10 +1072,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/smart-analysis.js?v=3"></script>
 <script src="/decimal-input.js?v=1"></script>
 <script src="/active-workout.js?v=2"></script>
-<script src="https://js.puter.com/v2/"></script>
-<script src="/puter-food-ai.js?v=2"></script>
-<script src="/food-chat.js?v=4"></script>
-<script src="/insights-ui.js?v=10"></script>
+<script src="/insights-ui.js?v=11"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1181,39 +1107,6 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
    <div class="nutrition-meals-heading"><h3>Comidas</h3></div>
    <div class="mealgrid" id="mealgrid"></div>
    <div id="daily-fruit" aria-label="Frutas del día"></div>
-  </section>
-  <section class="panel food-chat-entry" aria-label="Asistente de comidas">
-   <button type="button" id="food-chat-open" class="food-chat-entry-button">
-    <span class="food-chat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z"/><path d="M19 17l.7 1.7L21.5 19.5l-1.8.8L19 22l-.7-1.7-1.8-.8 1.8-.8L19 17Z"/></svg></span>
-    <span class="food-chat-entry-copy"><strong>Chat con IA</strong><small>Contame qué comiste y vemos qué grupos te faltan</small></span>
-    <span class="food-chat-entry-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></span>
-   </button>
-  </section>
-  <section class="panel dish-library-panel" aria-labelledby="dish-library-title">
-   <div class="heading dish-library-heading">
-    <h2 id="dish-library-title" class="dish-library-title">
-     <button class="dish-library-toggle" id="dish-library-toggle" type="button" aria-controls="dish-library-body" aria-expanded="false" aria-label="Mostrar Mis platos">
-      <span class="dish-library-toggle-icon" aria-hidden="true">▤</span>
-      <span class="dish-library-toggle-copy"><strong>Mis platos</strong><small id="dish-library-count">Tus opciones guardadas</small></span>
-      <span class="dish-library-toggle-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
-     </button>
-    </h2>
-    <button class="pill primary" id="new-dish" type="button">+ Crear plato</button>
-   </div>
-   <div id="dish-library-body" hidden>
-   <div class="dish-library-date"><span aria-hidden="true">◷</span> Para registrar una comida: <b id="dish-library-selected-date">fecha seleccionada</b></div>
-   <div class="dish-library-controls">
-    <label for="dish-library-meal"><span>Mostrar</span>
-     <select class="field" id="dish-library-meal"><option value="">Todas las comidas</option><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Té</option><option value="dinner">Comida</option></select>
-    </label>
-    <label for="dish-library-search"><span>Buscar plato</span>
-     <input class="field" id="dish-library-search" type="search" placeholder="Buscar mis opciones…" autocomplete="off">
-    </label>
-   </div>
-   <div id="dish-library-list" class="dish-list" aria-live="polite"></div>
-   <p class="mini dish-library-help">Crear un plato solo lo agrega a esta lista. Para anotarlo en un día, tocá <b>Comí esto</b>. Tocá <b>✓ Ya lo comí</b> para deshacer.</p>
-   <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
-   </div>
   </section>
   <details class="panel tool-card" id="nutrition-stats-detail">
     <summary class="tool-card-summary">
@@ -1264,23 +1157,32 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
       </section>
     </div>
   </details>
-    <details class="panel tool-card insights-planner-panel" id="nutrition-planner-detail">
-     <summary class="tool-card-summary">
-      <span><strong>Planificar comidas</strong><small>Organización y compras</small></span>
-      <span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
-     </summary>
-     <div class="tool-card-body">
-      <div class="heading insights-planner-head"><h3>Semana <span id="insights-plan-week"></span></h3><div class="daynav"><button class="square ui-nav-arrow" type="button" id="insights-plan-prev" aria-label="Semana anterior"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button class="square ui-nav-arrow" type="button" id="insights-plan-next" aria-label="Semana siguiente"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
-      <div class="insights-plan-days" id="insights-plan-days"></div>
-      <div class="insights-plan-meals" id="insights-plan-meals"></div>
-      <div class="nutrition-planner-shopping">
-       <div class="heading"><div><h3>Lista de compras</h3><span class="sub" id="insights-shopping-count"></span></div><button class="pill" type="button" id="insights-plan-copy">Copiar lista</button></div>
-       <ul class="insights-shopping-list" id="insights-shopping-items"></ul>
-       <p class="mini" id="insights-shopping-note"></p>
-      </div>
-     </div>
-    </details>
-
+  <section class="panel dish-library-panel" aria-labelledby="dish-library-title">
+   <div class="heading dish-library-heading">
+    <h2 id="dish-library-title" class="dish-library-title">
+     <button class="dish-library-toggle" id="dish-library-toggle" type="button" aria-controls="dish-library-body" aria-expanded="false" aria-label="Mostrar Mis platos">
+      <span class="dish-library-toggle-icon" aria-hidden="true">▤</span>
+      <span class="dish-library-toggle-copy"><strong>Mis platos</strong><small id="dish-library-count">Tus opciones guardadas</small></span>
+      <span class="dish-library-toggle-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+     </button>
+    </h2>
+    <button class="pill primary" id="new-dish" type="button">+ Crear plato</button>
+   </div>
+   <div id="dish-library-body" hidden>
+   <div class="dish-library-date"><span aria-hidden="true">◷</span> Para registrar una comida: <b id="dish-library-selected-date">fecha seleccionada</b></div>
+   <div class="dish-library-controls">
+    <label for="dish-library-meal"><span>Mostrar</span>
+     <select class="field" id="dish-library-meal"><option value="">Todas las comidas</option><option value="breakfast">Desayuno</option><option value="lunch">Almuerzo</option><option value="snack">Té</option><option value="dinner">Comida</option></select>
+    </label>
+    <label for="dish-library-search"><span>Buscar plato</span>
+     <input class="field" id="dish-library-search" type="search" placeholder="Buscar mis opciones…" autocomplete="off">
+    </label>
+   </div>
+   <div id="dish-library-list" class="dish-list" aria-live="polite"></div>
+   <p class="mini dish-library-help">Crear un plato solo lo agrega a esta lista. Para anotarlo en un día, tocá <b>Comí esto</b>. Tocá <b>✓ Ya lo comí</b> para deshacer.</p>
+   <p class="mini" id="dish-storage-note">Los platos se sincronizan con tu cuenta cuando tenés conexión.</p>
+   </div>
+  </section>
  </main>
 </div>
 
@@ -1535,37 +1437,6 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  <div id="insights-blocks-compare"></div>
 </section>
 </div></dialog>
-<dialog id="food-chat-dialog" class="food-chat-dialog" aria-labelledby="food-chat-title">
- <div class="food-chat-shell">
-  <header class="food-chat-head">
-   <div class="food-chat-head-top">
-    <div><span class="food-chat-eyebrow">MI RITMO · ALIMENTACIÓN</span><h2 id="food-chat-title">Asistente de comidas</h2><small id="food-chat-selected-date"></small></div>
-    <button id="food-chat-close" type="button" aria-label="Cerrar asistente" class="food-chat-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-   </div>
-   <label class="food-chat-meal-label" for="food-chat-meal"><span>¿Qué comida querés revisar?</span>
-    <select id="food-chat-meal"><option value="breakfast">☀️ Desayuno</option><option value="lunch">🥗 Almuerzo</option><option value="snack">🍵 Té</option><option value="dinner">🍽️ Comida</option></select>
-   </label>
-  </header>
-  <div class="food-chat-scroll" id="food-chat-messages" role="log" aria-label="Conversación del asistente" aria-live="polite"></div>
-  <div class="food-chat-bottom">
-   <div class="food-chat-examples" id="food-chat-examples">
-    <button type="button" data-example="Comí una milanesa con puré en un restaurante">Milanesa con puré</button>
-    <button type="button" data-example="Hoy comí pizza Sibarita de mozzarella">Pizza Sibarita</button>
-   </div>
-   <label class="food-chat-web-switch" for="food-chat-web-enabled">
-    <input type="checkbox" id="food-chat-web-enabled" checked>
-    <span>Buscar productos y locales en internet</span>
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
-   </label>
-   <form id="food-chat-form" class="food-chat-form">
-    <label for="food-chat-input" class="dish-visually-hidden">Describí qué comiste</label>
-    <textarea id="food-chat-input" rows="2" maxlength="550" placeholder="Hoy comí… ¿Qué me falta de mi plan?"></textarea>
-    <button id="food-chat-send" type="submit">Enviar</button>
-   </form>
-   <p class="food-chat-bottom-note">IA de Puter · La búsqueda web usa créditos de Puter · No se registran comidas automáticamente</p>
-  </div>
- </div>
-</dialog>
 <dialog id="active-workout-dialog" class="active-workout-dialog" aria-labelledby="active-workout-title">
  <div class="active-workout-shell">
   <header class="active-workout-header">
@@ -2446,7 +2317,7 @@ function renderStats(){
  $('daily-groups').textContent=Number(c.portionsCompleted.toFixed(2)).toLocaleString('es-AR')+' de '+c.portionsTotal+' porciones';
  $('complete-meals').textContent=c.complete+'/4';
 }
-function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();if($('nutrition-calendar-dialog').open)renderNutritionCalendar();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();ActiveWorkoutUI.updateEntryButton();FoodChatUI.refresh();
+function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();if($('nutrition-calendar-dialog').open)renderNutritionCalendar();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();ActiveWorkoutUI.updateEntryButton();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';
  if(user)$('session-email').textContent=user.email||'Tu cuenta';
 }
@@ -2651,17 +2522,6 @@ function switchView(view,scroll){
  if(scroll!==false)window.scrollTo(0,0);
 }
 async function start(){if(initDone)return;initDone=true;setupDishes();setupTraining();setupProgressTabs();setupNutritionCalendar();
- FoodChatUI.init({
-  date:function(){return k(picked)},day:function(key){return state.days[key]||{meals:{}}},
-  meals:function(){return meals},fruit:function(key){return dailyFruit(keyDay(fromKey(key)))},
-  user:function(){return user},openAccount:openAccount,
-  openMeal:function(mealId){
-   switchView('nutrition',false);
-   var card=$('mealgrid').querySelector('[data-meal-card="'+mealId+'"]');
-   if(card){card.open=true;card.scrollIntoView({behavior:'smooth',block:'center'})}
-  },
-  // Puter.js pide autorización propia en el navegador; no usamos claves ni tokens de Supabase.
- });
  ActiveWorkoutUI.init({
   userId:function(){return user&&user.id||''},
   today:function(){return k(new Date())},

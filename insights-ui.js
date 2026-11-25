@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-var b,plannerDate='',plannerWeek='',blockNotice='',weightDate='',recoveryDate='',initDone=false;
+var b,blockNotice='',weightDate='',recoveryDate='',initDone=false;
 var nutritionFrom='',nutritionTo='',nutritionPreset='30',nutritionMeal='all';
 function $(id){return document.getElementById(id)}
 function state(){return b.state()}
@@ -16,7 +16,6 @@ function setStatus(id,msg){$(id).textContent=msg}
 function shortDate(s){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(new Date(s+'T12:00:00'))}
 function longDate(s){return new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(new Date(s+'T12:00:00'))}
 function displayWeek(s){return shortDate(s)+' – '+shortDate(InsightsModel.addDay(s,6))}
-function weekEnd(start){return InsightsModel.addDay(start,6)}
 function statsDays(n){
  nutritionTo=today();nutritionFrom=InsightsModel.addDay(nutritionTo,-n+1);
  nutritionPreset=String(n);
@@ -66,54 +65,6 @@ function renderNutrition(){
  $('nutrition-stats-daily-note').textContent='Promedio de cada día de la semana en el rango elegido. Se muestran cuántos '+ 
   'registros componen cada promedio. Los días completamente vacíos se excluyen; en días anteriores con al menos una comida cargada, las demás cuentan como 0%.';
 }
-function plannerDayOptions(){
- var days=InsightsModel.dateRange(plannerWeek,weekEnd(plannerWeek));
- $('insights-plan-days').innerHTML=days.map(function(date){var d=new Date(date+'T12:00:00'),name=new Intl.DateTimeFormat('es-AR',{weekday:'short'}).format(d).replace('.','');return '<button type="button" class="insights-day'+(date===plannerDate?' active':'')+'" data-plan-date="'+date+'">'+clean(name)+'<small>'+d.getDate()+'</small></button>'}).join('');
- $('insights-plan-days').querySelectorAll('[data-plan-date]').forEach(function(btn){btn.addEventListener('click',function(){plannerDate=btn.dataset.planDate;renderPlanner()})});
-}
-function renderPlanner(){
- if(!plannerWeek)plannerWeek=InsightsModel.weekStart(today());
- if(!plannerDate||plannerDate<plannerWeek||plannerDate>weekEnd(plannerWeek))plannerDate=plannerWeek;
- $('insights-plan-week').textContent=displayWeek(plannerWeek);
- plannerDayOptions();
- var plans=settings().mealPlan,selected=plans[plannerDate]||{},all=b.dishList();
- $('insights-plan-meals').innerHTML=b.meals.map(function(meal){
- var options=all.filter(function(d){return d.meal===meal.id}),record=selected[meal.id]||null;
- var choices='<option value="">Sin planificar</option>'+options.map(function(d){return '<option value="'+clean(d.id)+'" '+(record&&record.dishId===d.id?'selected':'')+'>'+clean(d.name)+'</option>'}).join('');
- if(record&&!options.some(function(d){return d.id===record.dishId}))choices+='<option selected value="__legacy"> '+clean(record.label)+' (guardado)</option>';
- return '<label class="insights-plan-meal"><span>'+meal.icon+' '+meal.name+'</span><select class="field" data-plan-meal="'+meal.id+'">'+choices+'</select></label>';
- }).join('');
- $('insights-plan-meals').querySelectorAll('select').forEach(function(el){el.addEventListener('change',function(){
-  if(!active())return;
-  var date=plannerDate,meal=el.dataset.planMeal,all=b.dishList();
-  var plan=settings().mealPlan;
-  if(!plan[date])plan[date]={};
-  if(el.value==='__legacy')return;
-  if(!el.value)delete plan[date][meal];
-  else{
-   var dish=all.find(function(d){return d.id===el.value});if(!dish)return;
-   plan[date][meal]={dishId:dish.id,label:dish.name,ingredients:JSON.parse(JSON.stringify((dish.portions&&dish.portions._ingredients)||[]))};
-  }
-  if(!Object.keys(plan[date]).length)delete plan[date];
-  writeSettings();
- })});
- renderShopping();
-}
-function renderShopping(){
- var items=InsightsModel.shoppingList(settings().mealPlan,b.dishList(),FoodCatalog,plannerWeek,weekEnd(plannerWeek));
- var html=items.items.map(function(row){return '<li><span>'+clean(row.name)+'</span><b>'+fmt(row.quantity,2)+' '+clean(row.unit)+'</b></li>'}).join('');
- var legacy=items.fallback.map(function(row){return '<li><span>'+clean(row.name)+'</span><b>'+row.count+' '+(row.count===1?'vez':'veces')+'</b></li>'}).join('');
- $('insights-shopping-count').textContent=items.items.length+items.fallback.length+' elementos';
- $('insights-shopping-items').innerHTML=html+legacy||'<li class="insights-empty">Elegí platos para la semana y acá aparecerán sus ingredientes.</li>';
- $('insights-shopping-note').textContent='Las cantidades son porciones del catálogo, no kilos exactos de compra. Ajustalas según el tamaño de los envases.';
-}
-function exportShopping(){
- var rows=InsightsModel.shoppingList(settings().mealPlan,b.dishList(),FoodCatalog,plannerWeek,weekEnd(plannerWeek));
- var txt='Mi Ritmo — compras '+displayWeek(plannerWeek)+'\n'+rows.items.map(function(r){return '- '+r.name+': '+fmt(r.quantity,2)+' '+r.unit}).concat(rows.fallback.map(function(r){return '- '+r.name+': '+r.count+' veces (revisar ingredientes)'})).join('\n');
- if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){b.toast('Lista de compras copiada')}).catch(function(){fallbackCopy(txt)});
- else fallbackCopy(txt);
-}
-function fallbackCopy(s){var el=document.createElement('textarea');el.value=s;document.body.appendChild(el);el.select();document.execCommand('copy');el.remove();b.toast('Lista de compras copiada')}
 function weightChart(entries){
  var pts=entries.slice(-14),weights=pts.map(function(p){return p.weight});
  var low=Math.min.apply(null,weights),high=Math.max.apply(null,weights),span=Math.max(.6,high-low);
@@ -324,11 +275,11 @@ function saveGoal(){
 }
 function render(){
  if(!initDone)return;
- renderNutrition();renderPlanner();renderWeight();renderRecovery();renderReport();renderMuscles();renderExerciseProgress();renderBlocks();
+ renderNutrition();renderWeight();renderRecovery();renderReport();renderMuscles();renderExerciseProgress();renderBlocks();
 }
 function init(bridge){
  if(initDone)return;
- b=bridge;initDone=true;plannerWeek=InsightsModel.weekStart(today());plannerDate=today();weightDate=today();recoveryDate=today();
+ b=bridge;initDone=true;weightDate=today();recoveryDate=today();
  $('nutrition-stats-from').addEventListener('change',function(){nutritionFrom=this.value;nutritionPreset='';renderNutrition()});
  $('nutrition-stats-to').addEventListener('change',function(){nutritionTo=this.value;nutritionPreset='';renderNutrition()});
  $('nutrition-stats-meal').addEventListener('change',function(){nutritionMeal=this.value;renderNutrition()});
@@ -344,9 +295,6 @@ function init(bridge){
  $('insights-weight-history').addEventListener('click',function(event){var btn=event.target.closest('[data-weight-date]');if(!btn)return;weightDate=btn.getAttribute('data-weight-date');renderWeight();setStatus('insights-weight-feedback','Editá el valor y guardá. Para borrar este registro, dejá el peso vacío y guardá.');$('insights-weight-value').focus()});
  $('insights-recovery-form').addEventListener('submit',saveRecovery);
  $('insights-recovery-date').addEventListener('change',function(){recoveryDate=this.value;renderRecovery();setStatus('insights-recovery-feedback','')});
- $('insights-plan-prev').addEventListener('click',function(){plannerWeek=InsightsModel.addDay(plannerWeek,-7);plannerDate=plannerWeek;renderPlanner()});
- $('insights-plan-next').addEventListener('click',function(){plannerWeek=InsightsModel.addDay(plannerWeek,7);plannerDate=plannerWeek;renderPlanner()});
- $('insights-plan-copy').addEventListener('click',exportShopping);
  $('insights-block-form').addEventListener('submit',createBlock);
  $('insights-block-start').value=today();
  $('insights-block-goal-save').addEventListener('click',saveGoal);
