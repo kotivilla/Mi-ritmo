@@ -54,6 +54,44 @@ function nutritionWeek(days,mealSpec,start,end,asOf){
  return {registeredDays:registered,registeredMeals:registeredMeals,evaluatedMeals:evaluatedMeals,
   skippedMeals:skippedMeals,rate:total?Math.round(100*completed/total):null,groups:groups};
 }
+// Un único rango para promedios por grupo, por comida y cumplimiento diario.
+// Un día completamente vacío no se promedia. En días pasados con algún registro,
+// las comidas omitidas son 0%; hoy solo se evalúan comidas hasta la última cargada.
+function nutritionStats(days,mealSpec,start,end,asOf,selectedMeal){
+ var todayKey=asOf||key(new Date()),daily=[],groups={},registeredDays=0,evaluatedMeals=0,skippedMeals=0;
+ var daySum=0,mealSum=0,foodDays=days||{},spec=mealSpec||[];
+ var filter=selectedMeal&&selectedMeal!=='all'?selectedMeal:null;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||!/^\d{4}-\d{2}-\d{2}$/.test(end)||start>end){
+  return {daily:[],registeredDays:0,dailyAverage:null,groups:{},evaluatedMeals:0,skippedMeals:0,mealAverage:null};
+ }
+ for(var date=start,n=0;date<=end&&date<=todayKey&&n<5000;date=addDay(date,1),n++){
+  var food=((foodDays[date]||{}).meals)||{},lastLogged=-1;
+  spec.forEach(function(meal,i){if(mealWasLogged(food[meal.id]||{},meal))lastLogged=i});
+  if(lastLogged<0){daily.push({date:date,percent:null,recorded:false});continue}
+  var score=NutritionScoring.dayScore(food,spec);
+  registeredDays++;daySum+=score.rate;
+  daily.push({date:date,percent:Math.round(score.rate),recorded:true});
+  var lastCounted=date<todayKey?spec.length-1:lastLogged;
+  spec.forEach(function(meal,index){
+   if(index>lastCounted||(filter&&meal.id!==filter))return;
+   var entry=food[meal.id]||{},scored=NutritionScoring.mealPortions(entry,meal);
+   evaluatedMeals++;mealSum+=scored.fraction;
+   if(!mealWasLogged(entry,meal))skippedMeals++;
+   meal.groups.forEach(function(g){
+    var filled=Math.max(0,Math.min(g.target,Number(entry[g.id])||0))/g.target;
+    if(!groups[g.id])groups[g.id]={done:0,total:0};
+    groups[g.id].done+=filled;groups[g.id].total++;
+   });
+  });
+ }
+ Object.keys(groups).forEach(function(id){
+  groups[id].pct=groups[id].total?Math.round(100*groups[id].done/groups[id].total):null;
+ });
+ return {daily:daily,registeredDays:registeredDays,
+  dailyAverage:registeredDays?Math.round(daySum/registeredDays):null,
+  groups:groups,evaluatedMeals:evaluatedMeals,skippedMeals:skippedMeals,
+  mealAverage:evaluatedMeals?Math.round(100*mealSum/evaluatedMeals):null};
+}
 function weightEntries(days,until){
  return Object.keys(days||{}).filter(function(date){return date<=until&&finite(days[date].weightKg)&&days[date].weightKg>=20&&days[date].weightKg<=350}).sort().map(function(date){return {date:date,weight:days[date].weightKg}});
 }
@@ -123,6 +161,6 @@ function shoppingList(plan,dishes,foodCatalog,start,end){
  });
  return {items:Array.from(tally.values()).sort(function(a,b){return a.name.localeCompare(b.name,'es')}),fallback:Array.from(fallback).map(function(p){return {name:p[0],count:p[1]}})};
 }
-var api={weekStart:weekStart,addDay:addDay,dateRange:dateRange,fmt:fmt,workoutVolume:workoutVolume,muscleSeries:muscleSeries,nutritionWeek:nutritionWeek,weightEntries:weightEntries,weightTrend:weightTrend,recoveryWeek:recoveryWeek,progressChanges:progressChanges,weeklyReport:weeklyReport,blockStats:blockStats,shoppingList:shoppingList};
+var api={weekStart:weekStart,addDay:addDay,dateRange:dateRange,fmt:fmt,workoutVolume:workoutVolume,muscleSeries:muscleSeries,nutritionWeek:nutritionWeek,nutritionStats:nutritionStats,weightEntries:weightEntries,weightTrend:weightTrend,recoveryWeek:recoveryWeek,progressChanges:progressChanges,weeklyReport:weeklyReport,blockStats:blockStats,shoppingList:shoppingList};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.InsightsModel=api;
 })(typeof window==='undefined'?globalThis:window);

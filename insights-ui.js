@@ -1,6 +1,7 @@
 (function(root){
 'use strict';
 var b,plannerDate='',plannerWeek='',blockNotice='',weightDate='',recoveryDate='',initDone=false;
+var nutritionFrom='',nutritionTo='',nutritionPreset='30',nutritionMeal='all';
 function $(id){return document.getElementById(id)}
 function state(){return b.state()}
 function today(){return b.today()}
@@ -16,15 +17,53 @@ function shortDate(s){return new Intl.DateTimeFormat('es-AR',{day:'numeric',mont
 function longDate(s){return new Intl.DateTimeFormat('es-AR',{weekday:'long',day:'numeric',month:'long'}).format(new Date(s+'T12:00:00'))}
 function displayWeek(s){return shortDate(s)+' – '+shortDate(InsightsModel.addDay(s,6))}
 function weekEnd(start){return InsightsModel.addDay(start,6)}
+function statsDays(n){
+ nutritionTo=today();nutritionFrom=InsightsModel.addDay(nutritionTo,-n+1);
+ nutritionPreset=String(n);
+}
 function renderNutrition(){
- var end=b.date()<today()?b.date():today(),start=InsightsModel.weekStart(end),nut=InsightsModel.nutritionWeek(state().days,b.meals,start,end,today());
- $('insights-nutrition-date').textContent=displayWeek(start);
- if(nut.rate===null){$('insights-nutrition-body').innerHTML='<div class="insights-empty">Todavía no hay comidas registradas en esta semana. Cuando las cargues, vas a ver qué grupos pudiste cubrir.</div>';return}
+ var max=today();
+ if(!nutritionFrom||!nutritionTo)statsDays(30);
+ $('nutrition-stats-from').max=max;
+ $('nutrition-stats-to').max=max;
+ $('nutrition-stats-from').value=nutritionFrom;
+ $('nutrition-stats-to').value=nutritionTo;
+ document.querySelectorAll('[data-nutrition-range]').forEach(function(btn){
+  var selected=btn.dataset.nutritionRange===nutritionPreset;
+  btn.classList.toggle('active',selected);
+  btn.setAttribute('aria-pressed',String(selected));
+ });
+ var invalid=!/^\d{4}-\d{2}-\d{2}$/.test(nutritionFrom)||!/^\d{4}-\d{2}-\d{2}$/.test(nutritionTo)||
+  nutritionFrom>nutritionTo||nutritionTo>max;
+ $('nutrition-stats-error').hidden=!invalid;
+ $('nutrition-stats-error').textContent=invalid?'Elegí un rango válido: desde una fecha anterior o igual a hasta, sin días futuros.':'';
+ if(invalid)return;
+ var data=InsightsModel.nutritionStats(state().days,b.meals,nutritionFrom,nutritionTo,max,nutritionMeal);
+ $('nutrition-stats-average').textContent=data.dailyAverage===null?'—':data.dailyAverage+'%';
+ $('nutrition-stats-recorded').textContent=data.registeredDays+' / '+data.daily.length;
+ $('nutrition-stats-total-days').textContent='Días con comidas registradas';
+ var name=nutritionMeal==='all'?'todas las comidas':(b.meals.find(function(m){return m.id===nutritionMeal})||{}).name||'comida elegida';
+ $('insights-nutrition-caption').textContent=data.evaluatedMeals?
+  'Promedio de '+data.evaluatedMeals+' '+(data.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+' en '+name.toLowerCase()+'. '+
+  (data.skippedMeals?data.skippedMeals+' '+(data.skippedMeals===1?'comida sin cargar cuenta':'comidas sin cargar cuentan')+' como 0%. ':'')+
+  'Cada grupo se mide según sus propias porciones.':
+  'No hay comidas evaluables para este filtro y rango de fechas.';
  var order=[['protein','Proteínas'],['veg','Vegetales'],['carb','Hidratos'],['fat','Grasas']];
- $('insights-nutrition-body').innerHTML='<p class="mini">Promedio de <b>'+nut.evaluatedMeals+' '+(nut.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+'</b>: '+nut.rate+'% de porciones cumplidas por comida.'+(nut.skippedMeals?' '+nut.skippedMeals+' sin cargar contadas como 0%.':'')+' Los días totalmente vacíos se excluyen.</p><div class="insights-metrics">'+order.map(function(group){
-  var item=nut.groups[group[0]];if(!item)return '';
-  return '<div class="insights-bar-row"><div class="insights-bar-head"><b>'+group[1]+'</b><strong>'+item.pct+'%</strong></div><div class="insights-bar"><span style="width:'+item.pct+'%"></span></div></div>'
- }).join('')+'</div>';
+ var activeGroups=order.filter(function(g){return data.groups[g[0]]});
+ $('insights-nutrition-body').innerHTML=activeGroups.length?activeGroups.map(function(g){
+  var item=data.groups[g[0]],pct=item.pct;
+  return '<div class="insights-bar-row"><div class="insights-bar-head"><b>'+g[1]+'</b><strong>'+pct+'%</strong></div>'+
+  '<div class="insights-bar"><span style="width:'+pct+'%;background:'+NutritionScoring.color(pct,true)+'"></span></div></div>';
+ }).join(''):'<div class="insights-empty">Todavía no hay datos de estos grupos en el período.</div>';
+ $('nutrition-stats-daily-list').innerHTML=data.daily.length?data.daily.slice().reverse().map(function(item){
+  var dateText=new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'2-digit',month:'2-digit'}).format(new Date(item.date+'T12:00:00'));
+  var pct=item.percent;
+  return '<div class="nutrition-stats-day'+(item.recorded?'':' is-empty')+'" aria-label="'+clean(dateText)+': '+(item.recorded?pct+'%':'sin registro')+'">'+
+   '<span class="nutrition-stats-day-label">'+clean(dateText)+'</span>'+
+   '<div class="nutrition-stats-day-track" aria-hidden="true"><span style="width:'+(item.recorded?pct:0)+'%;background:'+(item.recorded?NutritionScoring.color(pct,true):'#dce2df')+'"></span></div>'+
+   '<span class="nutrition-stats-day-value">'+(item.recorded?pct+'%':'Sin registro')+'</span></div>';
+ }).join(''):'<div class="insights-empty">No hay días para mostrar en este período.</div>';
+ $('nutrition-stats-daily-note').textContent='Se muestran '+data.daily.length+' días (más reciente primero). Los días totalmente vacíos no entran en el promedio; si registraste alguna comida en un día anterior, las demás cuentan como 0%.';
 }
 function plannerDayOptions(){
  var days=InsightsModel.dateRange(plannerWeek,weekEnd(plannerWeek));
@@ -289,6 +328,16 @@ function render(){
 function init(bridge){
  if(initDone)return;
  b=bridge;initDone=true;plannerWeek=InsightsModel.weekStart(today());plannerDate=today();weightDate=today();recoveryDate=today();
+ $('nutrition-stats-from').addEventListener('change',function(){nutritionFrom=this.value;nutritionPreset='';renderNutrition()});
+ $('nutrition-stats-to').addEventListener('change',function(){nutritionTo=this.value;nutritionPreset='';renderNutrition()});
+ $('nutrition-stats-meal').addEventListener('change',function(){nutritionMeal=this.value;renderNutrition()});
+ document.querySelectorAll('[data-nutrition-range]').forEach(function(btn){btn.addEventListener('click',function(){
+  if(btn.dataset.nutritionRange==='all'){
+   var saved=Object.keys(state().days||{}).filter(function(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&day<=today()}).sort();
+   nutritionFrom=saved[0]||today();nutritionTo=today();nutritionPreset='all';
+  }else statsDays(Number(btn.dataset.nutritionRange));
+  renderNutrition();
+ })});
  $('insights-weight-form').addEventListener('submit',saveWeight);
  $('insights-weight-date').addEventListener('change',function(){weightDate=this.value;renderWeight();setStatus('insights-weight-feedback','')});
  $('insights-weight-history').addEventListener('click',function(event){var btn=event.target.closest('[data-weight-date]');if(!btn)return;weightDate=btn.getAttribute('data-weight-date');renderWeight();setStatus('insights-weight-feedback','Editá el valor y guardá. Para borrar este registro, dejá el peso vacío y guardá.');$('insights-weight-value').focus()});

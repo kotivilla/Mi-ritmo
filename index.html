@@ -1087,19 +1087,65 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 .food-chat-sources a{display:block;font-size:11px;font-weight:750;color:var(--green);line-height:1.4;overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:#b0c9b7;text-underline-offset:2px}
 .food-chat-sources a:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .food-chat-sources small{font-size:10px;line-height:1.45;color:#6e8978}
+
+/* Estadísticas alimentarias: un rango compartido, filtros y desglose diario */
+.nutrition-stats-content{display:flex!important;flex-direction:column;gap:19px}
+.nutrition-stats-toolbar{display:flex;flex-direction:column;gap:10px}
+.nutrition-stats-label{display:block;font-size:11px;font-weight:800;color:#56735f;margin-bottom:5px}
+.nutrition-stats-presets{display:flex;flex-wrap:wrap;gap:6px}
+.nutrition-stats-preset{border:1px solid #dceade;border-radius:10px;background:#f7faf7;color:#597362;font-size:12px;font-weight:800;min-height:37px;padding:8px 13px}
+.nutrition-stats-preset.active{color:#fff;background:var(--green);border-color:var(--green)}
+.nutrition-stats-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.nutrition-stats-dates label{min-width:0;display:block;color:#56735f;font-size:11px;font-weight:800}
+.nutrition-stats-dates .field{width:100%;min-width:0;margin:5px 0 0;font-size:14px;background:white}
+.nutrition-stats-error{font-size:12px;color:#b54343;margin:0}
+.nutrition-stats-error[hidden]{display:none}
+.nutrition-stats-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nutrition-stats-overview>div{background:#f5f9f5;border:1px solid #e1ede3;border-radius:13px;padding:14px;min-width:0}
+.nutrition-stats-overview small,.nutrition-stats-overview span{display:block;color:var(--muted);font-size:11px}
+.nutrition-stats-overview strong{display:block;font-size:26px;letter-spacing:-.7px;color:var(--green);line-height:1.25;margin:4px 0}
+.nutrition-stats-block{padding-top:17px;border-top:1px solid #e8eee8;min-width:0}
+.nutrition-stats-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:13px;flex-wrap:wrap}
+.nutrition-stats-section-head h3{font-size:15px;letter-spacing:-.25px;margin:0 0 4px}
+.nutrition-stats-section-head label{width:min(220px,100%);font-size:12px;min-width:0}
+.nutrition-stats-section-head select{width:100%;min-width:0;margin:0;padding:10px;font-size:13px}
+.nutrition-stats-caption{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 0}
+#insights-nutrition-body{margin-top:13px}
+#insights-nutrition-body .insights-bar-row{min-width:0}
+#insights-nutrition-body .insights-bar-head{font-size:12px}
+.nutrition-stats-daily-list{display:grid;gap:6px;max-height:370px;overflow-y:auto;scrollbar-gutter:stable;margin-top:15px;padding:0 3px 1px 0}
+.nutrition-stats-day{display:grid;grid-template-columns:92px minmax(0,1fr) 76px;align-items:center;gap:10px;min-height:32px;font-size:11px}
+.nutrition-stats-day-label{font-weight:750;color:#506f59;white-space:nowrap}
+.nutrition-stats-day-track{height:9px;background:#edf1ed;border-radius:100px;overflow:hidden}
+.nutrition-stats-day-track span{display:block;height:100%;border-radius:100px;min-width:0}
+.nutrition-stats-day-value{text-align:right;font-weight:850;color:var(--green);white-space:nowrap}
+.nutrition-stats-day.is-empty .nutrition-stats-day-label,.nutrition-stats-day.is-empty .nutrition-stats-day-value{color:#93a298}
+.nutrition-stats-day.is-empty .nutrition-stats-day-value{font-size:10px;font-weight:650}
+@media(max-width:610px){
+ .nutrition-stats-content{gap:15px}
+ .nutrition-stats-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ .nutrition-stats-preset{padding:8px 3px;font-size:11px}
+ .nutrition-stats-dates{gap:8px}
+ .nutrition-stats-dates .field{font-size:13px;padding:10px 6px}
+ .nutrition-stats-overview>div{padding:12px}
+ .nutrition-stats-overview strong{font-size:23px}
+ .nutrition-stats-section-head label{width:100%}
+ .nutrition-stats-day{grid-template-columns:74px minmax(0,1fr) 70px;gap:7px}
+}
+
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
-<script src="/nutrition-scoring.js?v=1"></script>
-<script src="/insights-model.js?v=5"></script>
+<script src="/nutrition-scoring.js?v=2"></script>
+<script src="/insights-model.js?v=6"></script>
 <script src="/smart-analysis.js?v=3"></script>
 <script src="/decimal-input.js?v=1"></script>
 <script src="/active-workout.js?v=2"></script>
 <script src="https://js.puter.com/v2/"></script>
 <script src="/puter-food-ai.js?v=2"></script>
 <script src="/food-chat.js?v=4"></script>
-<script src="/insights-ui.js?v=8"></script>
+<script src="/insights-ui.js?v=9"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1169,23 +1215,54 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
    </div>
   </section>
   <details class="panel tool-card" id="nutrition-stats-detail">
-     <summary class="tool-card-summary">
-      <span><strong>Estadísticas</strong><small>Semana y últimos 30 días</small></span>
+    <summary class="tool-card-summary">
+      <span><strong>Estadísticas</strong><small>Por día, por comida y por grupo</small></span>
       <span class="tool-card-chevron ui-chevron" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
-     </summary>
-     <div class="tool-card-body">
-      <div class="nutrition-weekly-section">
-       <div class="nutrition-tools-section-head"><h3>Últimos días</h3><span class="sub" id="week-range"></span></div>
-       <div class="barweek" id="barweek"></div>
-       <p class="mini" id="weekdetail"></p>
-       <div class="nutrition-monthly-line"><span>Promedio · 30 días</span><strong id="month-pct">—</strong></div>
+    </summary>
+    <div class="tool-card-body nutrition-stats-content">
+      <div class="nutrition-stats-toolbar">
+        <span class="nutrition-stats-label">Rango de fechas</span>
+        <div class="nutrition-stats-presets" role="group" aria-label="Elegir rango rápido">
+          <button type="button" data-nutrition-range="7" class="nutrition-stats-preset">7 días</button>
+          <button type="button" data-nutrition-range="30" class="nutrition-stats-preset active">30 días</button>
+          <button type="button" data-nutrition-range="90" class="nutrition-stats-preset">90 días</button>
+          <button type="button" data-nutrition-range="all" class="nutrition-stats-preset">Todo</button>
+        </div>
+        <div class="nutrition-stats-dates">
+          <label for="nutrition-stats-from">Desde <input class="field" type="date" id="nutrition-stats-from"></label>
+          <label for="nutrition-stats-to">Hasta <input class="field" type="date" id="nutrition-stats-to"></label>
+        </div>
+        <p class="nutrition-stats-error" role="alert" id="nutrition-stats-error" hidden></p>
       </div>
-      <div class="nutrition-food-stats" aria-labelledby="insights-nutrition-title">
-       <div class="nutrition-tools-section-head"><h3 id="insights-nutrition-title">Grupos de la semana</h3><span class="sub" id="insights-nutrition-date"></span></div>
-       <div id="insights-nutrition-body"></div>
+      <div class="nutrition-stats-overview" aria-label="Resumen de alimentación">
+        <div><small>Promedio diario</small><strong id="nutrition-stats-average">—</strong><span>Del plan cumplido</span></div>
+        <div><small>Días con registros</small><strong id="nutrition-stats-recorded">—</strong><span id="nutrition-stats-total-days">Dentro del rango elegido</span></div>
       </div>
-     </div>
-    </details>
+      <section class="nutrition-stats-block" aria-labelledby="insights-nutrition-title">
+        <div class="nutrition-stats-section-head">
+          <div><h3 id="insights-nutrition-title">Grupos alimentarios</h3><span class="sub">Promedio de cada grupo según sus porciones</span></div>
+          <label for="nutrition-stats-meal"><span class="nutrition-stats-label">Comida</span>
+            <select id="nutrition-stats-meal" class="field">
+              <option value="all">Todas las comidas</option>
+              <option value="breakfast">Desayuno</option>
+              <option value="lunch">Almuerzo</option>
+              <option value="snack">Té</option>
+              <option value="dinner">Comida (cena)</option>
+            </select>
+          </label>
+        </div>
+        <p id="insights-nutrition-caption" class="nutrition-stats-caption"></p>
+        <div id="insights-nutrition-body" class="insights-metrics"></div>
+      </section>
+      <section class="nutrition-stats-block" aria-labelledby="nutrition-stats-daily-title">
+        <div class="nutrition-stats-section-head">
+          <div><h3 id="nutrition-stats-daily-title">Cumplimiento por día</h3><span class="sub">Porcentaje total del plan diario</span></div>
+        </div>
+        <div id="nutrition-stats-daily-list" class="nutrition-stats-daily-list" aria-live="polite"></div>
+        <p class="nutrition-stats-caption" id="nutrition-stats-daily-note">Los días sin comidas registradas aparecen sin datos y no afectan el promedio.</p>
+      </section>
+    </div>
+  </details>
     <details class="panel tool-card insights-planner-panel" id="nutrition-planner-detail">
      <summary class="tool-card-summary">
       <span><strong>Planificar comidas</strong><small>Organización y compras</small></span>
@@ -1648,9 +1725,7 @@ function progressColor(percent,hasData){
 }
 // Cumplimiento alimentario por porciones: rojo, naranja, amarillo, verde, verde intenso.
 function nutritionProgressColor(percent,hasData){
- if(!hasData)return '#dce2df';
- var pct=Math.max(0,Math.min(100,Math.round(Number(percent)||0)));
- return pct<50?'#D94B4B':pct<75?'#E99A3E':pct<90?'#E5C14D':pct<100?'#4CAF50':'#2E7D32';
+ return NutritionScoring.color(percent,hasData);
 }
 function cap(v,max){var n=Number(v)||0;return Math.max(0,Math.min(max,n))}
 function dailyFruit(item){
@@ -2362,16 +2437,13 @@ function renderGymProgress(){
  $('gym-history').innerHTML=records.map(function(rec,index){return '<div class="gym-hcol'+(index===5?' current':'')+'"><span class="gym-hval">'+rec.count+'</span><div class="gym-hbar"><div class="gym-hfill" style="height:'+(rec.count/highest*100)+'%;background:'+progressColor(rec.count/goal*100,rec.count>0)+'"></div></div><span class="gym-hlabel">'+fmt(rec.day)+'</span></div>'}).join('');
  $('gym-history-caption').textContent=sumSix+' entrenamientos · 6 semanas';
 }
-function renderStats(){var c=countDay(picked),pct=Math.round(c.points/c.total*100);$('daily-pct').textContent=pct+'%';$('nutrition-progress-fill').style.width=pct+'%';$('nutrition-progress-fill').style.background=nutritionProgressColor(pct,c.any);$('daily-groups').textContent=Number(c.portionsCompleted.toFixed(2)).toLocaleString('es-AR')+' de '+c.portionsTotal+' porciones';$('complete-meals').textContent=c.complete+'/4';
- var first=monday(picked),range=function(d){return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(d)};
- $('week-range').textContent=range(first)+' – '+range(plus(first,6));$('barweek').innerHTML='';
- for(var i=0;i<7;i++){var d=plus(first,i),cc=countDay(d),col=document.createElement('div');col.className='bcol'+(k(d)===k(picked)?' today':'');col.innerHTML='<div class="btrack"><div class="bfill" style="height:'+(cc.points/cc.total*100)+'%;background:'+nutritionProgressColor(cc.points/cc.total*100,cc.any)+'"></div></div><small>'+days[d.getDay()]+'</small>';col.title=days[d.getDay()]+': '+Math.round(cc.points/cc.total*100)+'%';$('barweek').append(col)}
- var todayKey=k(new Date()),weekly=InsightsModel.nutritionWeek(state.days,meals,k(first),k(plus(first,6)),todayKey);
- $('weekdetail').textContent=weekly.rate===null?'Sin comidas registradas para analizar.':
-  'Promedio: '+weekly.rate+'% · '+weekly.evaluatedMeals+' '+(weekly.evaluatedMeals===1?'comida evaluada':'comidas evaluadas')+
-  (weekly.skippedMeals?' ('+weekly.skippedMeals+' sin cargar = 0%)':'')+'.';
- var monthly=InsightsModel.nutritionWeek(state.days,meals,k(plus(new Date(),-29)),todayKey,todayKey);
- $('month-pct').textContent=monthly.rate===null?'—':monthly.rate+'%';
+function renderStats(){
+ var c=countDay(picked),pct=Math.round(c.points/c.total*100);
+ $('daily-pct').textContent=pct+'%';
+ $('nutrition-progress-fill').style.width=pct+'%';
+ $('nutrition-progress-fill').style.background=nutritionProgressColor(pct,c.any);
+ $('daily-groups').textContent=Number(c.portionsCompleted.toFixed(2)).toLocaleString('es-AR')+' de '+c.portionsTotal+' porciones';
+ $('complete-meals').textContent=c.complete+'/4';
 }
 function render(){var actualToday=k(new Date()),label=k(picked)===actualToday?'Hoy · '+new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short'}).format(picked):new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'numeric',month:'short'}).format(picked);$('day-title').textContent=label.charAt(0).toUpperCase()+label.slice(1);renderDays();renderMeals();renderDishLibrary();renderFruit();if($('nutrition-calendar-dialog').open)renderNutritionCalendar();renderGym();renderStats();renderGymProgress();renderTraining();InsightsUI.render();ActiveWorkoutUI.updateEntryButton();FoodChatUI.refresh();
  $('account-btn').textContent=user?'☁ Mi cuenta':'☁ Cuenta';

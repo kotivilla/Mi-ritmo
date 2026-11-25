@@ -1,6 +1,12 @@
 (function(root){
 'use strict';
 // El cumplimiento mide porciones pautadas, no calorías ni el número de grupos.
+// Escala única de colores para cumplimiento alimentario.
+function color(percent,hasData){
+ if(!hasData)return '#dce2df';
+ var pct=Math.max(0,Math.min(100,Math.round(Number(percent)||0)));
+ return pct<50?'#D94B4B':pct<75?'#E99A3E':pct<90?'#E5C14D':pct<100?'#4CAF50':'#2E7D32';
+}
 function portion(value,target){
  var max=Number(target)||0,amount=Number(value)||0;
  return max>0?Math.max(0,Math.min(max,amount)):0;
@@ -25,6 +31,6 @@ function dayScore(mealsData,mealSpec){
   portionsCompleted:portionsCompleted,portionsTotal:portionsTotal,
   rate:meals.length?100*points/meals.length:0};
 }
-var api={portion:portion,mealPortions:mealPortions,dayScore:dayScore};
+var api={portion:portion,mealPortions:mealPortions,dayScore:dayScore,color:color};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.NutritionScoring=api;
 })(typeof window==='undefined'?globalThis:window);
