@@ -1024,9 +1024,9 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 .nutrition-stats-presets{display:flex;flex-wrap:wrap;gap:6px}
 .nutrition-stats-preset{border:1px solid #dceade;border-radius:10px;background:#f7faf7;color:#597362;font-size:12px;font-weight:800;min-height:37px;padding:8px 13px}
 .nutrition-stats-preset.active{color:#fff;background:var(--green);border-color:var(--green)}
-.nutrition-stats-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.nutrition-stats-dates label{min-width:0;display:block;color:#56735f;font-size:11px;font-weight:800}
-.nutrition-stats-dates .field{width:100%;min-width:0;margin:5px 0 0;font-size:14px;background:white}
+.nutrition-stats-dates{display:grid;width:100%;min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.nutrition-stats-dates label{display:block;width:100%;min-width:0;max-width:100%;color:#56735f;font-size:11px;font-weight:800}
+.nutrition-stats-dates input[type=date]{display:block;box-sizing:border-box;min-width:0;max-width:100%;width:100%;height:44px;margin:5px 0 0;padding:9px 12px;border:1px solid var(--border);border-radius:10px;color:var(--dark);background:white;font-size:16px;font-weight:500}
 .nutrition-stats-error{font-size:12px;color:#b54343;margin:0}
 .nutrition-stats-error[hidden]{display:none}
 .nutrition-stats-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -1055,8 +1055,9 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  .nutrition-stats-content{gap:15px}
  .nutrition-stats-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
  .nutrition-stats-preset{padding:8px 3px;font-size:11px}
- .nutrition-stats-dates{gap:8px}
- .nutrition-stats-dates .field{font-size:13px;padding:10px 6px}
+ .nutrition-stats-dates{grid-template-columns:minmax(0,1fr);gap:12px}
+ .nutrition-stats-dates label{width:100%;min-width:0}
+ .nutrition-stats-dates input[type=date]{font-size:16px;width:100%;min-width:0;max-width:100%;padding:10px 12px}
  .nutrition-stats-overview>div{padding:12px}
  .nutrition-stats-overview strong{font-size:23px}
  .nutrition-stats-section-head label{width:100%}
