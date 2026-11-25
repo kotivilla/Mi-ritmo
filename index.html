@@ -1063,6 +1063,39 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
  .nutrition-stats-day{grid-template-columns:74px minmax(0,1fr) 70px;gap:7px}
 }
 
+
+/* Selector semanal compacto: siete botones proporcionados sin estirar al ancho de la tarjeta */
+#nutrition-view .weekdays{
+ width:100%;
+ max-width:350px;
+ grid-template-columns:repeat(7,minmax(0,1fr));
+ gap:5px;
+ margin:12px auto 15px;
+}
+#nutrition-view .weekdate{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:1px;
+ width:100%;
+ min-width:0;
+ height:44px;
+ min-height:44px;
+ padding:4px 1px;
+ border-radius:9px;
+ box-shadow:none;
+}
+#nutrition-view .weekdate span{font-size:9px;line-height:1.05}
+#nutrition-view .weekdate strong{font-size:14px;line-height:1.15;margin:0}
+#nutrition-view .weekdate i{width:3px;height:3px;margin:1px 0 0}
+@media(max-width:610px){
+ #nutrition-view .weekdays{max-width:322px;margin:11px auto 14px;gap:4px}
+ #nutrition-view .weekdate{height:43px;min-height:43px;padding:4px 0;border-radius:8px}
+ #nutrition-view .weekdate span{font-size:9px}
+ #nutrition-view .weekdate strong{font-size:14px}
+}
+
 </style>
 <script src="/dish-model.js?v=2"></script>
 <script src="/food-catalog.js"></script>
