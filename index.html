@@ -1113,7 +1113,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 #insights-nutrition-body{margin-top:13px}
 #insights-nutrition-body .insights-bar-row{min-width:0}
 #insights-nutrition-body .insights-bar-head{font-size:12px}
-.nutrition-stats-daily-list{display:grid;gap:6px;max-height:370px;overflow-y:auto;scrollbar-gutter:stable;margin-top:15px;padding:0 3px 1px 0}
+.nutrition-stats-daily-list{display:grid;gap:9px;margin-top:15px;padding:0 3px 1px 0}
 .nutrition-stats-day{display:grid;grid-template-columns:92px minmax(0,1fr) 76px;align-items:center;gap:10px;min-height:32px;font-size:11px}
 .nutrition-stats-day-label{font-weight:750;color:#506f59;white-space:nowrap}
 .nutrition-stats-day-track{height:9px;background:#edf1ed;border-radius:100px;overflow:hidden}
@@ -1121,6 +1121,7 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 .nutrition-stats-day-value{text-align:right;font-weight:850;color:var(--green);white-space:nowrap}
 .nutrition-stats-day.is-empty .nutrition-stats-day-label,.nutrition-stats-day.is-empty .nutrition-stats-day-value{color:#93a298}
 .nutrition-stats-day.is-empty .nutrition-stats-day-value{font-size:10px;font-weight:650}
+.nutrition-stats-day-value small{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-top:2px}
 @media(max-width:610px){
  .nutrition-stats-content{gap:15px}
  .nutrition-stats-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
@@ -1138,14 +1139,14 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
 <script src="/food-catalog.js"></script>
 <script src="/training-model.js?v=7"></script>
 <script src="/nutrition-scoring.js?v=2"></script>
-<script src="/insights-model.js?v=6"></script>
+<script src="/insights-model.js?v=7"></script>
 <script src="/smart-analysis.js?v=3"></script>
 <script src="/decimal-input.js?v=1"></script>
 <script src="/active-workout.js?v=2"></script>
 <script src="https://js.puter.com/v2/"></script>
 <script src="/puter-food-ai.js?v=2"></script>
 <script src="/food-chat.js?v=4"></script>
-<script src="/insights-ui.js?v=9"></script>
+<script src="/insights-ui.js?v=10"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.min.js"></script>
 </head>
 <body class="nutrition-mode">
@@ -1256,10 +1257,10 @@ details[open]>summary .ui-chevron,.dish-library-toggle[aria-expanded="true"] .ui
       </section>
       <section class="nutrition-stats-block" aria-labelledby="nutrition-stats-daily-title">
         <div class="nutrition-stats-section-head">
-          <div><h3 id="nutrition-stats-daily-title">Cumplimiento por día</h3><span class="sub">Porcentaje total del plan diario</span></div>
+          <div><h3 id="nutrition-stats-daily-title">Promedio por día de la semana</h3><span class="sub">Compará lunes, martes y los demás días del rango</span></div>
         </div>
         <div id="nutrition-stats-daily-list" class="nutrition-stats-daily-list" aria-live="polite"></div>
-        <p class="nutrition-stats-caption" id="nutrition-stats-daily-note">Los días sin comidas registradas aparecen sin datos y no afectan el promedio.</p>
+        <p class="nutrition-stats-caption" id="nutrition-stats-daily-note">Cada barra promedia los registros de ese día de la semana. Los días sin comidas registradas no se incluyen.</p>
       </section>
     </div>
   </details>

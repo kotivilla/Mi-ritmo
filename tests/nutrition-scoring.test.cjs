@@ -45,3 +45,23 @@ assert.equal(Scoring.color(89,true),'#E5C14D','amarillo hasta 89');
 assert.equal(Scoring.color(90,true),'#4CAF50','verde vivo a partir de 90');
 assert.equal(Scoring.color(100,true),'#2E7D32','verde intenso al cien');
 console.log('Estadísticas por período, comida, día y escala de colores: OK');
+
+const weekdaysData={
+ '2026-11-02':{meals:{breakfast:{carb:1,protein:3,fat:1},lunch:{carb:1,protein:1,veg:1,fat:1},snack:{carb:1,protein:3,fat:1},dinner:{carb:1,protein:1,veg:1,fat:1}}},
+ '2026-11-09':{meals:{breakfast:{carb:1,protein:3,fat:1},lunch:{carb:1,protein:1,veg:1,fat:1}}},
+ '2026-11-03':{meals:{lunch:{carb:1,protein:1,veg:1,fat:1}}},
+ '2026-11-10':{meals:{daily:{fruit:2}}}
+};
+const weekdayStats=InsightsModel.nutritionStats(weekdaysData,meals,'2026-11-01','2026-11-10','2026-11-11','all');
+assert.equal(weekdayStats.weekdays.length,7,'Siempre muestra lunes a domingo');
+assert.equal(weekdayStats.weekdays[0].label,'Lunes','La semana empieza en lunes');
+assert.equal(weekdayStats.weekdays[0].count,2,'Dos lunes con registros');
+assert.equal(weekdayStats.weekdays[0].percent,75,'Promedio lunes: 100% y 50% => 75%');
+assert.equal(weekdayStats.weekdays[1].count,1,'Martes sin comidas se excluye');
+assert.equal(weekdayStats.weekdays[1].percent,25,'Martes registrado: almuerzo completo = 25%');
+assert.equal(weekdayStats.weekdays[2].percent,null,'Miércoles sin registros no tiene promedio');
+assert.equal(weekdayStats.weekdays[6].percent,null,'Domingo sin registros no tiene promedio');
+assert.equal(weekdayStats.registeredDays,3,'Las frutas solas no activan día alimentario');
+const weekdayEmpty=InsightsModel.nutritionStats({},meals,'2026-11-01','2026-11-07','2026-11-11','all');
+assert.ok(weekdayEmpty.weekdays.every(item=>item.percent===null&&item.count===0),'Sin registros: siete barras vacías');
+console.log('Promedios por día de la semana y días sin registros: OK');

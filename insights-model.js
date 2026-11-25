@@ -60,9 +60,10 @@ function nutritionWeek(days,mealSpec,start,end,asOf){
 function nutritionStats(days,mealSpec,start,end,asOf,selectedMeal){
  var todayKey=asOf||key(new Date()),daily=[],groups={},registeredDays=0,evaluatedMeals=0,skippedMeals=0;
  var daySum=0,mealSum=0,foodDays=days||{},spec=mealSpec||[];
+ var weekdays=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map(function(label){return {label:label,count:0,sum:0,percent:null}});
  var filter=selectedMeal&&selectedMeal!=='all'?selectedMeal:null;
  if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||!/^\d{4}-\d{2}-\d{2}$/.test(end)||start>end){
-  return {daily:[],registeredDays:0,dailyAverage:null,groups:{},evaluatedMeals:0,skippedMeals:0,mealAverage:null};
+  return {daily:[],weekdays:weekdays,registeredDays:0,dailyAverage:null,groups:{},evaluatedMeals:0,skippedMeals:0,mealAverage:null};
  }
  for(var date=start,n=0;date<=end&&date<=todayKey&&n<5000;date=addDay(date,1),n++){
   var food=((foodDays[date]||{}).meals)||{},lastLogged=-1;
@@ -70,6 +71,8 @@ function nutritionStats(days,mealSpec,start,end,asOf,selectedMeal){
   if(lastLogged<0){daily.push({date:date,percent:null,recorded:false});continue}
   var score=NutritionScoring.dayScore(food,spec);
   registeredDays++;daySum+=score.rate;
+  var weekday=weekdays[(dateObj(date).getDay()+6)%7];
+  weekday.count++;weekday.sum+=score.rate;
   daily.push({date:date,percent:Math.round(score.rate),recorded:true});
   var lastCounted=date<todayKey?spec.length-1:lastLogged;
   spec.forEach(function(meal,index){
@@ -87,7 +90,8 @@ function nutritionStats(days,mealSpec,start,end,asOf,selectedMeal){
  Object.keys(groups).forEach(function(id){
   groups[id].pct=groups[id].total?Math.round(100*groups[id].done/groups[id].total):null;
  });
- return {daily:daily,registeredDays:registeredDays,
+ weekdays.forEach(function(item){item.percent=item.count?Math.round(item.sum/item.count):null;delete item.sum});
+ return {daily:daily,weekdays:weekdays,registeredDays:registeredDays,
   dailyAverage:registeredDays?Math.round(daySum/registeredDays):null,
   groups:groups,evaluatedMeals:evaluatedMeals,skippedMeals:skippedMeals,
   mealAverage:evaluatedMeals?Math.round(100*mealSum/evaluatedMeals):null};

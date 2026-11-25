@@ -55,15 +55,16 @@ function renderNutrition(){
   return '<div class="insights-bar-row"><div class="insights-bar-head"><b>'+g[1]+'</b><strong>'+pct+'%</strong></div>'+
   '<div class="insights-bar"><span style="width:'+pct+'%;background:'+NutritionScoring.color(pct,true)+'"></span></div></div>';
  }).join(''):'<div class="insights-empty">Todavía no hay datos de estos grupos en el período.</div>';
- $('nutrition-stats-daily-list').innerHTML=data.daily.length?data.daily.slice().reverse().map(function(item){
-  var dateText=new Intl.DateTimeFormat('es-AR',{weekday:'short',day:'2-digit',month:'2-digit'}).format(new Date(item.date+'T12:00:00'));
-  var pct=item.percent;
-  return '<div class="nutrition-stats-day'+(item.recorded?'':' is-empty')+'" aria-label="'+clean(dateText)+': '+(item.recorded?pct+'%':'sin registro')+'">'+
-   '<span class="nutrition-stats-day-label">'+clean(dateText)+'</span>'+
-   '<div class="nutrition-stats-day-track" aria-hidden="true"><span style="width:'+(item.recorded?pct:0)+'%;background:'+(item.recorded?NutritionScoring.color(pct,true):'#dce2df')+'"></span></div>'+
-   '<span class="nutrition-stats-day-value">'+(item.recorded?pct+'%':'Sin registro')+'</span></div>';
- }).join(''):'<div class="insights-empty">No hay días para mostrar en este período.</div>';
- $('nutrition-stats-daily-note').textContent='Se muestran '+data.daily.length+' días (más reciente primero). Los días totalmente vacíos no entran en el promedio; si registraste alguna comida en un día anterior, las demás cuentan como 0%.';
+ $('nutrition-stats-daily-list').innerHTML=data.weekdays.map(function(item){
+  var hasData=item.count>0,pct=item.percent;
+  return '<div class="nutrition-stats-day'+(hasData?'':' is-empty')+'" aria-label="'+clean(item.label)+': '+(hasData?pct+'% promedio de '+item.count+' registros':'sin registros')+'">'+
+   '<span class="nutrition-stats-day-label">'+clean(item.label)+'</span>'+
+   '<div class="nutrition-stats-day-track" aria-hidden="true"><span style="width:'+(hasData?pct:0)+'%;background:'+(hasData?NutritionScoring.color(pct,true):'#dce2df')+'"></span></div>'+
+   '<span class="nutrition-stats-day-value">'+(hasData?pct+'%':'—')+
+   '<small>'+(hasData?item.count+' '+(item.count===1?'día':'días'):'Sin datos')+'</small></span></div>';
+ }).join('');
+ $('nutrition-stats-daily-note').textContent='Promedio de cada día de la semana en el rango elegido. Se muestran cuántos '+ 
+  'registros componen cada promedio. Los días completamente vacíos se excluyen; en días anteriores con al menos una comida cargada, las demás cuentan como 0%.';
 }
 function plannerDayOptions(){
  var days=InsightsModel.dateRange(plannerWeek,weekEnd(plannerWeek));
